@@ -29,6 +29,7 @@ const EcommercePage: React.FC = () => {
     error, 
     categories,
     featuredProducts,
+    exclusiveProducts,
     searchProducts,
     getProductsByCategory
   } = useProducts();
@@ -108,7 +109,7 @@ const EcommercePage: React.FC = () => {
                 criados por nossos franqueados com amor e qualidade.
               </p>
               
-              {/* Barra de Pesquisa Principal *
+              {/* Barra de Pesquisa Principal *}
               <div className="max-w-md mx-auto">
                 <SearchBar 
                   onSearch={handleSearch}
@@ -132,10 +133,12 @@ const EcommercePage: React.FC = () => {
             <section className="mb-12">
               <FeaturedProducts 
                 products={featuredProducts}
+                exclusiveProducts={exclusiveProducts}
                 onAddToCart={handleAddToCart}
               />
             </section>
           )}
+          
 
           {/* Controles da Loja */}
           <div className="flex flex-col lg:flex-row gap-8">
@@ -152,7 +155,7 @@ const EcommercePage: React.FC = () => {
             </aside>
 
             {/* Área Principal de Produtos */}
-            <div className="flex-1">
+            <div id="principal-produtos" className="flex-1">
               {/* Barra de Ferramentas */}
               <div className="flex items-center justify-between mb-6 bg-white rounded-xl shadow-sm p-4">
                 <div className="flex items-center gap-4">
@@ -166,7 +169,7 @@ const EcommercePage: React.FC = () => {
                     Filtros
                   </Button>
                   
-                  <span className="text-sm text-gray-600">
+                  <span className="text-md text-gray-600">
                     {displayedProducts.length} produto(s) encontrado(s)
                   </span>
                 </div>

@@ -11,6 +11,8 @@ import {
 // Importar imagens
 import productImage1 from '@/assets/products01.png';
 import productImage2 from '@/assets/products02.png';
+import productImage3 from '@/assets/products03.png';
+import { School, Shirt, Gamepad2 } from 'lucide-react';
 
 // Simulação de dados (será substituído por API real)
 const mockProducts: Product[] = [
@@ -28,7 +30,8 @@ const mockProducts: Product[] = [
       productImage2,
       productImage1
     ],
-    thumbnail: productImage1,
+    isExclusive: true,
+    thumbnail: productImage3,
     inStock: true,
     stockQuantity: 15,
     minAge: 2,
@@ -202,7 +205,8 @@ const mockCategories: ProductCategory[] = [
     slug: 'roupas',
     description: 'Roupas infantis para todas as idades',
     image: '/api/placeholder/200/200',
-    icon: '👕',
+    icon: Shirt,
+    color: 'bg-gradient-to-br from-amber-400 to-orange-500',
     productCount: 2,
     isActive: true
   },
@@ -212,7 +216,8 @@ const mockCategories: ProductCategory[] = [
     slug: 'brinquedos',
     description: 'Brinquedos educativos e divertidos',
     image: '/api/placeholder/200/200',
-    icon: '🧸',
+    icon: Gamepad2,
+    color: 'bg-gradient-to-br from-blue-400 to-blue-600',
     productCount: 2,
     isActive: true
   },
@@ -222,7 +227,8 @@ const mockCategories: ProductCategory[] = [
     slug: 'acessorios',
     description: 'Acessórios e utilitários para crianças',
     image: '/api/placeholder/200/200',
-    icon: '🎒',
+    icon: School,
+    color: 'bg-gradient-to-br from-purple-400 to-pink-500',
     productCount: 1,
     isActive: true
   }

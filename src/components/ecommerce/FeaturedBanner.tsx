@@ -4,8 +4,12 @@ import { ArrowRight, Sparkles, Star } from "lucide-react";
 import productsImage from "@/assets/products-showcase.jpg";
 
 const FeaturedBanner = () => {
-  const openWhatsApp = () => {
-    window.open('https://wa.me/5584999999999?text=Olá! Quero conhecer os produtos especiais!', '_blank');
+  
+  const scrollToSection = (sectionId: string) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
   };
 
   return (
@@ -15,7 +19,7 @@ const FeaturedBanner = () => {
           {/* Content */}
           <div className="space-y-6">
             <div className="space-y-4">
-              <Badge className="bg-gradient-to-r from-bronze to-gold text-white px-4 py-2 text-sm font-medium">
+              <Badge className="bg-gradient-to-r from-bronze to-gold text-white px-4 py-2 text-md font-medium">
                 🎯 Oportunidade Única
               </Badge>
               
@@ -31,7 +35,7 @@ const FeaturedBanner = () => {
             </div>
 
             {/* Trust Indicators */}
-            <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+            <div className="flex items-center space-x-2 text-md text-muted-foreground">
               <div className="flex space-x-1">
                 {[...Array(5)].map((_, i) => (
                   <Star key={i} className="h-4 w-4 fill-gold text-gold" />
@@ -45,7 +49,7 @@ const FeaturedBanner = () => {
               <Button 
                 variant="hero" 
                 size="lg" 
-                onClick={openWhatsApp}
+                onClick={() => scrollToSection('principal-produtos')}
                 className="group"
               >
                 <Sparkles className="h-5 w-5 mr-2 group-hover:animate-spin" />
@@ -54,6 +58,7 @@ const FeaturedBanner = () => {
               </Button>
               
               <Button 
+                onClick={() => scrollToSection('principal-produtos')}
                 variant="outline" 
                 size="lg"
                 className="group border-bronze/20 hover:bg-bronze/10"
@@ -91,11 +96,11 @@ const FeaturedBanner = () => {
             </div>
             
             {/* Floating Elements */}
-            <div className="absolute -top-4 -right-4 bg-gradient-hero text-white px-4 py-2 rounded-full text-sm font-medium animate-pulse-glow">
+            <div className="absolute -top-4 -right-4 bg-gradient-hero text-white px-4 py-2 rounded-full text-md font-medium animate-pulse-glow">
               🎉 Novidades!
             </div>
             
-            <div className="absolute -bottom-4 -left-4 bg-white shadow-bronze px-4 py-2 rounded-full text-sm font-medium">
+            <div className="absolute -bottom-4 -left-4 bg-white shadow-bronze px-4 py-2 rounded-full text-md font-medium">
               ✨ Entrega Rápida
             </div>
             

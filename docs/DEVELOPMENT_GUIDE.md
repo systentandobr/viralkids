@@ -405,7 +405,7 @@ export const useCart = create<CartStore>((set, get) => ({
 ```typescript
 // Mobile First
 <div className="w-full md:w-1/2 lg:w-1/3">
-<div className="text-sm md:text-base lg:text-lg">
+<div className="text-md md:text-base lg:text-lg">
 <div className="p-4 md:p-6 lg:p-8">
 ```
 

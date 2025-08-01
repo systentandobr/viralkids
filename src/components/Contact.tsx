@@ -130,10 +130,10 @@ const Contact = () => {
                       <h3 className="text-lg font-semibold text-foreground mb-1">
                         {method.title}
                       </h3>
-                      <p className="text-sm text-muted-foreground mb-2">
+                      <p className="text-md text-muted-foreground mb-2">
                         {method.description}
                       </p>
-                      <p className="text-sm font-medium text-bronze">
+                      <p className="text-md font-medium text-bronze">
                         {method.info}
                       </p>
                     </div>
@@ -185,7 +185,7 @@ const Contact = () => {
                     
                     <div className="space-y-2">
                       {region.cities.map((city, cityIndex) => (
-                        <div key={cityIndex} className="flex items-center text-sm text-muted-foreground">
+                        <div key={cityIndex} className="flex items-center text-md text-muted-foreground">
                           <MapPin className="h-3 w-3 mr-2 text-bronze" />
                           {city}
                         </div>
@@ -238,7 +238,7 @@ const Contact = () => {
                       <p className="font-semibold text-foreground">
                         {testimonial.name}
                       </p>
-                      <p className="text-sm text-muted-foreground">
+                      <p className="text-md text-muted-foreground">
                         {testimonial.role} • {testimonial.location}
                       </p>
                     </div>
@@ -255,7 +255,7 @@ const Contact = () => {
           <h3 className="text-xl font-bold text-foreground mb-4">
             Horários de Atendimento
           </h3>
-          <div className="grid md:grid-cols-2 gap-4 text-sm text-muted-foreground">
+          <div className="grid md:grid-cols-2 gap-4 text-md text-muted-foreground">
             <div>
               <p className="font-medium text-foreground">WhatsApp & Instagram</p>
               <p>Segunda a Sábado: 8h às 20h</p>

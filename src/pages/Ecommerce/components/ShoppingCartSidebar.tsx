@@ -105,7 +105,7 @@ export const ShoppingCartSidebar: React.FC<ShoppingCartSidebarProps> = ({
                   {/* Informações do Produto */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-start justify-between mb-1">
-                      <h4 className="font-medium text-gray-800 text-sm line-clamp-2">
+                      <h4 className="font-medium text-gray-800 text-md line-clamp-2">
                         {item.product.name}
                       </h4>
                       <Button
@@ -152,7 +152,7 @@ export const ShoppingCartSidebar: React.FC<ShoppingCartSidebarProps> = ({
                           <Minus className="h-3 w-3" />
                         </Button>
                         
-                        <span className="w-8 text-center text-sm font-medium">
+                        <span className="w-8 text-center text-md font-medium">
                           {item.quantity}
                         </span>
                         
@@ -188,7 +188,7 @@ export const ShoppingCartSidebar: React.FC<ShoppingCartSidebarProps> = ({
                 <span>Subtotal ({totalItems} itens)</span>
                 <span>{formatPrice(total)}</span>
               </div>
-              <div className="flex justify-between text-sm text-gray-600">
+              <div className="flex justify-between text-md text-gray-600">
                 <span>Frete</span>
                 <span>Calculado no checkout</span>
               </div>

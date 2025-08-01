@@ -63,7 +63,7 @@ const AssistantButton = () => {
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
                   <Bot className="h-5 w-5" />
-                  <CardTitle className="text-sm font-medium">Assistente Viral Kids</CardTitle>
+                  <CardTitle className="text-md font-medium">Assistente Viral Kids</CardTitle>
                 </div>
                 <Button
                   variant="ghost"
@@ -86,7 +86,7 @@ const AssistantButton = () => {
                     className={`flex ${msg.isBot ? 'justify-start' : 'justify-end'}`}
                   >
                     <div
-                      className={`max-w-[80%] p-3 rounded-lg text-sm ${
+                      className={`max-w-[80%] p-3 rounded-lg text-md ${
                         msg.isBot
                           ? 'bg-gray-100 text-gray-800'
                           : 'bg-gradient-to-r from-bronze to-gold text-white'

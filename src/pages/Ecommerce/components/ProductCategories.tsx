@@ -1,8 +1,11 @@
 import React from 'react';
 import { ProductCategory } from '../types/ecommerce.types';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Card, CardContent } from '@/components/ui/card';
+import CategoryCard from '@/components/ecommerce/CategoryCard';
+import { Star } from 'lucide-react';
+import { Shirt } from 'lucide-react';
+import { Book } from 'lucide-react';
+import { Baby } from 'lucide-react';
+import { Palette } from 'lucide-react';
 
 interface ProductCategoriesProps {
   categories: ProductCategory[];
@@ -74,165 +77,22 @@ export const ProductCategories: React.FC<ProductCategoriesProps> = ({
     return CategoryIcons[iconKey as keyof typeof CategoryIcons] || CategoryIcons.default;
   };
 
-  // Categorias padrão caso não haja dados
-  const defaultCategories: ProductCategory[] = [
-    {
-      id: 'all',
-      name: 'Todos',
-      slug: 'all',
-      description: 'Todos os produtos',
-      image: '',
-      icon: 'star',
-      productCount: categories.reduce((total, cat) => total + cat.productCount, 0),
-      isActive: true
-    },
-    {
-      id: 'brinquedos',
-      name: 'Brinquedos',
-      slug: 'brinquedos',
-      description: 'Brinquedos educativos e divertidos',
-      image: '',
-      icon: 'gamepad',
-      productCount: 45,
-      isActive: true
-    },
-    {
-      id: 'roupas',
-      name: 'Roupas',
-      slug: 'roupas',
-      description: 'Roupas confortáveis para crianças',
-      image: '',
-      icon: 'shirt',
-      productCount: 32,
-      isActive: true
-    },
-    {
-      id: 'livros',
-      name: 'Livros',
-      slug: 'livros',
-      description: 'Livros infantis e educativos',
-      image: '',
-      icon: 'book',
-      productCount: 28,
-      isActive: true
-    },
-    {
-      id: 'bebes',
-      name: 'Bebês',
-      slug: 'bebes',
-      description: 'Produtos especiais para bebês',
-      image: '',
-      icon: 'baby',
-      productCount: 23,
-      isActive: true
-    },
-    {
-      id: 'arte',
-      name: 'Arte & Criatividade',
-      slug: 'arte',
-      description: 'Materiais para artesanato e pintura',
-      image: '',
-      icon: 'palette',
-      productCount: 19,
-      isActive: true
-    }
-  ];
-
-  // Usar categorias reais se disponíveis, senão usar as padrão
-  const displayCategories = categories.length > 0 ? categories : defaultCategories;
-
   return (
-    <section className="mb-8">
-      <div className="text-center mb-6">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">
-          Explore por Categoria
+    <div className="mb-12">
+        <div className="text-center mb-8">
+        <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-2">
+            Explore por Categoria
         </h2>
-        <p className="text-gray-600">
-          Encontre produtos organizados por categoria
+        <p className="text-muted-foreground">
+            Encontre produtos organizados por categoria
         </p>
-      </div>
-
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-        {displayCategories.map((category) => {
-          const isSelected = selectedCategory === category.id;
-          const IconComponent = getCategoryIcon(category);
-
-          return (
-            <Card
-              key={category.id}
-              className={`cursor-pointer transition-all duration-200 hover:shadow-md ${
-                isSelected 
-                  ? 'ring-2 ring-primary bg-primary/5 border-primary' 
-                  : 'hover:border-primary/30'
-              }`}
-              onClick={() => handleCategoryClick(category.id)}
-            >
-              <CardContent className="p-4 text-center">
-                <div className="flex flex-col items-center space-y-3">
-                  {/* Ícone da categoria */}
-                  <div className={`p-3 rounded-full ${
-                    isSelected 
-                      ? 'bg-primary text-white' 
-                      : 'bg-gray-100 text-gray-600'
-                  }`}>
-                    {IconComponent}
-                  </div>
-
-                  {/* Nome da categoria */}
-                  <div className="space-y-1">
-                    <h3 className="font-semibold text-sm text-gray-900">
-                      {category.name}
-                    </h3>
-                    
-                    {/* Contador de produtos */}
-                    <Badge 
-                      variant={isSelected ? "default" : "secondary"}
-                      className="text-xs"
-                    >
-                      {category.productCount} produtos
-                    </Badge>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          );
-        })}
-      </div>
-
-      {/* Versão mobile com scroll horizontal */}
-      <div className="md:hidden mt-6">
-        <div className="flex space-x-4 overflow-x-auto pb-4 scrollbar-hide">
-          {displayCategories.map((category) => {
-            const isSelected = selectedCategory === category.id;
-            const IconComponent = getCategoryIcon(category);
-
-            return (
-              <div
-                key={category.id}
-                className={`flex-shrink-0 w-24 p-3 rounded-lg cursor-pointer transition-all duration-200 ${
-                  isSelected 
-                    ? 'bg-primary text-white' 
-                    : 'bg-white border border-gray-200 hover:border-primary/30'
-                }`}
-                onClick={() => handleCategoryClick(category.id)}
-              >
-                <div className="flex flex-col items-center space-y-2">
-                  {React.cloneElement(IconComponent, { className: "h-5 w-5" })}
-                  <span className="text-xs font-medium text-center">
-                    {category.name}
-                  </span>
-                  <Badge 
-                    variant={isSelected ? "secondary" : "outline"}
-                    className="text-xs"
-                  >
-                    {category.productCount}
-                  </Badge>
-                </div>
-              </div>
-            );
-          })}
         </div>
-      </div>
-    </section>
+        
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {categories.map((category, index) => (
+            <CategoryCard key={index} category={category} />
+        ))}
+        </div>
+    </div>
   );
 }; 

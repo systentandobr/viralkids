@@ -99,7 +99,7 @@ export const Chatbot: React.FC<ChatbotProps> = ({
               </div>
               <div>
                 <h3 className="font-semibold text-lg">Viral Kids</h3>
-                <p className="text-sm opacity-90">Assistente Virtual</p>
+                <p className="text-md opacity-90">Assistente Virtual</p>
               </div>
             </div>
             <div className="flex items-center space-x-2">

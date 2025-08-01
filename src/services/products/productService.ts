@@ -1,5 +1,13 @@
 import { httpClient, ApiResponse } from '../api/httpClient';
 import { API_ENDPOINTS } from '../api/config';
+import { 
+  Shirt, 
+  Gamepad2, 
+  GraduationCap, 
+  Home, 
+  Sparkles 
+} from 'lucide-react';
+import { ProductFiltersType } from '@/pages/Ecommerce/types/ecommerce.types';
 
 // Interfaces para produtos
 export interface Product {
@@ -47,20 +55,6 @@ export interface ProductCategory {
   parentId?: string;
   children?: ProductCategory[];
   productCount: number;
-}
-
-export interface ProductFilters {
-  category?: string;
-  subcategory?: string;
-  priceMin?: number;
-  priceMax?: number;
-  availability?: string;
-  isPersonalizable?: boolean;
-  tags?: string[];
-  search?: string;
-  sortBy?: 'name' | 'price' | 'rating' | 'createdAt';
-  sortOrder?: 'asc' | 'desc';
-  franchiseId?: string;
 }
 
 export interface CreateProductData {
@@ -151,7 +145,7 @@ export interface ProductStats {
 // Classe do serviço de produtos
 export class ProductService {
   // Listar produtos
-  static async listProducts(filters?: ProductFilters): Promise<ApiResponse<Product[]>> {
+  static async listProducts(filters?: ProductFiltersType): Promise<ApiResponse<Product[]>> {
     const params = filters ? { ...filters } : {};
     return httpClient.get<Product[]>(API_ENDPOINTS.PRODUCTS.LIST, { params });
   }
@@ -177,7 +171,7 @@ export class ProductService {
   }
 
   // Buscar produtos
-  static async searchProducts(query: string, filters?: ProductFilters): Promise<ApiResponse<Product[]>> {
+  static async searchProducts(query: string, filters?: ProductFiltersType): Promise<ApiResponse<Product[]>> {
     const params = { q: query, ...filters };
     return httpClient.get<Product[]>(API_ENDPOINTS.PRODUCTS.SEARCH, { params });
   }
@@ -188,13 +182,13 @@ export class ProductService {
   }
 
   // Obter produtos por categoria
-  static async getProductsByCategory(categoryId: string, filters?: ProductFilters): Promise<ApiResponse<Product[]>> {
+  static async getProductsByCategory(categoryId: string, filters?: ProductFiltersType): Promise<ApiResponse<Product[]>> {
     const params = { categoryId, ...filters };
     return httpClient.get<Product[]>(API_ENDPOINTS.PRODUCTS.LIST, { params });
   }
 
   // Obter produtos personalizáveis
-  static async getPersonalizableProducts(filters?: ProductFilters): Promise<ApiResponse<Product[]>> {
+  static async getPersonalizableProducts(filters?: ProductFiltersType): Promise<ApiResponse<Product[]>> {
     const params = { isPersonalizable: true, ...filters };
     return httpClient.get<Product[]>(API_ENDPOINTS.PRODUCTS.LIST, { params });
   }
@@ -210,7 +204,7 @@ export class ProductService {
   }
 
   // Obter produtos por franquia
-  static async getProductsByFranchise(franchiseId: string, filters?: ProductFilters): Promise<ApiResponse<Product[]>> {
+  static async getProductsByFranchise(franchiseId: string, filters?: ProductFiltersType): Promise<ApiResponse<Product[]>> {
     const params = { franchiseId, ...filters };
     return httpClient.get<Product[]>(API_ENDPOINTS.PRODUCTS.LIST, { params });
   }
@@ -241,7 +235,7 @@ export class ProductService {
   }
 
   // Exportar produtos
-  static async exportProducts(format: 'csv' | 'excel' = 'csv', filters?: ProductFilters): Promise<ApiResponse<{ downloadUrl: string }>> {
+  static async exportProducts(format: 'csv' | 'excel' = 'csv', filters?: ProductFiltersType): Promise<ApiResponse<{ downloadUrl: string }>> {
     const params = { format, ...filters };
     return httpClient.get<{ downloadUrl: string }>('/products/export', { params });
   }
@@ -322,11 +316,11 @@ export class ProductService {
   // Obter categorias principais
   static getMainCategories(): Array<{ value: string; label: string; icon: string }> {
     return [
-      { value: 'brinquedos', label: 'Brinquedos', icon: '🎮' },
-      { value: 'roupas', label: 'Roupas', icon: '👕' },
-      { value: 'acessorios', label: 'Acessórios', icon: '🎒' },
-      { value: 'decoracao', label: 'Decoração', icon: '🏠' },
-      { value: 'personalizados', label: 'Personalizados', icon: '✨' },
+      { value: 'brinquedos', label: 'Brinquedos', icon: Gamepad2 },
+      { value: 'roupas', label: 'Roupas', icon: Shirt },
+      { value: 'acessorios', label: 'Acessórios', icon: GraduationCap },
+      { value: 'decoracao', label: 'Decoração', icon: Home },
+      { value: 'personalizados', label: 'Personalizados', icon: Sparkles },
     ];
   }
 } 

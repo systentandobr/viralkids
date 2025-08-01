@@ -6,11 +6,13 @@ import { Button } from '@/components/ui/button';
 
 interface FeaturedProductsProps {
   products: Product[];
+  exclusiveProducts: Product[];
   onAddToCart: (product: Product) => void;
 }
 
 export const FeaturedProducts: React.FC<FeaturedProductsProps> = ({
   products,
+  exclusiveProducts,
   onAddToCart
 }) => {
   const [currentIndex, setCurrentIndex] = React.useState(0);
@@ -66,6 +68,8 @@ export const FeaturedProducts: React.FC<FeaturedProductsProps> = ({
             </Button>
           </div>
         )}
+
+       
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -98,6 +102,18 @@ export const FeaturedProducts: React.FC<FeaturedProductsProps> = ({
           </div>
         </div>
       )}
+      {exclusiveProducts.length > 0 && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            {exclusiveProducts.map((product) => (
+              <ProductCard
+                key={product.id}
+                product={product}
+                viewMode="grid"
+                onAddToCart={() => onAddToCart(product)}
+              />
+            ))}
+        </div>
+        )}
     </section>
   );
 };

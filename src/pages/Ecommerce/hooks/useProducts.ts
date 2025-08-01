@@ -7,6 +7,7 @@ interface UseProductsReturn {
   error: string | null;
   categories: ProductCategory[];
   featuredProducts: Product[];
+  exclusiveProducts: Product[];
   newProducts: Product[];
   searchProducts: (query: string) => Promise<Product[]>;
   getProductsByCategory: (categoryId: string) => Promise<Product[]>;
@@ -93,6 +94,9 @@ export const useProducts = (): UseProductsReturn => {
   // Produtos em destaque
   const featuredProducts = products.filter(product => product.isFeatured);
 
+  // Produtos exclusivos
+  const exclusiveProducts = products.filter(product => product.isExclusive);
+
   // Produtos novos
   const newProducts = products.filter(product => product.isNew);
 
@@ -108,6 +112,7 @@ export const useProducts = (): UseProductsReturn => {
     error,
     categories,
     featuredProducts,
+    exclusiveProducts,
     newProducts,
     searchProducts,
     getProductsByCategory,

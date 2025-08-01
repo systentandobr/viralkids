@@ -1,15 +1,15 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Product, ProductFilters } from '../types/ecommerce.types';
+import { Product, ProductFiltersType } from '../types/ecommerce.types';
 
 interface UseFiltersReturn {
-  filters: ProductFilters;
-  updateFilter: (key: keyof ProductFilters, value: any) => void;
+  filters: ProductFiltersType;
+  updateFilter: (key: keyof ProductFiltersType, value: any) => void;
   resetFilters: () => void;
   filteredProducts: Product[];
   activeFiltersCount: number;
 }
 
-const defaultFilters: ProductFilters = {
+const defaultFilters: ProductFiltersType = {
   category: undefined,
   minPrice: undefined,
   maxPrice: undefined,
@@ -27,10 +27,10 @@ const defaultFilters: ProductFilters = {
 };
 
 export const useFilters = (products: Product[]): UseFiltersReturn => {
-  const [filters, setFilters] = useState<ProductFilters>(defaultFilters);
+  const [filters, setFilters] = useState<ProductFiltersType>(defaultFilters);
 
   // Atualizar filtro específico
-  const updateFilter = (key: keyof ProductFilters, value: any) => {
+  const updateFilter = (key: keyof ProductFiltersType, value: any) => {
     setFilters(prev => ({
       ...prev,
       [key]: value
@@ -47,7 +47,7 @@ export const useFilters = (products: Product[]): UseFiltersReturn => {
     let count = 0;
 
     Object.keys(filters).forEach(key => {
-      const filterKey = key as keyof ProductFilters;
+      const filterKey = key as keyof ProductFiltersType;
       const value = filters[filterKey];
 
       if (value !== undefined && value !== null) {

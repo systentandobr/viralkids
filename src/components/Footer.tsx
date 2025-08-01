@@ -36,7 +36,7 @@ const Footer = () => {
                 <p className="text-xs text-background/70">Franquia Digital</p>
               </div>
             </div>
-            <p className="text-sm text-background/70">
+            <p className="text-md text-background/70">
               Transformando sonhos infantis em realidade através de produtos únicos e personalizados.
             </p>
             <div className="flex space-x-3">
@@ -60,7 +60,7 @@ const Footer = () => {
           {/* Products */}
           <div className="space-y-4">
             <h4 className="text-lg font-semibold text-bronze">Produtos</h4>
-            <div className="space-y-2 text-sm text-background/70">
+            <div className="space-y-2 text-md text-background/70">
               <p>Impressão 3D Exclusiva</p>
               <p>Kits Festa Temáticos</p>
               <p>Produtos Virais</p>
@@ -73,7 +73,7 @@ const Footer = () => {
           {/* Franchise */}
           <div className="space-y-4">
             <h4 className="text-lg font-semibold text-bronze">Franquia</h4>
-            <div className="space-y-2 text-sm text-background/70">
+            <div className="space-y-2 text-md text-background/70">
               <button 
                 onClick={handleFranchiseClick}
                 className="text-left hover:text-bronze transition-colors"
@@ -101,7 +101,7 @@ const Footer = () => {
           {/* Contact */}
           <div className="space-y-4">
             <h4 className="text-lg font-semibold text-bronze">Contato</h4>
-            <div className="space-y-3 text-sm text-background/70">
+            <div className="space-y-3 text-md text-background/70">
               <div className="flex items-center space-x-2">
                 <MessageCircle className="h-4 w-4 text-bronze" />
                 <span>(84) 98741-4238</span>
@@ -125,10 +125,10 @@ const Footer = () => {
         {/* Bottom Section */}
         <div className="border-t border-background/20 mt-8 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-            <div className="text-sm text-background/70">
+            <div className="text-md text-background/70">
               © {currentYear} Viral Kids. Todos os direitos reservados.
             </div>
-            <div className="flex space-x-6 text-sm text-background/70">
+            <div className="flex space-x-6 text-md text-background/70">
               <a href="#" className="hover:text-bronze transition-colors">Política de Privacidade</a>
               <a href="#" className="hover:text-bronze transition-colors">Termos de Uso</a>
               <a href="#" className="hover:text-bronze transition-colors">FAQ</a>

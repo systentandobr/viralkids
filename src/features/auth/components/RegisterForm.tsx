@@ -176,7 +176,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
               />
             </div>
             {validationErrors.name && (
-              <p className="text-sm text-red-600">{validationErrors.name}</p>
+              <p className="text-md text-red-600">{validationErrors.name}</p>
             )}
           </div>
 
@@ -196,7 +196,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
               />
             </div>
             {validationErrors.email && (
-              <p className="text-sm text-red-600">{validationErrors.email}</p>
+              <p className="text-md text-red-600">{validationErrors.email}</p>
             )}
           </div>
 
@@ -217,7 +217,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
               />
             </div>
             {validationErrors.phone && (
-              <p className="text-sm text-red-600">{validationErrors.phone}</p>
+              <p className="text-md text-red-600">{validationErrors.phone}</p>
             )}
           </div>
 
@@ -269,7 +269,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
               </button>
             </div>
             {validationErrors.password && (
-              <p className="text-sm text-red-600">{validationErrors.password}</p>
+              <p className="text-md text-red-600">{validationErrors.password}</p>
             )}
           </div>
 
@@ -301,7 +301,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
               </button>
             </div>
             {validationErrors.confirmPassword && (
-              <p className="text-sm text-red-600">{validationErrors.confirmPassword}</p>
+              <p className="text-md text-red-600">{validationErrors.confirmPassword}</p>
             )}
           </div>
 
@@ -317,7 +317,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
                 disabled={isLoading}
                 className="mt-1"
               />
-              <Label htmlFor="acceptTerms" className="text-sm leading-relaxed">
+              <Label htmlFor="acceptTerms" className="text-md leading-relaxed">
                 Eu aceito os{' '}
                 <a href="/terms" className="text-blue-600 hover:text-blue-800 hover:underline">
                   termos de uso
@@ -329,7 +329,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
               </Label>
             </div>
             {validationErrors.acceptTerms && (
-              <p className="text-sm text-red-600">{validationErrors.acceptTerms}</p>
+              <p className="text-md text-red-600">{validationErrors.acceptTerms}</p>
             )}
           </div>
 
@@ -354,7 +354,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
 
           {/* Login Link */}
           <div className="text-center pt-4 border-t">
-            <p className="text-sm text-gray-600">
+            <p className="text-md text-gray-600">
               Já tem uma conta?{' '}
               <button
                 type="button"

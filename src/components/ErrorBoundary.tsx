@@ -31,7 +31,7 @@ export class ErrorBoundary extends Component<Props, State> {
 
       return (
         <div className="flex items-center justify-center min-h-screen bg-gray-50">
-          <div className="text-center space-y-4 max-w-md mx-auto p-6">
+          <div className="text-center space-y-4 max-w-4xl mx-auto p-6">
             <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto">
               <span className="text-2xl">⚠️</span>
             </div>
@@ -42,15 +42,24 @@ export class ErrorBoundary extends Component<Props, State> {
               Ocorreu um erro inesperado. Por favor, recarregue a página.
             </p>
             {process.env.NODE_ENV === 'development' && this.state.error && (
-              <details className="text-left bg-gray-100 p-4 rounded-lg">
-                <summary className="cursor-pointer font-medium text-gray-700">
+              <details className="text-left bg-gray-100 p-6 rounded-lg">
+                <summary className="cursor-pointer font-medium text-gray-700 text-lg mb-3">
                   Detalhes do erro (desenvolvimento)
                 </summary>
-                <pre className="text-xs text-red-600 mt-2 whitespace-pre-wrap">
-                  {this.state.error.message}
-                  {'\n'}
-                  {this.state.error.stack}
-                </pre>
+                <div className="bg-white p-4 rounded border border-gray-200">
+                  <div className="mb-4">
+                    <h4 className="font-semibold text-red-700 mb-2">Mensagem do Erro:</h4>
+                    <pre className="text-sm text-red-600 whitespace-pre-wrap bg-red-50 p-3 rounded">
+                      {this.state.error.message}
+                    </pre>
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-red-700 mb-2">Stack Trace:</h4>
+                    <pre className="text-sm text-red-600 whitespace-pre-wrap bg-red-50 p-3 rounded max-h-96 overflow-y-auto">
+                      {this.state.error.stack}
+                    </pre>
+                  </div>
+                </div>
               </details>
             )}
             <button

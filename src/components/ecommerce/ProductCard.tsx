@@ -81,7 +81,7 @@ const ProductCard = ({ product, viewMode = 'grid', className }: ProductCardProps
             <div className="flex-1 p-6">
               <div className="flex justify-between items-start mb-4">
                 <div>
-                  <p className="text-sm text-muted-foreground mb-1">{product.category}</p>
+                  <p className="text-md text-muted-foreground mb-1">{product.category}</p>
                   <h3 className="text-lg font-semibold text-foreground mb-2 group-hover:text-bronze transition-colors">
                     {product.name}
                   </h3>
@@ -101,7 +101,7 @@ const ProductCard = ({ product, viewMode = 'grid', className }: ProductCardProps
                         />
                       ))}
                     </div>
-                    <span className="text-sm text-muted-foreground">
+                    <span className="text-md text-muted-foreground">
                       {product.rating} ({product.reviews})
                     </span>
                   </div>
@@ -120,7 +120,7 @@ const ProductCard = ({ product, viewMode = 'grid', className }: ProductCardProps
                       R$ {product.salePrice.toFixed(2).replace('.', ',')}
                     </span>
                     {product.originalPrice > product.salePrice && (
-                      <span className="text-sm text-muted-foreground line-through">
+                      <span className="text-md text-muted-foreground line-through">
                         R$ {product.originalPrice.toFixed(2).replace('.', ',')}
                       </span>
                     )}
@@ -194,7 +194,7 @@ const ProductCard = ({ product, viewMode = 'grid', className }: ProductCardProps
         <div className="p-4 space-y-3">
           <div>
             <p className="text-xs text-muted-foreground mb-1">{product.category}</p>
-            <h3 className="text-sm font-semibold text-foreground group-hover:text-bronze transition-colors line-clamp-2">
+            <h3 className="text-md font-semibold text-foreground group-hover:text-bronze transition-colors line-clamp-2">
               {product.name}
             </h3>
           </div>

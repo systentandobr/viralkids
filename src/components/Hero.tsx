@@ -28,7 +28,7 @@ const Hero = () => {
               <div className="space-y-4">
                 <div className="flex items-center space-x-2 text-bronze">
                   <Star className="h-5 w-5 fill-current" />
-                  <span className="text-sm font-medium">Franquia Digital #1 do Nordeste</span>
+                  <span className="text-md font-medium">Franquia Digital #1 do Nordeste</span>
                 </div>
                 
                 <h1 className="text-4xl md:text-6xl font-bold text-foreground leading-tight">
@@ -44,7 +44,7 @@ const Hero = () => {
                 </p>
               </div>
 
-              <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+              <div className="flex items-center space-x-2 text-md text-muted-foreground">
                 <div className="flex space-x-1">
                   {[...Array(5)].map((_, i) => (
                     <Star key={i} className="h-4 w-4 fill-gold text-gold" />
@@ -79,15 +79,15 @@ const Hero = () => {
               <div className="flex items-center space-x-8 pt-8 border-t border-bronze/20">
                 <div className="text-center">
                   <div className="text-2xl font-bold text-bronze">25+</div>
-                  <div className="text-sm text-muted-foreground">Franquias Ativas</div>
+                  <div className="text-md text-muted-foreground">Franquias Ativas</div>
                 </div>
                 <div className="text-center">
                   <div className="text-2xl font-bold text-bronze">500+</div>
-                  <div className="text-sm text-muted-foreground">Produtos Únicos</div>
+                  <div className="text-md text-muted-foreground">Produtos Únicos</div>
                 </div>
                 <div className="text-center">
                   <div className="text-2xl font-bold text-bronze">10k+</div>
-                  <div className="text-sm text-muted-foreground">Crianças Felizes</div>
+                  <div className="text-md text-muted-foreground">Crianças Felizes</div>
                 </div>
               </div>
             </div>
@@ -103,11 +103,11 @@ const Hero = () => {
               </div>
               
               {/* Floating Elements */}
-              <div className="absolute -top-4 -right-4 bg-gradient-hero text-white px-4 py-2 rounded-full text-sm font-medium animate-pulse-glow">
+              <div className="absolute -top-4 -right-4 bg-gradient-hero text-white px-4 py-2 rounded-full text-md font-medium animate-pulse-glow">
                 🎉 Produtos Virais!
               </div>
               
-              <div className="absolute -bottom-4 -left-4 bg-white shadow-bronze px-4 py-2 rounded-full text-sm font-medium">
+              <div className="absolute -bottom-4 -left-4 bg-white shadow-bronze px-4 py-2 rounded-full text-md font-medium">
                 ✨ 100% Personalizável
               </div>
             </div>

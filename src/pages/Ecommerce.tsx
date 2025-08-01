@@ -20,32 +20,14 @@ import AssistantButton from "@/components/ecommerce/AssistantButton";
 import products01 from "@/assets/products01.png"
 import products02 from "@/assets/products02.png"
 import products03 from "@/assets/products03.png"
+import { useProducts } from "./Ecommerce/hooks/useProducts";
 
 
 const Ecommerce = () => {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [searchTerm, setSearchTerm] = useState('');
 
-  const categories = [
-    {
-      icon: Zap,
-      title: "Brinquedos",
-      count: "2 produtos",
-      color: "bg-gradient-to-br from-amber-400 to-orange-500"
-    },
-    {
-      icon: Gift,
-      title: "Brinquedos",
-      count: "2 produtos", 
-      color: "bg-gradient-to-br from-blue-400 to-blue-600"
-    },
-    {
-      icon: Sparkles,
-      title: "Acessórios",
-      count: "3 produtos",
-      color: "bg-gradient-to-br from-purple-400 to-pink-500"
-    }
-  ];
+  const { categories } = useProducts();
 
   const featuredProducts = [
     {
@@ -164,50 +146,6 @@ const Ecommerce = () => {
       <FeaturedBanner />
 
       <div className="container mx-auto px-4 py-8">
-        {/* Search and Filters */}
-        <div className="flex flex-col lg:flex-row gap-4 mb-8">
-          <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-            <Input
-              placeholder="Buscar produtos..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 h-12 text-lg"
-            />
-            <Button 
-              size="lg" 
-              className="absolute right-1 top-1 bottom-1 px-6 bg-gradient-hero hover:from-bronze hover:to-gold"
-            >
-              <Search className="h-4 w-4" />
-            </Button>
-          </div>
-          
-          <div className="flex gap-2">
-            <Button variant="outline" size="lg">
-              <Filter className="h-4 w-4 mr-2" />
-              Filtros
-            </Button>
-            <div className="flex border border-bronze/20 rounded-lg overflow-hidden">
-              <Button
-                variant={viewMode === 'grid' ? 'default' : 'ghost'}
-                size="sm"
-                onClick={() => setViewMode('grid')}
-                className="rounded-none"
-              >
-                <Grid3X3 className="h-4 w-4" />
-              </Button>
-              <Button
-                variant={viewMode === 'list' ? 'default' : 'ghost'}
-                size="sm"
-                onClick={() => setViewMode('list')}
-                className="rounded-none"
-              >
-                <List className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
-        </div>
-
         {/* Categories */}
         <div className="mb-12">
           <div className="text-center mb-8">
@@ -229,7 +167,7 @@ const Ecommerce = () => {
         {/* Exclusive 3D Products Section */}
         <div className="mb-12">
           <div className="text-center mb-8">
-            <Badge className="bg-gradient-to-r from-bronze to-gold text-white mb-4 px-4 py-2 text-sm font-medium">
+            <Badge className="bg-gradient-to-r from-bronze to-gold text-white mb-4 px-4 py-2 text-md font-medium">
               ⭐ Produtos Exclusivos
             </Badge>
             <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-2">
@@ -270,7 +208,7 @@ const Ecommerce = () => {
               </h2>
             </div>
             
-            <div className="hidden md:flex items-center gap-2 text-sm text-muted-foreground">
+            <div className="hidden md:flex items-center gap-2 text-md text-muted-foreground">
               <span>8 produto(s) encontrado(s)</span>
               <div className="flex gap-1">
                 <div className="w-2 h-2 bg-bronze rounded-full"></div>

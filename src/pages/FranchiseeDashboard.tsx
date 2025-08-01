@@ -128,7 +128,7 @@ export const FranchiseeDashboard: React.FC = () => {
               </div>
               <div className="flex items-center space-x-2">
                 <UserCircle className="h-6 w-6 text-gray-600" />
-                <span className="text-sm font-medium">{user?.name}</span>
+                <span className="text-md font-medium">{user?.name}</span>
               </div>
               
               <Button variant="ghost" size="sm" onClick={() => {
@@ -216,7 +216,7 @@ export const FranchiseeDashboard: React.FC = () => {
                         <div className="text-3xl font-bold text-yellow-600">
                           Nível {level}
                         </div>
-                        <div className="text-sm text-muted-foreground">
+                        <div className="text-md text-muted-foreground">
                           {nextLevelPoints > 0 ? (
                             <>Faltam {nextLevelPoints} pontos para o próximo nível</>
                           ) : (
@@ -245,7 +245,7 @@ export const FranchiseeDashboard: React.FC = () => {
                         <div className="text-3xl font-bold text-blue-600">
                           {progress.toFixed(1)}%
                         </div>
-                        <div className="text-sm text-muted-foreground">
+                        <div className="text-md text-muted-foreground">
                           {completedTasks.length} de {completedTasks.length + tasks.length} tarefas concluídas
                         </div>
                         <Progress value={progress} className="h-2" />
@@ -265,7 +265,7 @@ export const FranchiseeDashboard: React.FC = () => {
                         <div className="text-3xl font-bold text-purple-600">
                           {badges.length}
                         </div>
-                        <div className="text-sm text-muted-foreground">
+                        <div className="text-md text-muted-foreground">
                           Badges conquistadas
                         </div>
                         <div className="flex space-x-1">
@@ -275,7 +275,7 @@ export const FranchiseeDashboard: React.FC = () => {
                             </span>
                           ))}
                           {badges.length > 3 && (
-                            <span className="text-sm text-muted-foreground">
+                            <span className="text-md text-muted-foreground">
                               +{badges.length - 3}
                             </span>
                           )}
@@ -305,7 +305,7 @@ export const FranchiseeDashboard: React.FC = () => {
                           <div className="text-2xl">{getBadgeEmoji(badge.type)}</div>
                           <div>
                             <div className="font-medium">{badge.name}</div>
-                            <div className="text-sm text-muted-foreground">{badge.description}</div>
+                            <div className="text-md text-muted-foreground">{badge.description}</div>
                             <div className="text-xs text-muted-foreground">
                               {badge.earnedAt instanceof Date 
                                 ? badge.earnedAt.toLocaleDateString()
@@ -342,7 +342,7 @@ export const FranchiseeDashboard: React.FC = () => {
                             </div>
                             <div className="flex-1">
                               <div className="font-medium">{task.title}</div>
-                              <div className="text-sm text-muted-foreground mb-2">
+                              <div className="text-md text-muted-foreground mb-2">
                                 {task.description}
                               </div>
                               <div className="flex items-center space-x-2">
@@ -421,7 +421,7 @@ export const FranchiseeDashboard: React.FC = () => {
                       <CardContent className="space-y-4">
                         <div>
                           <h4 className="font-medium mb-2">Instruções:</h4>
-                          <p className="text-sm text-muted-foreground">{task.instructions}</p>
+                          <p className="text-md text-muted-foreground">{task.instructions}</p>
                         </div>
                         
                         {task.resources.length > 0 && (

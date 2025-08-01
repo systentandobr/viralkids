@@ -1,12 +1,12 @@
 import React from 'react';
-import { ProductFilters, ProductCategory } from '../types/ecommerce.types';
+import { ProductFiltersType, ProductCategory } from '../types/ecommerce.types';
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
 import { X, RotateCcw } from 'lucide-react';
 
 interface ProductFiltersProps {
-  filters: ProductFilters;
-  onFilterChange: (key: keyof ProductFilters, value: any) => void;
+  filters: ProductFiltersType;
+  onFilterChange: (key: keyof ProductFiltersType, value: any) => void;
   onResetFilters: () => void;
   categories: ProductCategory[];
 }
@@ -28,7 +28,7 @@ export const ProductFilters: React.FC<ProductFiltersProps> = ({
   const colors = ['Rosa', 'Azul', 'Verde', 'Vermelho', 'Amarelo', 'Roxo', 'Branco', 'Preto'];
   const sizes = ['RN', '3 meses', '6 meses', '1 ano', '2 anos', '4 anos', '6 anos', '8 anos', '10 anos'];
 
-  const toggleArrayFilter = (key: keyof ProductFilters, value: string) => {
+  const toggleArrayFilter = (key: keyof ProductFiltersType, value: string) => {
     const currentArray = (filters[key] as string[]) || [];
     const newArray = currentArray.includes(value)
       ? currentArray.filter(item => item !== value)
@@ -54,7 +54,7 @@ export const ProductFilters: React.FC<ProductFiltersProps> = ({
 
       {/* Categoria */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-3">
+        <label className="block text-md font-medium text-gray-700 mb-3">
           Categoria
         </label>
         <div className="space-y-2">
@@ -68,8 +68,8 @@ export const ProductFilters: React.FC<ProductFiltersProps> = ({
                 onChange={(e) => onFilterChange('category', e.target.value)}
                 className="mr-2"
               />
-              <span className="text-sm text-gray-600">
-                {category.icon} {category.name} ({category.productCount})
+              <span className="text-md text-gray-600">
+                {category.name} ({category.productCount})
               </span>
             </label>
           ))}
@@ -78,7 +78,7 @@ export const ProductFilters: React.FC<ProductFiltersProps> = ({
 
       {/* Faixa de Preço */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-3">
+        <label className="block text-md font-medium text-gray-700 mb-3">
           Faixa de Preço
         </label>
         <div className="px-3">
@@ -90,7 +90,7 @@ export const ProductFilters: React.FC<ProductFiltersProps> = ({
             step={10}
             className="mb-3"
           />
-          <div className="flex justify-between text-sm text-gray-600">
+          <div className="flex justify-between text-md text-gray-600">
             <span>R$ {priceRange[0]}</span>
             <span>R$ {priceRange[1]}</span>
           </div>
@@ -99,7 +99,7 @@ export const ProductFilters: React.FC<ProductFiltersProps> = ({
 
       {/* Marcas */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-3">
+        <label className="block text-md font-medium text-gray-700 mb-3">
           Marca
         </label>
         <div className="space-y-2 max-h-32 overflow-y-auto">
@@ -113,7 +113,7 @@ export const ProductFilters: React.FC<ProductFiltersProps> = ({
                 onChange={(e) => onFilterChange('brand', e.target.value)}
                 className="mr-2"
               />
-              <span className="text-sm text-gray-600">{brand}</span>
+              <span className="text-md text-gray-600">{brand}</span>
             </label>
           ))}
         </div>
@@ -121,7 +121,7 @@ export const ProductFilters: React.FC<ProductFiltersProps> = ({
 
       {/* Cores */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-3">
+        <label className="block text-md font-medium text-gray-700 mb-3">
           Cores
         </label>
         <div className="flex flex-wrap gap-2">
@@ -143,7 +143,7 @@ export const ProductFilters: React.FC<ProductFiltersProps> = ({
 
       {/* Tamanhos */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-3">
+        <label className="block text-md font-medium text-gray-700 mb-3">
           Tamanhos
         </label>
         <div className="flex flex-wrap gap-2">
@@ -165,7 +165,7 @@ export const ProductFilters: React.FC<ProductFiltersProps> = ({
 
       {/* Avaliação Mínima */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-3">
+        <label className="block text-md font-medium text-gray-700 mb-3">
           Avaliação Mínima
         </label>
         <div className="space-y-2">
@@ -183,14 +183,14 @@ export const ProductFilters: React.FC<ProductFiltersProps> = ({
                 {Array.from({ length: 5 }, (_, i) => (
                   <span
                     key={i}
-                    className={`text-sm ${
+                    className={`text-md ${
                       i < rating ? 'text-yellow-400' : 'text-gray-300'
                     }`}
                   >
                     ★
                   </span>
                 ))}
-                <span className="text-sm text-gray-600 ml-2">
+                <span className="text-md text-gray-600 ml-2">
                   {rating}+ estrelas
                 </span>
               </div>
@@ -201,7 +201,7 @@ export const ProductFilters: React.FC<ProductFiltersProps> = ({
 
       {/* Filtros Especiais */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-3">
+        <label className="block text-md font-medium text-gray-700 mb-3">
           Especiais
         </label>
         <div className="space-y-2">
@@ -212,7 +212,7 @@ export const ProductFilters: React.FC<ProductFiltersProps> = ({
               onChange={(e) => onFilterChange('inStock', e.target.checked || undefined)}
               className="mr-2"
             />
-            <span className="text-sm text-gray-600">Apenas em estoque</span>
+            <span className="text-md text-gray-600">Apenas em estoque</span>
           </label>
           
           <label className="flex items-center">
@@ -222,7 +222,7 @@ export const ProductFilters: React.FC<ProductFiltersProps> = ({
               onChange={(e) => onFilterChange('isNew', e.target.checked || undefined)}
               className="mr-2"
             />
-            <span className="text-sm text-gray-600">Produtos novos</span>
+            <span className="text-md text-gray-600">Produtos novos</span>
           </label>
           
           <label className="flex items-center">
@@ -232,7 +232,7 @@ export const ProductFilters: React.FC<ProductFiltersProps> = ({
               onChange={(e) => onFilterChange('isFeatured', e.target.checked || undefined)}
               className="mr-2"
             />
-            <span className="text-sm text-gray-600">Em destaque</span>
+            <span className="text-md text-gray-600">Em destaque</span>
           </label>
         </div>
       </div>

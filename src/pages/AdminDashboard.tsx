@@ -98,7 +98,7 @@ export const AdminDashboard: React.FC = () => {
               
               <div className="flex items-center space-x-2">
                 <UserCircle className="h-6 w-6 text-gray-600" />
-                <span className="text-sm font-medium">{user?.name}</span>
+                <span className="text-md font-medium">{user?.name}</span>
               </div>
               
               <Button variant="ghost" size="sm" onClick={() => {
@@ -208,7 +208,7 @@ export const AdminDashboard: React.FC = () => {
                   <p className="text-muted-foreground">
                     Esta funcionalidade será implementada na próxima fase, incluindo:
                   </p>
-                  <ul className="list-disc list-inside mt-2 space-y-1 text-sm text-muted-foreground">
+                  <ul className="list-disc list-inside mt-2 space-y-1 text-md text-muted-foreground">
                     <li>Dashboard de performance dos franqueados</li>
                     <li>Sistema de gamificação com tarefas e pontuações</li>
                     <li>Gestão de território e exclusividade</li>
@@ -255,13 +255,13 @@ export const AdminDashboard: React.FC = () => {
                             <div className="text-2xl font-bold text-blue-600">
                               {dashboard.performance.websiteTraffic.totalVisits.toLocaleString()}
                             </div>
-                            <div className="text-sm text-muted-foreground">Visitas do Site</div>
+                            <div className="text-md text-muted-foreground">Visitas do Site</div>
                           </div>
                           <div className="text-center">
                             <div className="text-2xl font-bold text-green-600">
                               {dashboard.performance.chatbotMetrics.totalConversations.toLocaleString()}
                             </div>
-                            <div className="text-sm text-muted-foreground">Conversas Chatbot</div>
+                            <div className="text-md text-muted-foreground">Conversas Chatbot</div>
                           </div>
                         </div>
                         
@@ -270,13 +270,13 @@ export const AdminDashboard: React.FC = () => {
                             <div className="text-2xl font-bold text-purple-600">
                               {dashboard.performance.emailMetrics.openRate.toFixed(1)}%
                             </div>
-                            <div className="text-sm text-muted-foreground">Taxa Abertura Email</div>
+                            <div className="text-md text-muted-foreground">Taxa Abertura Email</div>
                           </div>
                           <div className="text-center">
                             <div className="text-2xl font-bold text-orange-600">
                               {dashboard.performance.socialMedia.instagram.followers.toLocaleString()}
                             </div>
-                            <div className="text-sm text-muted-foreground">Seguidores Instagram</div>
+                            <div className="text-md text-muted-foreground">Seguidores Instagram</div>
                           </div>
                         </div>
                       </div>
@@ -298,7 +298,7 @@ export const AdminDashboard: React.FC = () => {
                           <div key={activity.id} className="flex items-start space-x-3">
                             <div className="text-lg">{activity.icon}</div>
                             <div className="flex-1">
-                              <p className="text-sm font-medium">{activity.title}</p>
+                              <p className="text-md font-medium">{activity.title}</p>
                               <p className="text-xs text-muted-foreground">
                                 {activity.description}
                               </p>

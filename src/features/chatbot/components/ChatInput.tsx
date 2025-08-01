@@ -131,7 +131,7 @@ const QuickActionButton: React.FC<QuickActionButtonProps> = ({
     type="button"
     onClick={onClick}
     disabled={disabled}
-    className="inline-flex items-center space-x-1 px-3 py-1.5 text-sm bg-gray-100 hover:bg-gray-200 disabled:bg-gray-50 text-gray-700 disabled:text-gray-400 rounded-lg transition-colors disabled:cursor-not-allowed"
+    className="inline-flex items-center space-x-1 px-3 py-1.5 text-md bg-gray-100 hover:bg-gray-200 disabled:bg-gray-50 text-gray-700 disabled:text-gray-400 rounded-lg transition-colors disabled:cursor-not-allowed"
   >
     <span>{icon}</span>
     <span>{text}</span>

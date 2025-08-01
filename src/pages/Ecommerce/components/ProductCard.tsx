@@ -106,7 +106,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
               </Button>
             </div>
 
-            <p className="text-gray-600 text-sm mb-3 line-clamp-2">
+            <p className="text-gray-600 text-md mb-3 line-clamp-2">
               {product.description}
             </p>
 
@@ -130,7 +130,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
                 {formatPrice(product.price)}
               </span>
               {product.originalPrice && (
-                <span className="text-sm text-gray-500 line-through">
+                <span className="text-md text-gray-500 line-through">
                   {formatPrice(product.originalPrice)}
                 </span>
               )}
@@ -242,7 +242,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             {formatPrice(product.price)}
           </span>
           {product.originalPrice && (
-            <span className="text-sm text-gray-500 line-through">
+            <span className="text-md text-gray-500 line-through">
               {formatPrice(product.originalPrice)}
             </span>
           )}

@@ -119,7 +119,7 @@ export const SupplierCard: React.FC<SupplierCardProps> = ({
             <div className="flex items-center space-x-1">
               <Star className="h-4 w-4 text-yellow-500 fill-current" />
               <span className="font-medium">{formatRating(supplier.rating.overall)}</span>
-              <span className="text-sm text-gray-500">
+              <span className="text-md text-gray-500">
                 ({supplier.rating.totalReviews} avaliações)
               </span>
             </div>
@@ -130,7 +130,7 @@ export const SupplierCard: React.FC<SupplierCardProps> = ({
       <CardContent className="space-y-4">
         {/* Descrição */}
         {supplier.description && (
-          <p className="text-sm text-gray-600 line-clamp-2">
+          <p className="text-md text-gray-600 line-clamp-2">
             {supplier.description}
           </p>
         )}
@@ -153,7 +153,7 @@ export const SupplierCard: React.FC<SupplierCardProps> = ({
         </div>
 
         {/* Políticas */}
-        <div className="text-sm space-y-1">
+        <div className="text-md space-y-1">
           <div className="flex justify-between">
             <span className="text-gray-600">Pedido mínimo:</span>
             <span className="font-medium">{supplier.policies.minimumOrder} peças</span>
@@ -174,7 +174,7 @@ export const SupplierCard: React.FC<SupplierCardProps> = ({
         {/* Produtos */}
         {supplier.products.length > 0 && (
           <div>
-            <h4 className="text-sm font-medium mb-2">Categorias:</h4>
+            <h4 className="text-md font-medium mb-2">Categorias:</h4>
             <div className="flex flex-wrap gap-1">
               {supplier.products.slice(0, 3).map((product, index) => (
                 <Badge key={index} variant="secondary" className="text-xs">

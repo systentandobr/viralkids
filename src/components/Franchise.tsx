@@ -146,7 +146,7 @@ const Franchise = () => {
                   <h3 className="text-lg font-semibold text-foreground mb-2">
                     {benefit.title}
                   </h3>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-md text-muted-foreground">
                     {benefit.description}
                   </p>
                 </CardContent>
@@ -168,7 +168,7 @@ const Franchise = () => {
                   <h3 className="text-lg font-semibold text-foreground mb-2">
                     {benefit.title}
                   </h3>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-md text-muted-foreground">
                     {benefit.description}
                   </p>
                 </CardContent>
@@ -207,7 +207,7 @@ const Franchise = () => {
                 <CardHeader className="text-center pb-4">
                   <CardTitle className="text-xl text-foreground">{pkg.name}</CardTitle>
                   <div className="text-3xl font-bold text-bronze mb-2">{pkg.price}</div>
-                  <p className="text-sm text-muted-foreground">{pkg.description}</p>
+                  <p className="text-md text-muted-foreground">{pkg.description}</p>
                 </CardHeader>
 
                 <CardContent className="space-y-4">

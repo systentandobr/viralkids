@@ -124,7 +124,7 @@ O Design System do ViralKids é baseado em uma paleta de cores quentes e acolhed
 /* Corpo de texto */
 .text-lg { font-size: 1.125rem; line-height: 1.75rem; } /* 18px */
 .text-base { font-size: 1rem; line-height: 1.5rem; } /* 16px */
-.text-sm { font-size: 0.875rem; line-height: 1.25rem; } /* 14px */
+.text-md { font-size: 0.875rem; line-height: 1.25rem; } /* 14px */
 .text-xs { font-size: 0.75rem; line-height: 1rem; } /* 12px */
 ```
 

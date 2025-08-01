@@ -114,7 +114,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
               />
             </div>
             {validationErrors.email && (
-              <p className="text-sm text-red-600">{validationErrors.email}</p>
+              <p className="text-md text-red-600">{validationErrors.email}</p>
             )}
           </div>
 
@@ -146,7 +146,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
               </button>
             </div>
             {validationErrors.password && (
-              <p className="text-sm text-red-600">{validationErrors.password}</p>
+              <p className="text-md text-red-600">{validationErrors.password}</p>
             )}
           </div>
 
@@ -169,7 +169,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
             <button
               type="button"
               onClick={onForgotPasswordClick}
-              className="text-sm text-blue-600 hover:text-blue-800 hover:underline"
+              className="text-md text-blue-600 hover:text-blue-800 hover:underline"
               disabled={isLoading}
             >
               Esqueceu a senha?
@@ -197,7 +197,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
 
           {/* Demo Credentials */}
           <div className="mt-4 p-3 bg-blue-50 rounded-lg">
-            <p className="text-sm text-blue-800 font-medium mb-2">Credenciais para teste:</p>
+            <p className="text-md text-blue-800 font-medium mb-2">Credenciais para teste:</p>
             <div className="text-xs text-blue-700 space-y-1">
               <p><strong>Admin:</strong> admin@viralkids.com.br | 123456</p>
               <p><strong>Franqueado:</strong> franqueado@natal.com | 123456</p>
@@ -206,7 +206,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
 
           {/* Register Link */}
           <div className="text-center pt-4 border-t">
-            <p className="text-sm text-gray-600">
+            <p className="text-md text-gray-600">
               Ainda não tem uma conta?{' '}
               <button
                 type="button"

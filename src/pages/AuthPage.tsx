@@ -143,7 +143,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({
                       <stat.icon className="h-6 w-6 text-purple-600" />
                     </div>
                     <div className="text-2xl font-bold text-gray-900">{stat.value}</div>
-                    <div className="text-sm text-gray-600">{stat.label}</div>
+                    <div className="text-md text-gray-600">{stat.label}</div>
                   </div>
                 ))}
               </div>
@@ -171,8 +171,8 @@ export const AuthPage: React.FC<AuthPageProps> = ({
                             ))}
                           </div>
                         </div>
-                        <p className="text-sm text-gray-600 mb-1">{testimonial.role}</p>
-                        <p className="text-sm text-gray-800 italic">"{testimonial.text}"</p>
+                        <p className="text-md text-gray-600 mb-1">{testimonial.role}</p>
+                        <p className="text-md text-gray-800 italic">"{testimonial.text}"</p>
                       </div>
                     </div>
                   </CardContent>
@@ -185,7 +185,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({
               <h3 className="text-lg font-semibold text-gray-900 mb-4">
                 Por que escolher a Viral Kids?
               </h3>
-              <ul className="space-y-3 text-sm text-gray-700">
+              <ul className="space-y-3 text-md text-gray-700">
                 <li className="flex items-center space-x-2">
                   <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                   <span>Produtos exclusivos com impressão 3D personalizada</span>

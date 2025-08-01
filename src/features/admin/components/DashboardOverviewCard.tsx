@@ -99,7 +99,7 @@ export const DashboardOverviewCard: React.FC<DashboardOverviewCardProps> = ({ ov
           <h2 className="text-2xl font-bold">Dashboard Geral</h2>
           <p className="text-muted-foreground">Visão geral das métricas principais</p>
         </div>
-        <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+        <div className="flex items-center space-x-2 text-md text-muted-foreground">
           <Calendar className="h-4 w-4" />
           <span>Últimos 30 dias</span>
         </div>
@@ -110,7 +110,7 @@ export const DashboardOverviewCard: React.FC<DashboardOverviewCardProps> = ({ ov
         {metrics.map((metric, index) => (
           <Card key={index} className="relative overflow-hidden">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">
+              <CardTitle className="text-md font-medium text-muted-foreground">
                 {metric.title}
               </CardTitle>
               {metric.icon}
@@ -119,7 +119,7 @@ export const DashboardOverviewCard: React.FC<DashboardOverviewCardProps> = ({ ov
               <div className="space-y-2">
                 <div className="text-2xl font-bold">{metric.value}</div>
                 <div className="flex items-center space-x-2">
-                  <span className="text-sm text-muted-foreground">
+                  <span className="text-md text-muted-foreground">
                     {metric.subtitle}
                   </span>
                   {metric.trend !== undefined && (

@@ -1,5 +1,7 @@
 // Types for Ecommerce System
 
+import { LucideIcon } from "lucide-react";
+
 export interface Product {
   id: string;
   name: string;
@@ -42,7 +44,8 @@ export interface ProductCategory {
   slug: string;
   description: string;
   image: string;
-  icon: string;
+  icon: LucideIcon;
+  color: string;
   parentId?: string;
   subcategories?: ProductCategory[];
   productCount: number;
@@ -67,7 +70,7 @@ export interface Cart {
   itemCount: number;
 }
 
-export interface ProductFilters {
+export interface ProductFiltersType {
   category?: string;
   minPrice?: number;
   maxPrice?: number;
@@ -95,7 +98,7 @@ export interface ProductSearchResult {
   page: number;
   limit: number;
   hasMore: boolean;
-  filters: ProductFilters;
+  filters: ProductFiltersType;
   sort: ProductSort;
 }
 

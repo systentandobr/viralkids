@@ -1,20 +1,15 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { LucideIcon } from "lucide-react";
+import { LucideIcon, Package } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ProductCategory } from "@/pages/Ecommerce/types/ecommerce.types";
-interface Category {
-  icon: LucideIcon;
-  title: string;
-  count: string;
-  color: string;
-}
 
 interface CategoryCardProps {
-  category: Category | ProductCategory;
+  category: ProductCategory;
 }
 
 const CategoryCard = ({ category }: CategoryCardProps) => {
-  const Icon = category.icon;
+  // Verificar se o ícone é válido, caso contrário usar um fallback
+  const Icon = (category.icon && typeof category.icon === 'function') ? category.icon : Package;
 
   return (
     <Card className="group hover:shadow-bronze transition-all duration-300 hover:-translate-y-2 cursor-pointer bg-gradient-card border-bronze/20">
@@ -31,10 +26,10 @@ const CategoryCard = ({ category }: CategoryCardProps) => {
           {/* Content */}
           <div>
             <h3 className="text-lg font-semibold text-foreground mb-1 group-hover:text-bronze transition-colors">
-              {category.title}
+              {category.description}
             </h3>
-            <p className="text-sm text-muted-foreground">
-              {category.count}
+            <p className="text-md text-muted-foreground">
+              {category.productCount}
             </p>
           </div>
         </div>

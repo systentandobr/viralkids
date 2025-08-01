@@ -115,7 +115,7 @@ const EcommerceHeader = () => {
           </div>
 
           {/* Mobile Menu Button */}
-          <button 
+          <div 
             className="md:hidden flex items-center space-x-2"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
           >
@@ -126,7 +126,7 @@ const EcommerceHeader = () => {
               </Badge>
             </Button>
             {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-          </button>
+          </div>
         </div>
 
         {/* Mobile Menu */}
