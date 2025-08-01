@@ -1,25 +1,34 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { MessageCircle, Instagram, Phone, Mail, MapPin, Clock, Star } from "lucide-react";
+import { MessageCircle, Instagram, Mail, MapPin, Clock, Star, Bot } from "lucide-react";
+import { useChatbot } from "@/features/chatbot/hooks/useChatbot";
 
 const Contact = () => {
-  const openWhatsApp = () => {
-    window.open('https://wa.me/5584999999999?text=Olá! Gostaria de mais informações sobre o Viral Kids!', '_blank');
-  };
+  const { openChatbot } = useChatbot();
 
   const openInstagram = () => {
-    window.open('https://instagram.com/viralkids', '_blank');
+    window.open('https://instagram.com/viral.kids', '_blank');
   };
 
   const contactMethods = [
     {
+      icon: Bot,
+      title: "Assistente Virtual",
+      description: "Atendimento inteligente 24/7",
+      action: "Falar com Assistente",
+      info: "Chatbot IA",
+      onClick: openChatbot,
+      color: "bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700",
+      available: "24/7"
+    },
+    {
       icon: MessageCircle,
       title: "WhatsApp",
-      description: "Atendimento rápido e personalizado",
+      description: "Atendimento direto e personalizado",
       action: "Iniciar Conversa",
-      info: "(84) 99999-9999",
-      onClick: openWhatsApp,
+      info: "(84) 98741-4238",
+      onClick: () => window.open('https://wa.me/5584987414238?text=Olá! Gostaria de mais informações sobre o Viral Kids!', '_blank'),
       color: "bg-green-500 hover:bg-green-600",
       available: "Online agora"
     },
@@ -27,21 +36,11 @@ const Contact = () => {
       icon: Instagram,
       title: "Instagram",
       description: "Novidades e produtos em destaque",
-      action: "Seguir @viralkids",
-      info: "@viralkids",
+      action: "Seguir @viral.kids",
+      info: "@viral.kids",
       onClick: openInstagram,
       color: "bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600",
       available: "Sempre ativo"
-    },
-    {
-      icon: Phone,
-      title: "Telefone",
-      description: "Atendimento por telefone",
-      action: "Ligar Agora",
-      info: "(84) 3333-4444",
-      onClick: () => window.open('tel:+5584333344444'),
-      color: "bg-blue-500 hover:bg-blue-600",
-      available: "Seg-Sex 8h-18h"
     },
     {
       icon: Mail,
@@ -197,7 +196,7 @@ const Contact = () => {
                       variant="outline" 
                       size="sm" 
                       className="w-full"
-                      onClick={openWhatsApp}
+                      onClick={() => window.open('https://wa.me/5584987414238?text=Olá! Gostaria de mais informações sobre o Viral Kids!', '_blank')}
                     >
                       <MessageCircle className="h-4 w-4" />
                       Atendimento Local
@@ -282,11 +281,11 @@ const Contact = () => {
           <Button 
             variant="secondary" 
             size="lg"
-            onClick={openWhatsApp}
+            onClick={openChatbot}
             className="bg-white text-bronze hover:bg-white/90 group"
           >
-            <MessageCircle className="h-5 w-5 group-hover:animate-pulse" />
-            Iniciar Conversa Agora
+            <Bot className="h-5 w-5 group-hover:animate-pulse" />
+            Falar com nosso Assistente
           </Button>
         </div>
       </div>
