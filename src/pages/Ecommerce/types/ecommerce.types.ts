@@ -21,6 +21,7 @@ export interface Product {
     width: number;
     height: number;
   };
+  isExclusive?: boolean;
   colors?: string[];
   sizes?: string[];
   tags: string[];

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Product } from '../types/ecommerce.types';
 import { Button } from '@/components/ui/button';
-import { Heart, ShoppingCart, Star, MapPin, Badge, Eye } from 'lucide-react';
+import { Heart, ShoppingCart, Star, MapPin, Badge, Eye, Image } from 'lucide-react';
 
 interface ProductCardProps {
   product: Product;
@@ -16,10 +16,15 @@ export const ProductCard: React.FC<ProductCardProps> = ({
 }) => {
   const [isWishlisted, setIsWishlisted] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [imageError, setImageError] = useState(false);
 
   const handleWishlistToggle = (e: React.MouseEvent) => {
     e.stopPropagation();
     setIsWishlisted(!isWishlisted);
+  };
+
+  const handleImageError = () => {
+    setImageError(true);
   };
 
   const formatPrice = (price: number) => {
@@ -42,17 +47,37 @@ export const ProductCard: React.FC<ProductCardProps> = ({
     ));
   };
 
+  // Função para renderizar imagem com fallback
+  const renderImage = (src: string, alt: string, className: string) => {
+    if (imageError) {
+      return (
+        <div className={`${className} bg-gray-200 flex items-center justify-center`}>
+          <Image className="h-12 w-12 text-gray-400" />
+        </div>
+      );
+    }
+
+    return (
+      <img
+        src={src}
+        alt={alt}
+        className={className}
+        onError={handleImageError}
+      />
+    );
+  };
+
   if (viewMode === 'list') {
     return (
       <div className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow p-6">
         <div className="flex gap-6">
           {/* Imagem do Produto */}
           <div className="relative flex-shrink-0">
-            <img
-              src={product.thumbnail}
-              alt={product.name}
-              className="w-32 h-32 object-cover rounded-lg"
-            />
+            {renderImage(
+              product.thumbnail,
+              product.name,
+              "w-32 h-32 object-cover rounded-lg"
+            )}
             {product.discount && (
               <div className="absolute top-2 left-2 bg-red-500 text-white px-2 py-1 rounded-full text-xs font-medium">
                 -{product.discount}%
@@ -99,35 +124,27 @@ export const ProductCard: React.FC<ProductCardProps> = ({
               </div>
             </div>
 
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <span className="text-2xl font-bold text-primary-600">
-                  {formatPrice(product.price)}
+            {/* Preço */}
+            <div className="flex items-center gap-2 mb-4">
+              <span className="text-xl font-bold text-primary-600">
+                {formatPrice(product.price)}
+              </span>
+              {product.originalPrice && (
+                <span className="text-sm text-gray-500 line-through">
+                  {formatPrice(product.originalPrice)}
                 </span>
-                {product.originalPrice && (
-                  <span className="text-sm text-gray-500 line-through">
-                    {formatPrice(product.originalPrice)}
-                  </span>
-                )}
-              </div>
+              )}
+            </div>
 
-              <div className="flex items-center gap-2">
-                {!product.inStock ? (
-                  <span className="text-red-500 text-sm font-medium">
-                    Indisponível
-                  </span>
-                ) : (
-                  <>
-                    <Button variant="outline" size="sm">
-                      <Eye className="h-4 w-4" />
-                    </Button>
-                    <Button onClick={onAddToCart} size="sm">
-                      <ShoppingCart className="h-4 w-4 mr-2" />
-                      Adicionar
-                    </Button>
-                  </>
-                )}
-              </div>
+            {/* Ações */}
+            <div className="flex gap-2">
+              <Button variant="outline" size="sm">
+                <Eye className="h-4 w-4" />
+              </Button>
+              <Button onClick={onAddToCart} size="sm">
+                <ShoppingCart className="h-4 w-4 mr-2" />
+                Adicionar
+              </Button>
             </div>
           </div>
         </div>
@@ -140,11 +157,11 @@ export const ProductCard: React.FC<ProductCardProps> = ({
     <div className="bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden group">
       {/* Imagem do Produto */}
       <div className="relative aspect-square overflow-hidden">
-        <img
-          src={product.images[selectedImageIndex] || product.thumbnail}
-          alt={product.name}
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-        />
+        {renderImage(
+          product.images[selectedImageIndex] || product.thumbnail,
+          product.name,
+          "w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+        )}
         
         {/* Badges */}
         <div className="absolute top-3 left-3 flex flex-col gap-2">
@@ -251,29 +268,17 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           </div>
         )}
 
-        {/* Status do Estoque */}
-        <div className="mb-4">
-          {product.inStock ? (
-            <span className="text-xs text-green-600 font-medium">
-              ✓ Em estoque ({product.stockQuantity} disponíveis)
-            </span>
-          ) : (
-            <span className="text-xs text-red-500 font-medium">
-              ✗ Indisponível
-            </span>
-          )}
+        {/* Ações */}
+        <div className="flex gap-2">
+          <Button variant="outline" size="sm" className="flex-1">
+            <Eye className="h-4 w-4 mr-2" />
+            Ver
+          </Button>
+          <Button onClick={onAddToCart} size="sm" className="flex-1">
+            <ShoppingCart className="h-4 w-4 mr-2" />
+            Adicionar
+          </Button>
         </div>
-
-        {/* Botão de Adicionar ao Carrinho */}
-        <Button
-          onClick={onAddToCart}
-          disabled={!product.inStock}
-          className="w-full"
-          size="sm"
-        >
-          <ShoppingCart className="h-4 w-4 mr-2" />
-          {product.inStock ? 'Adicionar ao Carrinho' : 'Indisponível'}
-        </Button>
       </div>
     </div>
   );

@@ -8,6 +8,10 @@ import {
   PaginatedResponse
 } from '../types/ecommerce.types';
 
+// Importar imagens
+import productImage1 from '@/assets/products01.png';
+import productImage2 from '@/assets/products02.png';
+
 // Simulação de dados (será substituído por API real)
 const mockProducts: Product[] = [
   {
@@ -20,11 +24,11 @@ const mockProducts: Product[] = [
     category: 'roupas',
     brand: 'Little Princess',
     images: [
-      '/api/placeholder/400/400',
-      '/api/placeholder/400/400',
-      '/api/placeholder/400/400'
+      productImage1,
+      productImage2,
+      productImage1
     ],
-    thumbnail: '/api/placeholder/300/300',
+    thumbnail: productImage1,
     inStock: true,
     stockQuantity: 15,
     minAge: 2,
@@ -52,10 +56,10 @@ const mockProducts: Product[] = [
     category: 'roupas',
     brand: 'Adventure Kids',
     images: [
-      '/api/placeholder/400/400',
-      '/api/placeholder/400/400'
+      productImage2,
+      productImage1
     ],
-    thumbnail: '/api/placeholder/300/300',
+    thumbnail: productImage2,
     inStock: true,
     stockQuantity: 8,
     minAge: 3,
@@ -81,12 +85,12 @@ const mockProducts: Product[] = [
     category: 'brinquedos',
     brand: 'Smart Toys',
     images: [
-      '/api/placeholder/400/400',
-      '/api/placeholder/400/400',
-      '/api/placeholder/400/400',
-      '/api/placeholder/400/400'
+      productImage1,
+      productImage2,
+      productImage1,
+      productImage2
     ],
-    thumbnail: '/api/placeholder/300/300',
+    thumbnail: productImage1,
     inStock: true,
     stockQuantity: 12,
     minAge: 3,
@@ -110,55 +114,84 @@ const mockProducts: Product[] = [
     originalPrice: 95.00,
     discount: 17,
     category: 'acessorios',
-    brand: 'School Bags',
+    brand: 'School Buddy',
     images: [
-      '/api/placeholder/400/400',
-      '/api/placeholder/400/400'
+      productImage2,
+      productImage1
     ],
-    thumbnail: '/api/placeholder/300/300',
+    thumbnail: productImage2,
     inStock: true,
-    stockQuantity: 20,
+    stockQuantity: 22,
     minAge: 5,
     maxAge: 12,
-    colors: ['Rosa', 'Azul', 'Verde', 'Roxo'],
-    tags: ['escola', 'organizador', 'resistente'],
-    rating: 4.3,
-    reviewCount: 12,
+    colors: ['Azul', 'Rosa', 'Verde', 'Vermelho'],
+    sizes: ['Pequeno', 'Médio', 'Grande'],
+    tags: ['escola', 'resistente', 'organizador'],
+    rating: 4.6,
+    reviewCount: 31,
     isFeatured: false,
     isNew: false,
-    franchiseId: 'franchise-1',
-    franchiseName: 'Kids Fashion Store',
-    franchiseLocation: 'São Paulo, SP',
-    createdAt: '2024-01-10T08:45:00Z',
-    updatedAt: '2024-01-15T10:20:00Z'
+    franchiseId: 'franchise-4',
+    franchiseName: 'Acessórios Kids',
+    franchiseLocation: 'Curitiba, PR',
+    createdAt: '2024-01-12T08:45:00Z',
+    updatedAt: '2024-01-18T15:20:00Z'
   },
   {
     id: '5',
-    name: 'Kit de Arte Criativa',
-    description: 'Kit completo com lápis de cor, giz de cera, canetinhas e papel para desenvolver a criatividade.',
+    name: 'Kit de Pintura Criativa',
+    description: 'Kit completo de pintura com tintas não tóxicas, pincéis e papéis especiais para crianças.',
     price: 45.90,
-    category: 'brinquedos',
-    brand: 'Arte Kids',
+    category: 'arte',
+    brand: 'Creative Kids',
     images: [
-      '/api/placeholder/400/400',
-      '/api/placeholder/400/400',
-      '/api/placeholder/400/400'
+      productImage1,
+      productImage2
     ],
-    thumbnail: '/api/placeholder/300/300',
+    thumbnail: productImage1,
     inStock: true,
-    stockQuantity: 25,
+    stockQuantity: 18,
     minAge: 4,
-    maxAge: 12,
+    maxAge: 10,
+    colors: ['Multicolor'],
     tags: ['arte', 'criatividade', 'educativo'],
-    rating: 4.6,
+    rating: 4.7,
     reviewCount: 28,
-    isFeatured: false,
+    isFeatured: true,
     isNew: true,
-    franchiseId: 'franchise-2',
-    franchiseName: 'Mundo Kids',
-    franchiseLocation: 'Rio de Janeiro, RJ',
+    franchiseId: 'franchise-5',
+    franchiseName: 'Arte & Criatividade',
+    franchiseLocation: 'Salvador, BA',
     createdAt: '2024-01-22T14:30:00Z',
     updatedAt: '2024-01-25T09:15:00Z'
+  },
+  {
+    id: '6',
+    name: 'Instrumento Musical Infantil',
+    description: 'Instrumento musical seguro e divertido para introduzir crianças ao mundo da música.',
+    price: 125.00,
+    category: 'musica',
+    brand: 'Music Kids',
+    images: [
+      productImage2,
+      productImage1
+    ],
+    thumbnail: productImage2,
+    inStock: true,
+    stockQuantity: 10,
+    minAge: 3,
+    maxAge: 8,
+    colors: ['Natural', 'Colorido'],
+    tags: ['música', 'educativo', 'desenvolvimento'],
+    rating: 4.8,
+    reviewCount: 19,
+    isFeatured: false,
+    isNew: false,
+    franchiseId: 'franchise-6',
+    franchiseName: 'Música para Crianças',
+    franchiseLocation: 'Recife, PE',
+    createdAt: '2024-01-15T16:20:00Z',
+    updatedAt: '2024-01-20T11:45:00Z'
   }
 ];
 

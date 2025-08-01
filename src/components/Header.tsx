@@ -3,9 +3,13 @@
 import { Button } from "@/components/ui/button";
 import { MessageCircle, Menu, X } from "lucide-react";
 import { useState } from "react";
+import { useChatbot } from "@/features/chatbot/hooks/useChatbot";
+import { useRouter } from "@/router";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { openChatbot } = useChatbot();
+  const { navigate } = useRouter();
 
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId);
@@ -15,8 +19,24 @@ const Header = () => {
     setIsMenuOpen(false);
   };
 
-  const openWhatsApp = () => {
-    window.open('https://wa.me/5584999999999?text=Olá! Gostaria de saber mais sobre o Viral Kids!', '_blank');
+  const handleFranchiseClick = () => {
+    navigate('/franchisees');
+    setIsMenuOpen(false);
+  };
+
+  const handleChatbotClick = () => {
+    openChatbot();
+    setIsMenuOpen(true);
+  };
+
+  const handleHomeClick = () => {
+    navigate('/');
+    setIsMenuOpen(false);
+  };
+
+  const handleProductsClick = () => {
+    navigate('/ecomm');
+    setIsMenuOpen(false);
   };
 
   return (
@@ -39,7 +59,7 @@ const Header = () => {
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
             <button 
-              onClick={() => scrollToSection('inicio')}
+              onClick={handleHomeClick}
               className="text-foreground hover:text-bronze transition-colors"
             >
               Início
@@ -66,12 +86,12 @@ const Header = () => {
 
           {/* CTA Buttons */}
           <div className="hidden md:flex items-center space-x-3">
-            <Button variant="outline" onClick={() => scrollToSection('franquia')}>
+            <Button variant="outline" onClick={handleFranchiseClick}>
               Seja Franqueado
             </Button>
-            <Button variant="whatsapp" onClick={openWhatsApp}>
+            <Button variant="whatsapp" onClick={handleChatbotClick}>
               <MessageCircle className="h-4 w-4" />
-              WhatsApp
+              Assistente Virtual
             </Button>
           </div>
 
@@ -101,7 +121,7 @@ const Header = () => {
                 Produtos
               </button>
               <button 
-                onClick={() => scrollToSection('franquia')}
+                onClick={handleFranchiseClick}
                 className="text-left text-foreground hover:text-bronze transition-colors"
               >
                 Franquia
@@ -113,12 +133,12 @@ const Header = () => {
                 Contato
               </button>
               <div className="flex flex-col space-y-2 pt-4">
-                <Button variant="outline" onClick={() => scrollToSection('franquia')}>
+                <Button variant="outline" onClick={handleFranchiseClick}>
                   Seja Franqueado
                 </Button>
-                <Button variant="whatsapp" onClick={openWhatsApp}>
+                <Button variant="whatsapp" onClick={handleChatbotClick}>
                   <MessageCircle className="h-4 w-4" />
-                  WhatsApp
+                  Assistente Virtual
                 </Button>
               </div>
             </nav>

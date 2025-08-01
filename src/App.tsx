@@ -7,7 +7,7 @@ import { Router } from '@/router';
 import { ServiceProvider } from '@/services';
 import { DebugRouter } from '@/components/DebugRouter';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
-
+import { Chatbot } from '@/features/chatbot/components/Chatbot';
 
 import { NotFoundPage } from '@/pages/NotFoundPage';
 import { routes } from '@/router/main-routes';
@@ -27,6 +27,7 @@ const App: React.FC = () => {
             fallback={<NotFoundPage />}
           />
           <DebugRouter />
+          <Chatbot />
           <Toaster />
           <Sonner />
         </AuthProvider>

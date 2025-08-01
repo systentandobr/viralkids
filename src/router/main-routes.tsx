@@ -5,11 +5,17 @@ import { AdminDashboard } from '@/pages/AdminDashboard';
 import { FranchiseeDashboard } from '@/pages/FranchiseeDashboard';
 import EcommercePage from '@/pages/Ecommerce/EcommercePage';
 import { Route } from '.';
+import Ecommerce from '@/pages/Ecommerce';
 
 // Definição das rotas
 const routes: Route[] = [
   {
     path: '/',
+    component: Ecommerce,
+    exact: true
+  },
+  {
+    path: '/ecomm',
     component: EcommercePage,
     exact: true
   },

@@ -15,6 +15,8 @@ import { useFilters } from './hooks/useFilters';
 import { Product, ProductCategory } from './types/ecommerce.types';
 import { ShoppingCart, Filter, Grid, List } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import EcommerceHeader from '@/components/ecommerce/EcommerceHeader';
+import FeaturedBanner from '@/components/ecommerce/FeaturedBanner';
 
 const EcommercePage: React.FC = () => {
   const [isCartOpen, setIsCartOpen] = useState(false);
@@ -89,11 +91,14 @@ const EcommercePage: React.FC = () => {
   return (
     <>
       <div className="min-h-screen bg-gradient-to-br from-primary/10 to-accent/10">
-        <Header />
+        <EcommerceHeader />
+        
+        {/* Hero Banner */}
+        <FeaturedBanner />
         
         <main className="container mx-auto px-4 py-8">
           {/* Hero Section da Loja */}
-          <section className="mb-12 text-center py-16 bg-white rounded-2xl shadow-sm">
+          {/* <section className="mb-12 text-center py-16 bg-white rounded-2xl shadow-sm">
             <div className="max-w-4xl mx-auto">
               <h1 className="text-4xl md:text-5xl font-bold text-primary mb-6">
                 Produtos Especiais para seu Pequeno
@@ -103,7 +108,7 @@ const EcommercePage: React.FC = () => {
                 criados por nossos franqueados com amor e qualidade.
               </p>
               
-              {/* Barra de Pesquisa Principal */}
+              {/* Barra de Pesquisa Principal *
               <div className="max-w-md mx-auto">
                 <SearchBar 
                   onSearch={handleSearch}
@@ -111,7 +116,7 @@ const EcommercePage: React.FC = () => {
                 />
               </div>
             </div>
-          </section>
+          </section> */}
 
           {/* Categorias em Destaque */}
           <section className="mb-12">

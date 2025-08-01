@@ -1,14 +1,22 @@
 import { MessageCircle, Instagram, Mail, MapPin, Phone } from "lucide-react";
+import { useChatbot } from "@/features/chatbot/hooks/useChatbot";
+import { useRouter } from "@/router";
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
+  const { openChatbot } = useChatbot();
+  const { navigate } = useRouter();
 
-  const openWhatsApp = () => {
-    window.open('https://wa.me/5584999999999?text=Olá! Vim através do site e gostaria de mais informações!', '_blank');
+  const handleChatbotClick = () => {
+    openChatbot();
   };
 
   const openInstagram = () => {
-    window.open('https://instagram.com/viralkids', '_blank');
+    window.open('https://instagram.com/viral.kids', '_blank');
+  };
+
+  const handleFranchiseClick = () => {
+    navigate('/franchisees');
   };
 
   return (
@@ -33,14 +41,16 @@ const Footer = () => {
             </p>
             <div className="flex space-x-3">
               <button 
-                onClick={openWhatsApp}
+                onClick={handleChatbotClick}
                 className="bg-green-500 hover:bg-green-600 p-2 rounded-lg transition-colors"
+                title="Falar com nosso assistente"
               >
                 <MessageCircle className="h-5 w-5" />
               </button>
               <button 
                 onClick={openInstagram}
                 className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 p-2 rounded-lg transition-colors"
+                title="Siga-nos no Instagram"
               >
                 <Instagram className="h-5 w-5" />
               </button>
@@ -64,9 +74,24 @@ const Footer = () => {
           <div className="space-y-4">
             <h4 className="text-lg font-semibold text-bronze">Franquia</h4>
             <div className="space-y-2 text-sm text-background/70">
-              <p>Plano Starter</p>
-              <p>Plano Premium</p>
-              <p>Plano Master</p>
+              <button 
+                onClick={handleFranchiseClick}
+                className="text-left hover:text-bronze transition-colors"
+              >
+                Plano Starter
+              </button>
+              <button 
+                onClick={handleFranchiseClick}
+                className="text-left hover:text-bronze transition-colors"
+              >
+                Plano Premium
+              </button>
+              <button 
+                onClick={handleFranchiseClick}
+                className="text-left hover:text-bronze transition-colors"
+              >
+                Plano Master
+              </button>
               <p>Suporte Completo</p>
               <p>Treinamentos</p>
               <p>Material de Marketing</p>
@@ -79,11 +104,11 @@ const Footer = () => {
             <div className="space-y-3 text-sm text-background/70">
               <div className="flex items-center space-x-2">
                 <MessageCircle className="h-4 w-4 text-bronze" />
-                <span>(84) 99999-9999</span>
+                <span>(84) 98741-4238</span>
               </div>
               <div className="flex items-center space-x-2">
-                <Phone className="h-4 w-4 text-bronze" />
-                <span>(84) 3333-4444</span>
+                <Instagram className="h-4 w-4 text-bronze" />
+                <span>@viral.kids</span>
               </div>
               <div className="flex items-center space-x-2">
                 <Mail className="h-4 w-4 text-bronze" />

@@ -5,7 +5,6 @@ import Products from '@/components/Products';
 import Contact from '@/components/Contact';
 import Footer from '@/components/Footer';
 import Franchise from '@/components/Franchise';
-import { Chatbot } from '@/features/chatbot/components/Chatbot';
 import { Button } from '@/components/ui/button';
 import { User, LogIn } from 'lucide-react';
 import { useAuthContext } from '@/features/auth/context/AuthContext';
@@ -31,9 +30,6 @@ export const LandingPage: React.FC = () => {
         <Contact />
       </main>
       <Footer />
-      
-      {/* Chatbot */}
-      <Chatbot />
       
       {/* Botão de Autenticação Flutuante */}
       {!isAuthenticated && (
