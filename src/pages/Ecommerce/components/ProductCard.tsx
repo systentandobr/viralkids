@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Product } from '../types/ecommerce.types';
 import { Button } from '@/components/ui/button';
 import { Heart, ShoppingCart, Star, MapPin, Badge, Eye, Image } from 'lucide-react';
+import { useRouter } from '@/router';
 
 interface ProductCardProps {
   product: Product;
@@ -17,6 +18,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   const [isWishlisted, setIsWishlisted] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [imageError, setImageError] = useState(false);
+  const { navigate } = useRouter();
 
   const handleWishlistToggle = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -32,6 +34,13 @@ export const ProductCard: React.FC<ProductCardProps> = ({
       style: 'currency',
       currency: 'BRL'
     }).format(price);
+  };
+
+  const handleProductClick = () => {
+    // Salvar o ID do produto no localStorage para acessar na página de detalhes
+    localStorage.setItem('selectedProductId', product.id);
+    // Navegar para a página de detalhes do produto
+    navigate('/product');
   };
 
   const renderStars = (rating: number) => {
@@ -69,7 +78,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
 
   if (viewMode === 'list') {
     return (
-      <div className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow p-6">
+      <div className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow p-6 cursor-pointer" onClick={handleProductClick}>
         <div className="flex gap-6">
           {/* Imagem do Produto */}
           <div className="relative flex-shrink-0">
@@ -93,7 +102,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           {/* Informações do Produto */}
           <div className="flex-1">
             <div className="flex justify-between items-start mb-2">
-              <h3 className="text-lg font-semibold text-gray-800 line-clamp-2">
+              <h3 className="text-lg font-semibold text-gray-800 line-clamp-2 hover:text-primary transition-colors">
                 {product.name}
               </h3>
               <Button
@@ -106,7 +115,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
               </Button>
             </div>
 
-            <p className="text-gray-600 text-md mb-3 line-clamp-2">
+            <p className="text-gray-600 text-sm mb-3 line-clamp-2">
               {product.description}
             </p>
 
@@ -126,24 +135,45 @@ export const ProductCard: React.FC<ProductCardProps> = ({
 
             {/* Preço */}
             <div className="flex items-center gap-2 mb-4">
-              <span className="text-xl font-bold text-primary-600">
+              <span className="text-2xl font-bold text-primary">
                 {formatPrice(product.price)}
               </span>
               {product.originalPrice && (
-                <span className="text-md text-gray-500 line-through">
+                <span className="text-sm text-gray-500 line-through">
                   {formatPrice(product.originalPrice)}
+                </span>
+              )}
+            </div>
+
+            {/* Status do Estoque */}
+            <div className="mb-4">
+              {product.inStock ? (
+                <span className="text-xs text-green-600 font-medium">
+                  ✓ Em estoque ({product.stockQuantity} disponíveis)
+                </span>
+              ) : (
+                <span className="text-xs text-red-500 font-medium">
+                  ✗ Indisponível
                 </span>
               )}
             </div>
 
             {/* Ações */}
             <div className="flex gap-2">
-              <Button variant="outline" size="sm">
-                <Eye className="h-4 w-4" />
+              <Button variant="outline" size="sm" onClick={handleProductClick}>
+                <Eye className="h-4 w-4 mr-2" />
+                Ver Detalhes
               </Button>
-              <Button onClick={onAddToCart} size="sm">
+              <Button 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onAddToCart();
+                }} 
+                size="sm"
+                disabled={!product.inStock}
+              >
                 <ShoppingCart className="h-4 w-4 mr-2" />
-                Adicionar
+                {product.inStock ? 'Adicionar' : 'Indisponível'}
               </Button>
             </div>
           </div>
@@ -154,7 +184,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
 
   // Grid view
   return (
-    <div className="bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden group">
+    <div className="bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden group cursor-pointer" onClick={handleProductClick}>
       {/* Imagem do Produto */}
       <div className="relative aspect-square overflow-hidden">
         {renderImage(
@@ -176,7 +206,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             </div>
           )}
           {product.isFeatured && (
-            <div className="bg-purple-500 text-white px-2 py-1 rounded-full text-xs font-medium">
+            <div className="bg-purple-500 text-white px-2 py-1 rounded-full text-xs font-medium flex items-center">
               <Badge className="h-3 w-3 mr-1" />
               Destaque
             </div>
@@ -199,7 +229,10 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             {product.images.map((_, index) => (
               <button
                 key={index}
-                onClick={() => setSelectedImageIndex(index)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setSelectedImageIndex(index);
+                }}
                 className={`w-2 h-2 rounded-full transition-colors ${
                   index === selectedImageIndex ? 'bg-white' : 'bg-white/50'
                 }`}
@@ -210,7 +243,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
 
         {/* Overlay de Ações */}
         <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-          <Button variant="secondary" size="sm">
+          <Button variant="secondary" size="sm" onClick={handleProductClick}>
             <Eye className="h-4 w-4 mr-2" />
             Ver Detalhes
           </Button>
@@ -220,7 +253,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
       {/* Informações do Produto */}
       <div className="p-4">
         <div className="mb-2">
-          <h3 className="font-semibold text-gray-800 line-clamp-2 mb-1">
+          <h3 className="font-semibold text-gray-800 line-clamp-2 mb-1 hover:text-primary transition-colors">
             {product.name}
           </h3>
           <p className="text-xs text-gray-500 mb-2">
@@ -238,11 +271,11 @@ export const ProductCard: React.FC<ProductCardProps> = ({
 
         {/* Preço */}
         <div className="flex items-center gap-2 mb-4">
-          <span className="text-lg font-bold text-primary-600">
+          <span className="text-lg font-bold text-primary">
             {formatPrice(product.price)}
           </span>
           {product.originalPrice && (
-            <span className="text-md text-gray-500 line-through">
+            <span className="text-sm text-gray-500 line-through">
               {formatPrice(product.originalPrice)}
             </span>
           )}
@@ -268,17 +301,32 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           </div>
         )}
 
-        {/* Ações */}
-        <div className="flex gap-2">
-          <Button variant="outline" size="sm" className="flex-1">
-            <Eye className="h-4 w-4 mr-2" />
-            Ver
-          </Button>
-          <Button onClick={onAddToCart} size="sm" className="flex-1">
-            <ShoppingCart className="h-4 w-4 mr-2" />
-            Adicionar
-          </Button>
+        {/* Status do Estoque */}
+        <div className="mb-4">
+          {product.inStock ? (
+            <span className="text-xs text-green-600 font-medium">
+              ✓ Em estoque ({product.stockQuantity} disponíveis)
+            </span>
+          ) : (
+            <span className="text-xs text-red-500 font-medium">
+              ✗ Indisponível
+            </span>
+          )}
         </div>
+
+        {/* Botão de Adicionar ao Carrinho */}
+        <Button
+          onClick={(e) => {
+            e.stopPropagation();
+            onAddToCart();
+          }}
+          disabled={!product.inStock}
+          className="w-full"
+          size="sm"
+        >
+          <ShoppingCart className="h-4 w-4 mr-2" />
+          {product.inStock ? 'Adicionar ao Carrinho' : 'Indisponível'}
+        </Button>
       </div>
     </div>
   );

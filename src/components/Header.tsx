@@ -34,11 +34,6 @@ const Header = () => {
     setIsMenuOpen(false);
   };
 
-  const handleProductsClick = () => {
-    navigate('/ecomm');
-    setIsMenuOpen(false);
-  };
-
   return (
     <header className="bg-white/95 backdrop-blur-sm border-b border-bronze/20 sticky top-0 z-50">
       <div className="container mx-auto px-4 py-4">

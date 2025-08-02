@@ -1,4 +1,5 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
+import { useFiltersStore } from '@/stores/filters.store';
 import { Product, ProductFiltersType } from '../types/ecommerce.types';
 
 interface UseFiltersReturn {
@@ -9,60 +10,15 @@ interface UseFiltersReturn {
   activeFiltersCount: number;
 }
 
-const defaultFilters: ProductFiltersType = {
-  category: undefined,
-  minPrice: undefined,
-  maxPrice: undefined,
-  brand: undefined,
-  inStock: undefined,
-  minAge: undefined,
-  maxAge: undefined,
-  colors: [],
-  sizes: [],
-  rating: undefined,
-  isNew: undefined,
-  isFeatured: undefined,
-  franchiseId: undefined,
-  tags: []
-};
-
 export const useFilters = (products: Product[]): UseFiltersReturn => {
-  const [filters, setFilters] = useState<ProductFiltersType>(defaultFilters);
+  // Usar as ações e estado da store
+  const filters = useFiltersStore(state => state.filters);
+  const updateFilter = useFiltersStore(state => state.updateFilter);
+  const resetFilters = useFiltersStore(state => state.resetFilters);
+  const getActiveFiltersCount = useFiltersStore(state => state.getActiveFiltersCount);
 
-  // Atualizar filtro específico
-  const updateFilter = (key: keyof ProductFiltersType, value: any) => {
-    setFilters(prev => ({
-      ...prev,
-      [key]: value
-    }));
-  };
-
-  // Resetar todos os filtros
-  const resetFilters = () => {
-    setFilters(defaultFilters);
-  };
-
-  // Contar filtros ativos
-  const activeFiltersCount = useMemo(() => {
-    let count = 0;
-
-    Object.keys(filters).forEach(key => {
-      const filterKey = key as keyof ProductFiltersType;
-      const value = filters[filterKey];
-
-      if (value !== undefined && value !== null) {
-        if (Array.isArray(value)) {
-          if (value.length > 0) count++;
-        } else if (typeof value === 'boolean') {
-          if (value === true) count++;
-        } else {
-          count++;
-        }
-      }
-    });
-
-    return count;
-  }, [filters]);
+  // Calcular filtros ativos usando a função da store
+  const activeFiltersCount = getActiveFiltersCount();
 
   // Aplicar filtros aos produtos
   const filteredProducts = useMemo(() => {

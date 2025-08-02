@@ -3,10 +3,10 @@ import { MessageCircle, Play, Star } from "lucide-react";
 import { Chatbot } from "@/features/chatbot";
 import { useState } from "react";
 import heroImage from "@/assets/hero-image.jpg";
-
+import { useIsMobile } from "@/hooks/use-mobile";
 const Hero = () => {
   const [isChatbotOpen, setIsChatbotOpen] = useState(false);
-
+  const isMobile  = useIsMobile();
   const openChatbot = () => {
     setIsChatbotOpen(true);
   };
@@ -116,7 +116,7 @@ const Hero = () => {
       </section>
 
       {/* Chatbot */}
-      {isChatbotOpen && <Chatbot position="fixed" />}
+      {isChatbotOpen && <Chatbot position={isMobile ? "relative" : "fixed"} isChatbotOpen={isChatbotOpen} />}
     </>
   );
 };

@@ -4,19 +4,20 @@ import { AuthPage } from '@/pages/AuthPage';
 import { AdminDashboard } from '@/pages/AdminDashboard';
 import { FranchiseeDashboard } from '@/pages/FranchiseeDashboard';
 import EcommercePage from '@/pages/Ecommerce/EcommercePage';
+import ProductDetailPage from '@/pages/ProductDetail/ProductDetailPage';
 import { Route } from '.';
-import Ecommerce from '@/pages/Ecommerce';
 
 // Definição das rotas
 const routes: Route[] = [
   {
     path: '/',
-    component: Ecommerce,
+    component: EcommercePage,
     exact: true
   },
+  // Página de detalhes do produto
   {
-    path: '/ecomm',
-    component: EcommercePage,
+    path: '/product',
+    component: ProductDetailPage,
     exact: true
   },
   // Página de Franquias

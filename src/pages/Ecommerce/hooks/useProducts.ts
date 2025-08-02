@@ -1,6 +1,8 @@
-import { useState, useEffect, useCallback } from 'react';
-import { Product, ProductCategory, ProductFilters, ProductSort } from '../types/ecommerce.types';
+import { useEffect, useCallback } from 'react';
+import { useProductsStore } from '@/stores/products.store';
+import { Product, ProductCategory } from '../types/ecommerce.types';
 import { ProductService } from '../services/product.service';
+
 interface UseProductsReturn {
   products: Product[];
   loading: boolean;
@@ -16,13 +18,30 @@ interface UseProductsReturn {
 }
 
 export const useProducts = (): UseProductsReturn => {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [categories, setCategories] = useState<ProductCategory[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  // Usar as ações e estado da store
+  const products = useProductsStore(state => state.products);
+  const categories = useProductsStore(state => state.categories);
+  const loading = useProductsStore(state => state.loading);
+  const error = useProductsStore(state => state.error);
+  const shouldRefresh = useProductsStore(state => state.shouldRefresh);
+  const setProducts = useProductsStore(state => state.setProducts);
+  const setCategories = useProductsStore(state => state.setCategories);
+  const setLoading = useProductsStore(state => state.setLoading);
+  const setError = useProductsStore(state => state.setError);
+  const getFeaturedProducts = useProductsStore(state => state.getFeaturedProducts);
+  const getExclusiveProducts = useProductsStore(state => state.getExclusiveProducts);
+  const getNewProducts = useProductsStore(state => state.getNewProducts);
+  const getProductsByCategoryStore = useProductsStore(state => state.getProductsByCategory);
+  const getProductByIdStore = useProductsStore(state => state.getProductById);
+  const setSearchResults = useProductsStore(state => state.setSearchResults);
 
   // Carregar produtos
-  const loadProducts = useCallback(async () => {
+  const loadProducts = useCallback(async (force: boolean = false) => {
+    // Verificar se precisa atualizar os dados
+    if (!force && !shouldRefresh()) {
+      return; // Usar dados do cache
+    }
+
     try {
       setLoading(true);
       setError(null);
@@ -39,7 +58,7 @@ export const useProducts = (): UseProductsReturn => {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [shouldRefresh, setLoading, setError, setProducts]);
 
   // Carregar categorias
   const loadCategories = useCallback(async () => {
@@ -51,21 +70,32 @@ export const useProducts = (): UseProductsReturn => {
     } catch (err) {
       console.error('Erro ao carregar categorias:', err);
     }
-  }, []);
+  }, [setCategories]);
 
   // Buscar produtos
   const searchProducts = useCallback(async (query: string): Promise<Product[]> => {
     try {
       const response = await ProductService.searchProducts(query);
-      return response.success ? response.data.products : [];
+      if (response.success) {
+        setSearchResults(response.data.products, query);
+        return response.data.products;
+      }
+      return [];
     } catch (err) {
       console.error('Erro ao buscar produtos:', err);
       return [];
     }
-  }, []);
+  }, [setSearchResults]);
 
-  // Obter produtos por categoria
+  // Obter produtos por categoria (primeiro verificar cache)
   const getProductsByCategory = useCallback(async (categoryId: string): Promise<Product[]> => {
+    // Primeiro tentar obter do cache
+    const cachedProducts = getProductsByCategoryStore(categoryId);
+    if (cachedProducts.length > 0) {
+      return cachedProducts;
+    }
+
+    // Se não encontrar no cache, buscar da API
     try {
       const response = await ProductService.getProductsByCategory(categoryId);
       return response.success ? response.data : [];
@@ -73,10 +103,17 @@ export const useProducts = (): UseProductsReturn => {
       console.error('Erro ao buscar produtos por categoria:', err);
       return [];
     }
-  }, []);
+  }, [getProductsByCategoryStore]);
 
-  // Obter produto por ID
+  // Obter produto por ID (primeiro verificar cache)
   const getProductById = useCallback(async (id: string): Promise<Product | null> => {
+    // Primeiro tentar obter do cache
+    const cachedProduct = getProductByIdStore(id);
+    if (cachedProduct) {
+      return cachedProduct;
+    }
+
+    // Se não encontrar no cache, buscar da API
     try {
       const response = await ProductService.getProductById(id);
       return response.success ? response.data : null;
@@ -84,21 +121,17 @@ export const useProducts = (): UseProductsReturn => {
       console.error('Erro ao buscar produto:', err);
       return null;
     }
-  }, []);
+  }, [getProductByIdStore]);
 
-  // Atualizar produtos
+  // Atualizar produtos (forçar busca nova)
   const refreshProducts = useCallback(() => {
-    loadProducts();
+    loadProducts(true);
   }, [loadProducts]);
 
-  // Produtos em destaque
-  const featuredProducts = products.filter(product => product.isFeatured);
-
-  // Produtos exclusivos
-  const exclusiveProducts = products.filter(product => product.isExclusive);
-
-  // Produtos novos
-  const newProducts = products.filter(product => product.isNew);
+  // Produtos calculados usando as funções da store
+  const featuredProducts = getFeaturedProducts();
+  const exclusiveProducts = getExclusiveProducts();
+  const newProducts = getNewProducts();
 
   // Carregar dados iniciais
   useEffect(() => {

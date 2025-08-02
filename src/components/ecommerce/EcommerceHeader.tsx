@@ -33,7 +33,7 @@ const EcommerceHeader = () => {
   };
 
   const handleProductsClick = () => {
-    navigate('/ecomm');
+    navigate('/');
     setIsMenuOpen(false);
   };
 

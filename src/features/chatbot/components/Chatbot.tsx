@@ -9,11 +9,15 @@ import { LoadingIndicator } from './LoadingIndicator';
 interface ChatbotProps {
   className?: string;
   position?: 'fixed' | 'relative';
+  isChatbotOpen?: boolean;
+  isMobile?: boolean;
 }
 
 export const Chatbot: React.FC<ChatbotProps> = ({ 
   className = '', 
-  position = 'fixed' 
+  position = 'fixed',
+  isChatbotOpen = false,
+  isMobile = false,
 }) => {
   const {
     isOpen,
@@ -84,9 +88,9 @@ export const Chatbot: React.FC<ChatbotProps> = ({
   return (
     <div
       className={`${
-        position === 'fixed'
-          ? 'fixed bottom-6 right-6 w-96 h-[600px] z-50'
-          : 'w-full h-full'
+        isMobile
+          ? 'fixed bottom-0 right-0 p-0 w-full h-full z-50'
+          : 'fixed bottom-6 right-6 w-96 h-[600px] z-50'
       } ${className}`}
     >
       <div className="bg-white rounded-2xl shadow-2xl border border-gray-200 h-full flex flex-col overflow-hidden">

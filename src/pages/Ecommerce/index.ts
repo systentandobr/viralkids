@@ -7,6 +7,7 @@ export { ProductCategories } from './components/ProductCategories';
 export { FeaturedProducts } from './components/FeaturedProducts';
 export { SearchBar } from './components/SearchBar';
 export { ShoppingCartSidebar } from './components/ShoppingCartSidebar';
+export { BrandSelector } from './components/BrandSelector';
 
 // Exportações dos hooks
 export { useProducts } from './hooks/useProducts';
