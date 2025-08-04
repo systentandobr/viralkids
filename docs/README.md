@@ -27,7 +27,7 @@ O **ViralKids** é uma plataforma de vendas focada em produtos infantis, desenvo
 - **Frontend**: React 18 + TypeScript
 - **Styling**: Tailwind CSS + shadcn/ui
 - **Build Tool**: Vite
-- **State Management**: React Query (TanStack Query)
+- **State Management**: Zustand com persistência automática
 - **Forms**: React Hook Form + Zod
 - **UI Components**: Radix UI
 - **Icons**: Lucide React
@@ -130,6 +130,13 @@ src/
 │   └── Franchise.tsx # Seção de franquias
 ├── pages/           # Páginas da aplicação
 ├── hooks/           # Hooks customizados
+├── stores/          # Stores Zustand
+│   ├── cart.store.ts
+│   ├── products.store.ts
+│   ├── filters.store.ts
+│   ├── user-preferences.store.ts
+│   └── index.ts
+├── providers/       # Providers da aplicação
 ├── lib/             # Utilitários e configurações
 ├── App.tsx          # Componente raiz
 └── main.tsx         # Ponto de entrada
@@ -209,6 +216,8 @@ export const Component = ({ title, description, onAction }: ComponentProps) => {
 - **Form Validation**: Validação com React Hook Form + Zod
 - **Toast Notifications**: Feedback visual para usuários
 - **WhatsApp Integration**: Integração direta com WhatsApp
+- **State Management**: Zustand com persistência automática
+- **Cache Inteligente**: Cache de produtos com TTL automático
 
 ## 🚀 Roadmap
 

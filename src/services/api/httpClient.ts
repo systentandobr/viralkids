@@ -15,11 +15,15 @@ interface HttpClientConfig {
   baseURL?: string;
   timeout?: number;
   headers?: Record<string, string>;
+  getAuthToken?: () => string | null;
+  onAuthError?: () => void;
 }
 
 // Classe principal do cliente HTTP
 export class HttpClient {
   private client: AxiosInstance;
+  private getAuthToken?: () => string | null;
+  private onAuthError?: () => void;
 
   constructor(config: HttpClientConfig = {}) {
     this.client = axios.create({
@@ -31,6 +35,9 @@ export class HttpClient {
       },
     });
 
+    this.getAuthToken = config.getAuthToken;
+    this.onAuthError = config.onAuthError;
+
     this.setupInterceptors();
   }
 
@@ -40,7 +47,7 @@ export class HttpClient {
     this.client.interceptors.request.use(
       (config) => {
         // Adicionar token de autenticação se disponível
-        const token = localStorage.getItem('viralkids_token');
+        const token = this.getAuthToken?.();
         if (token) {
           config.headers.Authorization = `Bearer ${token}`;
         }
@@ -59,9 +66,7 @@ export class HttpClient {
       (error) => {
         // Tratar erros de autenticação
         if (error.response?.status === ERROR_STATUS_CODES.UNAUTHORIZED) {
-          localStorage.removeItem('viralkids_token');
-          localStorage.removeItem('viralkids_user');
-          window.location.href = '/auth';
+          this.onAuthError?.();
         }
         return Promise.reject(error);
       }
@@ -172,6 +177,12 @@ export class HttpClient {
   // Remover token de autenticação
   removeAuthToken() {
     delete this.client.defaults.headers.common.Authorization;
+  }
+
+  // Configurar callbacks de autenticação
+  setAuthCallbacks(getToken: () => string | null, onError: () => void) {
+    this.getAuthToken = getToken;
+    this.onAuthError = onError;
   }
 }
 

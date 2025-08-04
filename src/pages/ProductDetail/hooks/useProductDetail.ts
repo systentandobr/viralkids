@@ -342,9 +342,16 @@ export const useProductDetail = (productId: string): UseProductDetailReturn => {
   // Rastrear visualização quando o produto for carregado
   useEffect(() => {
     if (product && !loading) {
-      trackView();
+      // TODO: Implementar analytics
+      console.log('Product view tracked:', {
+        productId: product.id,
+        productName: product.name,
+        category: product.category,
+        brand: product.brand,
+        price: currentPrice
+      });
     }
-  }, [product, loading, trackView]);
+  }, [product, loading, currentPrice]); // Remover trackView da dependência
 
   return {
     product,

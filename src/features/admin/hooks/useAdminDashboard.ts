@@ -1,23 +1,11 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
+import { useAdminStore } from '@/stores/admin.store';
 import { AdminDashboard, Lead, AdminFilters, LeadMetrics, FranchiseMetrics, LeadNote } from '../types';
 
 interface UseAdminDashboardOptions {
   autoRefresh?: boolean;
   refreshInterval?: number; // em milissegundos
 }
-
-interface AdminDashboardState {
-  dashboard: AdminDashboard | null;
-  leads: Lead[];
-  filteredLeads: Lead[];
-  filters: AdminFilters;
-  loading: boolean;
-  error: string | null;
-  lastUpdated: Date | null;
-}
-
-const STORAGE_KEY_LEADS = 'viralkids_admin_leads';
-const STORAGE_KEY_DASHBOARD = 'viralkids_admin_dashboard';
 
 // Dados simulados para desenvolvimento
 const generateMockDashboard = (): AdminDashboard => {
@@ -241,20 +229,28 @@ export const useAdminDashboard = ({
   autoRefresh = false, 
   refreshInterval = 30000 
 }: UseAdminDashboardOptions = {}) => {
-  const [state, setState] = useState<AdminDashboardState>({
-    dashboard: null,
-    leads: [],
-    filteredLeads: [],
-    filters: {
-      dateRange: {
-        start: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
-        end: new Date()
-      }
-    },
-    loading: false,
-    error: null,
-    lastUpdated: null
-  });
+  // Estado da store - usando seletores simples para evitar loops
+  const dashboard = useAdminStore(state => state.dashboard);
+  const allLeads = useAdminStore(state => state.leads);
+  const filters = useAdminStore(state => state.filters);
+  const loading = useAdminStore(state => state.isLoading);
+  const error = useAdminStore(state => state.error);
+  const lastUpdated = useAdminStore(state => state.lastUpdated);
+  
+  // Cachear valores derivados para evitar re-renders desnecessários
+  const leads = useMemo(() => useAdminStore.getState().filteredLeads, [allLeads, filters]);
+  
+  // Ações da store
+  const setDashboard = useAdminStore(state => state.setDashboard);
+  const setLeads = useAdminStore(state => state.setLeads);
+  const setFilters = useAdminStore(state => state.setFilters);
+  const clearFilters = useAdminStore(state => state.clearFilters);
+  const refreshData = useAdminStore(state => state.refreshData);
+  const updateLeadStatus = useAdminStore(state => state.updateLeadStatus);
+  const addLeadNote = useAdminStore(state => state.addLeadNote);
+  const getLeadById = useAdminStore(state => state.getLeadById);
+  const getLeadsByStatus = useAdminStore(state => state.getLeadsByStatus);
+  const getTodayLeads = useAdminStore(state => state.getTodayLeads);
 
   // Carregar dados iniciais
   useEffect(() => {
@@ -272,189 +268,37 @@ export const useAdminDashboard = ({
     return () => clearInterval(interval);
   }, [autoRefresh, refreshInterval]);
 
-  // Aplicar filtros
-  useEffect(() => {
-    applyFilters();
-  }, [state.leads, state.filters]);
-
   const loadDashboardData = useCallback(async () => {
-    setState(prev => ({ ...prev, loading: true, error: null }));
-
     try {
-      // Tentar carregar do localStorage
-      const savedDashboard = localStorage.getItem(STORAGE_KEY_DASHBOARD);
-      const savedLeads = localStorage.getItem(STORAGE_KEY_LEADS);
-
-      let dashboard: AdminDashboard;
-      let leads: Lead[];
-
-      if (savedDashboard && savedLeads) {
-        dashboard = JSON.parse(savedDashboard);
-        leads = JSON.parse(savedLeads).map((lead: any) => ({
-          ...lead,
-          createdAt: new Date(lead.createdAt),
-          updatedAt: new Date(lead.updatedAt)
-        }));
-      } else {
-        // Gerar dados simulados
-        dashboard = generateMockDashboard();
-        leads = generateMockLeads();
-
-        // Salvar no localStorage
-        localStorage.setItem(STORAGE_KEY_DASHBOARD, JSON.stringify(dashboard));
-        localStorage.setItem(STORAGE_KEY_LEADS, JSON.stringify(leads));
-      }
+      // Gerar dados simulados
+      const mockDashboard = generateMockDashboard();
+      const mockLeads = generateMockLeads();
 
       // Atualizar leads recentes no dashboard
-      dashboard.leads.recentLeads = leads.slice(0, 10);
+      mockDashboard.leads.recentLeads = mockLeads.slice(0, 10);
 
-      setState(prev => ({
-        ...prev,
-        dashboard,
-        leads,
-        loading: false,
-        lastUpdated: new Date()
-      }));
+      // Salvar na store
+      setDashboard(mockDashboard);
+      setLeads(mockLeads);
 
     } catch (error) {
-      setState(prev => ({
-        ...prev,
-        error: 'Erro ao carregar dados do dashboard',
-        loading: false
-      }));
+      console.error('Erro ao carregar dados do dashboard:', error);
     }
-  }, []);
-
-  const applyFilters = useCallback(() => {
-    let filtered = [...state.leads];
-
-    // Filtro por data
-    filtered = filtered.filter(lead => {
-      const leadDate = new Date(lead.createdAt);
-      return leadDate >= state.filters.dateRange.start && 
-             leadDate <= state.filters.dateRange.end;
-    });
-
-    // Filtro por região
-    if (state.filters.region && state.filters.region.length > 0) {
-      filtered = filtered.filter(lead => 
-        state.filters.region!.includes(lead.city)
-      );
-    }
-
-    // Filtro por pacote
-    if (state.filters.package && state.filters.package.length > 0) {
-      filtered = filtered.filter(lead => 
-        state.filters.package!.includes(lead.franchiseType)
-      );
-    }
-
-    // Filtro por status
-    if (state.filters.status && state.filters.status.length > 0) {
-      filtered = filtered.filter(lead => 
-        state.filters.status!.includes(lead.status)
-      );
-    }
-
-    // Filtro por fonte
-    if (state.filters.source && state.filters.source.length > 0) {
-      filtered = filtered.filter(lead => 
-        state.filters.source!.includes(lead.source)
-      );
-    }
-
-    setState(prev => ({ ...prev, filteredLeads: filtered }));
-  }, [state.leads, state.filters]);
-
-  const setFilters = useCallback((newFilters: Partial<AdminFilters>) => {
-    setState(prev => ({
-      ...prev,
-      filters: { ...prev.filters, ...newFilters }
-    }));
-  }, []);
-
-  const clearFilters = useCallback(() => {
-    setState(prev => ({
-      ...prev,
-      filters: {
-        dateRange: {
-          start: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
-          end: new Date()
-        }
-      }
-    }));
-  }, []);
+  }, [setDashboard, setLeads]);
 
   const refreshDashboard = useCallback(() => {
-    loadDashboardData();
-  }, [loadDashboardData]);
-
-  const updateLeadStatus = useCallback((leadId: string, newStatus: Lead['status']) => {
-    setState(prev => {
-      const updatedLeads = prev.leads.map(lead => 
-        lead.id === leadId 
-          ? { ...lead, status: newStatus, updatedAt: new Date() }
-          : lead
-      );
-
-      // Salvar no localStorage
-      localStorage.setItem(STORAGE_KEY_LEADS, JSON.stringify(updatedLeads));
-
-      return {
-        ...prev,
-        leads: updatedLeads
-      };
-    });
-  }, []);
-
-  const addLeadNote = useCallback((leadId: string, note: Omit<LeadNote, 'id'>) => {
-    setState(prev => {
-      const updatedLeads = prev.leads.map(lead => 
-        lead.id === leadId 
-          ? { 
-              ...lead, 
-              notes: [...lead.notes, { ...note, id: `note_${Date.now()}` }],
-              updatedAt: new Date() 
-            }
-          : lead
-      );
-
-      localStorage.setItem(STORAGE_KEY_LEADS, JSON.stringify(updatedLeads));
-
-      return {
-        ...prev,
-        leads: updatedLeads
-      };
-    });
-  }, []);
-
-  const getLeadById = useCallback((id: string): Lead | undefined => {
-    return state.leads.find(lead => lead.id === id);
-  }, [state.leads]);
-
-  const getLeadsByStatus = useCallback((status: Lead['status']): Lead[] => {
-    return state.filteredLeads.filter(lead => lead.status === status);
-  }, [state.filteredLeads]);
-
-  const getTodayLeads = useCallback((): Lead[] => {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const tomorrow = new Date(today.getTime() + 24 * 60 * 60 * 1000);
-
-    return state.leads.filter(lead => 
-      lead.createdAt >= today && lead.createdAt < tomorrow
-    );
-  }, [state.leads]);
+    refreshData();
+  }, [refreshData]);
 
   return {
     // Estado
-    dashboard: state.dashboard,
-    leads: state.filteredLeads,
-    allLeads: state.leads,
-    filters: state.filters,
-    loading: state.loading,
-    error: state.error,
-    lastUpdated: state.lastUpdated,
+    dashboard,
+    leads,
+    allLeads,
+    filters,
+    loading,
+    error,
+    lastUpdated,
 
     // Ações
     setFilters,

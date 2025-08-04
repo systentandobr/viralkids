@@ -1,0 +1,153 @@
+
+interface GameificationState {
+    tasks: FranchiseeTask[];
+    completedTasks: FranchiseeTask[];
+    currentTask: FranchiseeTask | null;
+    performance: FranchiseePerformance;
+    badges: Badge[];
+    level: number;
+    totalPoints: number;
+    progress: number;
+    isLoading: boolean;
+    error: string | null;
+  }
+  
+  const LEVEL_POINTS = [0, 100, 250, 500, 1000, 2000, 4000, 8000, 15000, 30000];
+  
+  const DEFAULT_TASKS: FranchiseeTask[] = [
+    {
+      id: 'setup-profile',
+      title: 'Complete seu Perfil',
+      description: 'Adicione suas informações pessoais e de negócio para começar sua jornada.',
+      category: 'setup',
+      type: 'profile_setup',
+      difficulty: 'easy',
+      points: 50,
+      status: 'pending',
+      instructions: 'Vá para a seção "Meu Perfil" e preencha todas as informações obrigatórias.',
+      resources: [
+        {
+          id: 'profile-guide',
+          type: 'video',
+          title: 'Como completar seu perfil',
+          url: '/guides/profile-setup.mp4',
+          description: 'Vídeo explicativo sobre como preencher seu perfil'
+        }
+      ]
+    },
+    {
+      id: 'create-instagram',
+      title: 'Crie seu Instagram ViralKids',
+      description: 'Configure seu perfil no Instagram seguindo nossos padrões de marca.',
+      category: 'social_media',
+      type: 'instagram_creation',
+      difficulty: 'medium',
+      points: 100,
+      status: 'pending',
+      dependencies: ['setup-profile'],
+      instructions: 'Crie uma conta @viralkids.suacidade seguindo o template fornecido.',
+      resources: [
+        {
+          id: 'instagram-template',
+          type: 'template',
+          title: 'Template Instagram ViralKids',
+          url: '/templates/instagram-profile.pdf',
+          description: 'Template completo para criar seu perfil'
+        },
+        {
+          id: 'bio-examples',
+          type: 'document',
+          title: 'Exemplos de Bio',
+          url: '/guides/instagram-bio-examples.pdf',
+          description: 'Exemplos de biografias para inspiração'
+        }
+      ],
+      validation: {
+        type: 'link',
+        required: true,
+        instructions: 'Cole o link do seu perfil Instagram criado'
+      }
+    },
+    {
+      id: 'follow-suppliers',
+      title: 'Siga nossos Fornecedores',
+      description: 'Siga pelo menos 10 fornecedores parceiros para acompanhar novidades.',
+      category: 'marketing',
+      type: 'follow_suppliers',
+      difficulty: 'easy',
+      points: 75,
+      status: 'pending',
+      dependencies: ['create-instagram'],
+      instructions: 'Acesse a lista de fornecedores e siga pelo menos 10 perfis no Instagram.',
+      resources: [
+        {
+          id: 'suppliers-list',
+          type: 'document',
+          title: 'Lista de Fornecedores',
+          url: '/suppliers/instagram-list.pdf',
+          description: 'Lista completa dos fornecedores parceiros'
+        }
+      ]
+    },
+    {
+      id: 'first-post',
+      title: 'Faça seu Primeiro Post',
+      description: 'Publique seu primeiro post de apresentação seguindo nosso template.',
+      category: 'social_media',
+      type: 'first_post',
+      difficulty: 'medium',
+      points: 150,
+      status: 'pending',
+      dependencies: ['create-instagram'],
+      instructions: 'Use nosso template para criar um post de apresentação da sua franquia.',
+      resources: [
+        {
+          id: 'post-template',
+          type: 'template',
+          title: 'Template Primeiro Post',
+          url: '/templates/first-post.psd',
+          description: 'Template editável para seu primeiro post'
+        },
+        {
+          id: 'caption-guide',
+          type: 'document',
+          title: 'Guia de Legendas',
+          url: '/guides/captions-guide.pdf',
+          description: 'Como escrever legendas que vendem'
+        }
+      ],
+      validation: {
+        type: 'link',
+        required: true,
+        instructions: 'Cole o link do seu primeiro post'
+      }
+    },
+    {
+      id: 'market-research',
+      title: 'Pesquise seu Mercado Local',
+      description: 'Faça uma pesquisa dos concorrentes e oportunidades na sua região.',
+      category: 'marketing',
+      type: 'market_research',
+      difficulty: 'hard',
+      points: 200,
+      status: 'pending',
+      dependencies: ['setup-profile'],
+      instructions: 'Pesquise lojas infantis, preços e oportunidades na sua cidade.',
+      resources: [
+        {
+          id: 'research-template',
+          type: 'template',
+          title: 'Planilha de Pesquisa',
+          url: '/templates/market-research.xlsx',
+          description: 'Planilha para organizar sua pesquisa'
+        }
+      ],
+      validation: {
+        type: 'upload',
+        required: true,
+        instructions: 'Faça upload da planilha preenchida',
+        acceptedFormats: ['.xlsx', '.pdf']
+      }
+    }
+  ];
+  

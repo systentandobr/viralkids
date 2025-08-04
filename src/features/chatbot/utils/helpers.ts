@@ -136,31 +136,3 @@ export const getFranchiseInfo = (type: 'starter' | 'premium' | 'master') => {
   
   return info[type];
 };
-
-export class LocalStorageManager {
-  static save(key: string, data: any): void {
-    try {
-      localStorage.setItem(key, JSON.stringify(data));
-    } catch (error) {
-      console.error('Erro ao salvar no localStorage:', error);
-    }
-  }
-  
-  static load<T>(key: string): T | null {
-    try {
-      const data = localStorage.getItem(key);
-      return data ? JSON.parse(data) : null;
-    } catch (error) {
-      console.error('Erro ao carregar do localStorage:', error);
-      return null;
-    }
-  }
-  
-  static remove(key: string): void {
-    try {
-      localStorage.removeItem(key);
-    } catch (error) {
-      console.error('Erro ao remover do localStorage:', error);
-    }
-  }
-}

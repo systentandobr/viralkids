@@ -81,10 +81,27 @@ export const Router: React.FC<RouterProps> = ({ routes, fallback }) => {
 
   // Encontrar rota correspondente
   const matchedRoute = routes.find(route => {
+    console.log(`Testando rota: ${route.path} contra: ${currentPath}`);
+    
     if (route.exact) {
-      return route.path === currentPath;
+      const exactMatch = route.path === currentPath;
+      console.log(`  Exact match: ${exactMatch}`);
+      return exactMatch;
     }
-    return currentPath.startsWith(route.path);
+    
+    // Para rotas dinâmicas (com parâmetros como :id)
+    if (route.path.includes(':')) {
+      const routePattern = route.path.replace(/:[^/]+/g, '[^/]+');
+      const regex = new RegExp(`^${routePattern}$`);
+      const dynamicMatch = regex.test(currentPath);
+      console.log(`  Dynamic match (${routePattern}): ${dynamicMatch}`);
+      return dynamicMatch;
+    }
+    
+    // Para rotas normais
+    const startsWithMatch = currentPath.startsWith(route.path);
+    console.log(`  StartsWith match: ${startsWithMatch}`);
+    return startsWithMatch;
   });
 
   console.log('Matched route:', matchedRoute?.path || 'none');
@@ -160,8 +177,55 @@ export const useParams = () => {
   // Extrair parâmetros simples da URL
   const params: Record<string, string> = {};
   
-  // Exemplo: /user/:id -> /user/123
+  // Exemplo: /product/detail/:id -> /product/detail/123
   const pathSegments = currentPath.split('/');
+  
+  // Extrair ID do produto se estiver na rota /product/detail/:id
+  if (pathSegments[1] === 'product' && pathSegments[2] === 'detail' && pathSegments[3]) {
+    params.id = pathSegments[3];
+  }
+  
+  // Extrair ID do produto se estiver na rota /produto/:id
+  if (pathSegments[1] === 'produto' && pathSegments[2]) {
+    params.id = pathSegments[2];
+  }
+  
+  // Extrair parâmetros dinâmicos de qualquer rota
+  // Exemplo: /user/:id/profile/:tab -> /user/123/profile/settings
+  const routes = [
+    { pattern: '/product/detail/:id', params: ['id'] },
+    { pattern: '/produto/:id', params: ['id'] },
+    { pattern: '/user/:id/profile/:tab', params: ['id', 'tab'] },
+    // Adicione mais padrões conforme necessário
+  ];
+  
+  for (const route of routes) {
+    const patternSegments = route.pattern.split('/');
+    if (patternSegments.length === pathSegments.length) {
+      let matches = true;
+      const extractedParams: Record<string, string> = {};
+      
+      for (let i = 0; i < patternSegments.length; i++) {
+        const patternSegment = patternSegments[i];
+        const pathSegment = pathSegments[i];
+        
+        if (patternSegment.startsWith(':')) {
+          // É um parâmetro dinâmico
+          const paramName = patternSegment.slice(1);
+          extractedParams[paramName] = pathSegment;
+        } else if (patternSegment !== pathSegment) {
+          // Segmentos não coincidem
+          matches = false;
+          break;
+        }
+      }
+      
+      if (matches) {
+        Object.assign(params, extractedParams);
+        break;
+      }
+    }
+  }
   
   return params;
 };

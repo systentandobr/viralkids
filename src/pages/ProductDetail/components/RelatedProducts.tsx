@@ -131,7 +131,7 @@ export const RelatedProducts: React.FC<RelatedProductsProps> = ({
   };
 
   const handleProductClick = (productId: string) => {
-    navigate(`/product?id=${productId}`);
+    navigate(`/product/detail/${productId}`);
   };
 
   const formatPrice = (price: number) => {

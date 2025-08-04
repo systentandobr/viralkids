@@ -1,62 +1,55 @@
-import { useState, useCallback, useEffect } from 'react';
-import { ChatMessage, ChatFlow, LeadData, ChatbotState, ChatStep } from '../types';
+import { useCallback, useMemo } from 'react';
+import { useChatbotStore } from '@/stores/chatbot.store';
+import { ChatMessage, ChatFlow, LeadData, ChatStep } from '../types';
 import { generateId } from '../utils/helpers';
 import { franchiseLeadFlow } from '../flows/franchiseFlow';
 
-const initialState: ChatbotState = {
-  isOpen: false,
-  messages: [],
-  currentFlow: undefined,
-  currentStep: undefined,
-  leadData: {},
-  isLoading: false,
-  error: null,
-};
-
 export const useChatbot = () => {
-  const [state, setState] = useState<ChatbotState>(initialState);
+  // Estado da store - usando seletores simples para evitar loops
+  const isOpen = useChatbotStore(state => state.isOpen);
+  const isLoading = useChatbotStore(state => state.isLoading);
+  const error = useChatbotStore(state => state.error);
+  const currentFlow = useChatbotStore(state => state.currentSession?.currentFlow);
+  const currentStep = useChatbotStore(state => state.currentSession?.currentStep);
+  const currentSession = useChatbotStore(state => state.currentSession);
+  
+  // Cachear valores derivados para evitar re-renders desnecessários
+  const messages = useMemo(() => currentSession?.messages || [], [currentSession?.messages]);
+  const leadData = useMemo(() => currentSession?.leadData || {}, [currentSession?.leadData]);
+  
+  // Ações da store
+  const storeToggleChatbot = useChatbotStore(state => state.toggleChatbot);
+  const storeOpenChatbot = useChatbotStore(state => state.openChatbot);
+  const storeCloseChatbot = useChatbotStore(state => state.closeChatbot);
+  const addMessage = useChatbotStore(state => state.addMessage);
+  const setCurrentFlow = useChatbotStore(state => state.setCurrentFlow);
+  const setCurrentStep = useChatbotStore(state => state.setCurrentStep);
+  const updateLeadData = useChatbotStore(state => state.updateLeadData);
+  const setLoading = useChatbotStore(state => state.setLoading);
+  const setError = useChatbotStore(state => state.setError);
+  const clearMessages = useChatbotStore(state => state.clearMessages);
+  const saveLead = useChatbotStore(state => state.saveLead);
 
   // Abrir/fechar chatbot
   const toggleChatbot = useCallback(() => {
-    setState(prev => ({ ...prev, isOpen: !prev.isOpen }));
-  }, []);
+    storeToggleChatbot();
+  }, [storeToggleChatbot]);
 
   const openChatbot = useCallback(() => {
-    setState(prev => ({ ...prev, isOpen: true }));
-    if (state.messages.length === 0) {
+    storeOpenChatbot();
+    if (messages.length === 0) {
       startFlow(franchiseLeadFlow);
     }
-  }, [state.messages.length]);
+  }, [storeOpenChatbot, messages.length]);
 
   const closeChatbot = useCallback(() => {
-    setState(prev => ({ ...prev, isOpen: false }));
-  }, []);
-
-  // Adicionar mensagem
-  const addMessage = useCallback((text: string, sender: 'user' | 'bot', type?: ChatMessage['type']) => {
-    const message: ChatMessage = {
-      id: generateId(),
-      text,
-      sender,
-      timestamp: new Date(),
-      type: type || 'text',
-    };
-
-    setState(prev => ({
-      ...prev,
-      messages: [...prev.messages, message],
-    }));
-
-    return message;
-  }, []);
+    storeCloseChatbot();
+  }, [storeCloseChatbot]);
 
   // Iniciar fluxo de conversa
   const startFlow = useCallback((flow: ChatFlow) => {
-    setState(prev => ({
-      ...prev,
-      currentFlow: flow,
-      currentStep: flow.steps[0]?.id,
-    }));
+    setCurrentFlow(flow.id);
+    setCurrentStep(flow.steps[0]?.id);
 
     // Enviar primeira mensagem do fluxo
     if (flow.steps[0]) {
@@ -64,58 +57,52 @@ export const useChatbot = () => {
         addMessage(flow.steps[0].content, 'bot');
       }, 500);
     }
-  }, [addMessage]);
+  }, [setCurrentFlow, setCurrentStep, addMessage]);
 
   // Processar resposta do usuário
   const processUserMessage = useCallback(async (text: string) => {
     // Adicionar mensagem do usuário
     addMessage(text, 'user');
-
-    setState(prev => ({ ...prev, isLoading: true }));
+    setLoading(true);
 
     try {
-      if (!state.currentFlow || !state.currentStep) {
+      if (!currentFlow || !currentStep) {
         // Se não há fluxo ativo, iniciar fluxo padrão
         startFlow(franchiseLeadFlow);
         return;
       }
 
-      const currentStep = state.currentFlow.steps.find(step => step.id === state.currentStep);
-      if (!currentStep) {
+      const flow = franchiseLeadFlow; // Em produção, buscar flow pelo ID
+      const currentStepObj = flow.steps.find(step => step.id === currentStep);
+      if (!currentStepObj) {
         throw new Error('Step não encontrado');
       }
 
       // Processar baseado no tipo do step
-      let nextStepId = currentStep.nextStep;
+      let nextStepId = currentStepObj.nextStep;
 
-      if (currentStep.type === 'question' || currentStep.type === 'form') {
+      if (currentStepObj.type === 'question' || currentStepObj.type === 'form') {
         // Validar resposta se necessário
-        if (currentStep.validation) {
-          const isValid = validateInput(text, currentStep.validation);
+        if (currentStepObj.validation) {
+          const isValid = validateInput(text, currentStepObj.validation);
           if (!isValid) {
             addMessage('Por favor, verifique sua resposta e tente novamente.', 'bot');
-            setState(prev => ({ ...prev, isLoading: false }));
+            setLoading(false);
             return;
           }
         }
 
         // Salvar dados do lead
-        const fieldName = getFieldNameFromStep(currentStep);
+        const fieldName = getFieldNameFromStep(currentStepObj);
         if (fieldName) {
-          setState(prev => ({
-            ...prev,
-            leadData: {
-              ...prev.leadData,
-              [fieldName]: text,
-            },
-          }));
+          updateLeadData({ [fieldName]: text });
         }
       }
 
       // Verificar condições para próximo step
-      if (currentStep.conditions) {
-        for (const condition of currentStep.conditions) {
-          if (evaluateCondition(condition, text, state.leadData)) {
+      if (currentStepObj.conditions) {
+        for (const condition of currentStepObj.conditions) {
+          if (evaluateCondition(condition, text, leadData)) {
             nextStepId = condition.nextStep;
             break;
           }
@@ -124,33 +111,30 @@ export const useChatbot = () => {
 
       // Ir para próximo step
       if (nextStepId) {
-        const nextStep = state.currentFlow.steps.find(step => step.id === nextStepId);
+        const nextStep = flow.steps.find(step => step.id === nextStepId);
         if (nextStep) {
-          setState(prev => ({ ...prev, currentStep: nextStepId }));
+          setCurrentStep(nextStepId);
           
           setTimeout(() => {
             addMessage(nextStep.content, 'bot');
-            setState(prev => ({ ...prev, isLoading: false }));
+            setLoading(false);
           }, 1000);
         }
       } else {
         // Fim do fluxo - enviar dados para API
-        await submitLead(state.leadData);
+        await submitLead(leadData);
         addMessage(
           'Obrigado! Recebemos suas informações e entraremos em contato em breve. 🚀',
           'bot'
         );
-        setState(prev => ({ ...prev, isLoading: false }));
+        setLoading(false);
       }
     } catch (error) {
       console.error('Erro ao processar mensagem:', error);
-      setState(prev => ({
-        ...prev,
-        error: 'Desculpe, ocorreu um erro. Tente novamente.',
-        isLoading: false,
-      }));
+      setError('Desculpe, ocorreu um erro. Tente novamente.');
+      setLoading(false);
     }
-  }, [state.currentFlow, state.currentStep, state.leadData, addMessage, startFlow]);
+  }, [currentFlow, currentStep, leadData, addMessage, startFlow, setLoading, setError, updateLeadData, setCurrentStep]);
 
   // Processar quick reply
   const processQuickReply = useCallback((payload: string, text: string) => {
@@ -227,14 +211,16 @@ export const useChatbot = () => {
       // Simular delay de API
       await new Promise(resolve => setTimeout(resolve, 1000));
       
-      // Em desenvolvimento, apenas log
-      localStorage.setItem('viralkids_lead', JSON.stringify({
+      // Usar store para salvar lead
+      const leadToSave = {
         ...leadData,
         id: generateId(),
         source: 'chatbot',
         createdAt: new Date(),
-        status: 'new',
-      }));
+        status: 'new' as const,
+      };
+      
+      await saveLead(leadToSave);
     } catch (error) {
       console.error('Erro ao enviar lead:', error);
       throw error;
@@ -243,16 +229,16 @@ export const useChatbot = () => {
 
   // Limpar conversa
   const clearChat = useCallback(() => {
-    setState(initialState);
-  }, []);
+    clearMessages();
+  }, [clearMessages]);
 
   return {
     // Estado
-    isOpen: state.isOpen,
-    messages: state.messages,
-    isLoading: state.isLoading,
-    error: state.error,
-    leadData: state.leadData,
+    isOpen,
+    messages,
+    isLoading,
+    error,
+    leadData,
     
     // Ações
     toggleChatbot,

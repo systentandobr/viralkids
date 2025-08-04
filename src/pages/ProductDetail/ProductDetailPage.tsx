@@ -1,44 +1,47 @@
-import React, { useEffect, useState } from 'react';
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
-import AssistantButton from '@/components/ecommerce/AssistantButton';
-import { ProductImageGallery } from './components/ProductImageGallery';
-import { ProductVariationSelector } from './components/ProductVariationSelector';
-import { SizeGuideComponent } from './components/SizeGuideComponent';
-import { ProductReviews } from './components/ProductReviews';
-import { RelatedProducts } from './components/RelatedProducts';
-import { useProductDetail } from './hooks/useProductDetail';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import React, { useState, useEffect, useCallback } from 'react';
+import { useRouter, useParams } from '../../router';
+import { useCart } from '../../pages/Ecommerce/hooks/useCart';
+import { useNavigation } from '../../stores/additional/navigation.store';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import {
-  ShoppingCart,
-  Heart,
-  Share2,
-  Truck,
-  Shield,
-  RotateCcw,
-  MapPin,
-  Star,
+import { 
+  Heart, 
+  Share2, 
+  ShoppingCart, 
+  Star, 
   ChevronLeft,
-  Plus,
-  Minus,
+  Zap,
+  Award,
+  MapPin,
+  Truck,
+  Clock,
+  RotateCcw,
+  Shield,
   AlertTriangle,
   CheckCircle,
-  Clock,
-  Award,
-  Zap,
-  Copy,
+  MessageCircle,
   Facebook,
   Twitter,
-  MessageCircle
+  Copy,
+  Minus,
+  Plus
 } from 'lucide-react';
-import { useRouter } from '@/router';
 import { toast } from 'sonner';
+import { useProductDetail } from './hooks/useProductDetail';
+import Header from '@/components/Header';
+import { ProductImageGallery } from './components/ProductImageGallery';
+import { ProductVariationSelector } from './components/ProductVariationSelector';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { RelatedProducts } from './components/RelatedProducts';
+import Footer from '@/components/Footer';
+import { SizeGuideComponent } from './components/SizeGuideComponent';
+import AssistantButton from '@/components/ecommerce/AssistantButton';
+import { ProductReviews } from './components/ProductReviews';
 
 const ProductDetailPage: React.FC = () => {
   const { navigate } = useRouter();
+  const params = useParams();
   const [productId, setProductId] = useState<string>('');
   
   // Estados locais da UI
@@ -46,16 +49,46 @@ const ProductDetailPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState('description');
   const [showShareMenu, setShowShareMenu] = useState(false);
 
-  // Pegar o ID do produto do localStorage
+  // Navigation store para rastreamento
+  const { addToHistory, addPage, setBreadcrumbs } = useNavigation();
+
+  // Pegar o ID do produto da URL usando useParams
   useEffect(() => {
-    const storedProductId = localStorage.getItem('selectedProductId');
-    if (storedProductId) {
-      setProductId(storedProductId);
+    // Primeiro tentar pegar do useParams (rota /product/detail/:id)
+    if (params.id) {
+      setProductId(params.id);
+      return;
+    }
+    
+    // Fallback: Extrair productId da URL atual (rota /produto/:id)
+    const pathSegments = window.location.hash.slice(1).split('/');
+    const idFromUrl = pathSegments[pathSegments.length - 1];
+    
+    if (idFromUrl && idFromUrl !== 'produto') {
+      setProductId(idFromUrl);
     } else {
-      // Se não há ID, redirecionar para a página principal
+      // Se não há ID na URL, redirecionar para a página principal
       navigate('/');
     }
-  }, [navigate]);
+  }, [navigate, params.id]);
+
+  // Efeito separado para navegação e breadcrumbs
+  useEffect(() => {
+    if (!productId) return;
+
+    // Adicionar ao histórico de produtos visitados
+    addToHistory(productId);
+    
+    // Adicionar página ao histórico de navegação
+    addPage(`/product/detail/${productId}`, 'Detalhes do Produto');
+    
+    // Configurar breadcrumbs
+    setBreadcrumbs([
+      { label: 'Home', path: '/', isActive: false },
+      { label: 'Produtos', path: '/products', isActive: false },
+      { label: 'Detalhes', path: `/product/detail/${productId}`, isActive: true }
+    ]);
+  }, [productId]); // Apenas depende do productId
 
   // Hook customizado para gerencia do produto
   const {
@@ -81,9 +114,11 @@ const ProductDetailPage: React.FC = () => {
 
   // Verificar se todas as variações obrigatórias foram selecionadas
   const requiredVariationTypes = ['color', 'size'];
-  const allRequiredSelected = requiredVariationTypes.every(type => 
-    !product?.variations.some(v => v.type === type) || selectedVariations[type]
-  );
+  const allRequiredSelected = React.useMemo(() => {
+    return requiredVariationTypes.every(type => 
+      !product?.variations.some(v => v.type === type) || selectedVariations[type]
+    );
+  }, [product?.variations, selectedVariations]);
 
   // Verificar disponibilidade baseada nas variações selecionadas
   const isAvailable = React.useMemo(() => {

@@ -11,9 +11,9 @@ export { useAdminStore } from './admin.store';
 import { useCartStore } from './cart.store';
 import { useFiltersStore } from './filters.store';
 import { useUserPreferencesStore } from './user-preferences.store';
-import { useAuthStore } from './auth.store';
 import { useChatbotStore } from './chatbot.store';
 import { useAdminStore } from './admin.store';
+import { useAuthStore } from './additional/auth.store';
 
 export const useResetAllStores = () => {
   const clearCart = useCartStore(state => state.clearCart);

@@ -1,7 +1,7 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
+import { useAuthStore } from '@/stores/auth.store';
 import { 
   User, 
-  AuthState, 
   LoginCredentials, 
   RegisterData, 
   ForgotPasswordData, 
@@ -14,13 +14,6 @@ interface UseAuthOptions {
   autoLogin?: boolean;
   persistSession?: boolean;
 }
-
-const STORAGE_KEYS = {
-  TOKEN: 'viralkids_auth_token',
-  REFRESH_TOKEN: 'viralkids_refresh_token',
-  USER: 'viralkids_user_data',
-  REMEMBER_ME: 'viralkids_remember_me'
-};
 
 // Mock users para desenvolvimento
 const MOCK_USERS: User[] = [
@@ -80,55 +73,43 @@ const MOCK_USERS: User[] = [
 ];
 
 export const useAuth = ({ autoLogin = true, persistSession = true }: UseAuthOptions = {}) => {
-  const [state, setState] = useState<AuthState>({
-    user: null,
-    isAuthenticated: false,
-    isLoading: true,
-    error: null,
-    token: null
-  });
+  // Estado da store
+  const user = useAuthStore(state => state.user);
+  const isAuthenticated = useAuthStore(state => state.isAuthenticated);
+  const isLoading = useAuthStore(state => state.isLoading);
+  const error = useAuthStore(state => state.error);
+  const tokens = useAuthStore(state => state.tokens);
+  
+  // Ações da store
+  const storeLogin = useAuthStore(state => state.login);
+  const storeLogout = useAuthStore(state => state.logout);
+  const storeUpdateUser = useAuthStore(state => state.updateUser);
+  const setLoading = useAuthStore(state => state.setLoading);
+  const setError = useAuthStore(state => state.setError);
+  const hasPermission = useAuthStore(state => state.hasPermission);
+  const hasRole = useAuthStore(state => state.hasRole);
+  const refreshTokens = useAuthStore(state => state.refreshTokens);
 
   // Verificar sessão existente no load
   useEffect(() => {
     if (autoLogin) {
       checkExistingSession();
     } else {
-      setState(prev => ({ ...prev, isLoading: false }));
+      setLoading(false);
     }
   }, [autoLogin]);
 
   const checkExistingSession = useCallback(async () => {
     try {
-      const token = localStorage.getItem(STORAGE_KEYS.TOKEN);
-      const userData = localStorage.getItem(STORAGE_KEYS.USER);
-
-      if (token && userData) {
-        // Verificar se o token não expirou
-        if (isTokenValid(token)) {
-          const user: User = JSON.parse(userData);
-          setState({
-            user,
-            isAuthenticated: true,
-            isLoading: false,
-            error: null,
-            token
-          });
-        } else {
-          // Token expirado, tentar refresh
-          await tryRefreshToken();
-        }
-      } else {
-        setState(prev => ({ ...prev, isLoading: false }));
-      }
+      // A store Zustand com persist já gerencia a sessão automaticamente
+      // Não precisamos fazer nada aqui, apenas garantir que loading seja false
+      setLoading(false);
     } catch (error) {
       console.error('Erro ao verificar sessão existente:', error);
-      setState(prev => ({ 
-        ...prev, 
-        isLoading: false,
-        error: 'Erro ao verificar sessão'
-      }));
+      setError('Erro ao verificar sessão');
+      setLoading(false);
     }
-  }, []);
+  }, [setError, setLoading]);
 
   const isTokenValid = (token: string): boolean => {
     try {
@@ -153,8 +134,7 @@ export const useAuth = ({ autoLogin = true, persistSession = true }: UseAuthOpti
 
   const tryRefreshToken = async (): Promise<void> => {
     try {
-      const refreshToken = localStorage.getItem(STORAGE_KEYS.REFRESH_TOKEN);
-      if (!refreshToken) {
+      if (!tokens?.refreshToken) {
         throw new Error('No refresh token available');
       }
 
@@ -167,12 +147,13 @@ export const useAuth = ({ autoLogin = true, persistSession = true }: UseAuthOpti
       
     } catch (error) {
       // Refresh falhou, fazer logout
-      logout();
+      storeLogout();
     }
   };
 
   const login = useCallback(async (credentials: LoginCredentials): Promise<void> => {
-    setState(prev => ({ ...prev, isLoading: true, error: null }));
+    setLoading(true);
+    setError(null);
 
     try {
       // Simular delay de API
@@ -194,39 +175,28 @@ export const useAuth = ({ autoLogin = true, persistSession = true }: UseAuthOpti
       const token = generateMockToken(user);
       const refreshToken = generateMockRefreshToken(user);
 
-      // Atualizar estado
-      setState({
-        user: { ...user, lastLogin: new Date() },
-        isAuthenticated: true,
-        isLoading: false,
-        error: null,
-        token
-      });
+      // Criar tokens para a store
+      const authTokens = {
+        token,
+        refreshToken,
+        expiresAt: Date.now() + (24 * 60 * 60 * 1000), // 24 horas
+      };
 
-      // Persistir dados se necessário
-      if (persistSession || credentials.rememberMe) {
-        localStorage.setItem(STORAGE_KEYS.TOKEN, token);
-        localStorage.setItem(STORAGE_KEYS.REFRESH_TOKEN, refreshToken);
-        localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(user));
-        
-        if (credentials.rememberMe) {
-          localStorage.setItem(STORAGE_KEYS.REMEMBER_ME, 'true');
-        }
-      }
+      // Usar store para login
+      storeLogin({ ...user, lastLogin: new Date() }, authTokens, credentials.rememberMe || false);
 
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Erro ao fazer login';
-      setState(prev => ({
-        ...prev,
-        isLoading: false,
-        error: errorMessage
-      }));
+      setError(errorMessage);
       throw error;
+    } finally {
+      setLoading(false);
     }
-  }, [persistSession]);
+  }, [storeLogin, setLoading, setError]);
 
   const register = useCallback(async (data: RegisterData): Promise<void> => {
-    setState(prev => ({ ...prev, isLoading: true, error: null }));
+    setLoading(true);
+    setError(null);
 
     try {
       // Validações básicas
@@ -285,50 +255,30 @@ export const useAuth = ({ autoLogin = true, persistSession = true }: UseAuthOpti
       const token = generateMockToken(newUser);
       const refreshToken = generateMockRefreshToken(newUser);
 
-      setState({
-        user: newUser,
-        isAuthenticated: true,
-        isLoading: false,
-        error: null,
-        token
-      });
+      const authTokens = {
+        token,
+        refreshToken,
+        expiresAt: Date.now() + (24 * 60 * 60 * 1000),
+      };
 
-      // Persistir dados
-      if (persistSession) {
-        localStorage.setItem(STORAGE_KEYS.TOKEN, token);
-        localStorage.setItem(STORAGE_KEYS.REFRESH_TOKEN, refreshToken);
-        localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(newUser));
-      }
+      storeLogin(newUser, authTokens, false);
 
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Erro ao criar conta';
-      setState(prev => ({
-        ...prev,
-        isLoading: false,
-        error: errorMessage
-      }));
+      setError(errorMessage);
       throw error;
+    } finally {
+      setLoading(false);
     }
-  }, [persistSession]);
+  }, [storeLogin, setLoading, setError]);
 
   const logout = useCallback((): void => {
-    setState({
-      user: null,
-      isAuthenticated: false,
-      isLoading: false,
-      error: null,
-      token: null
-    });
-
-    // Limpar storage
-    localStorage.removeItem(STORAGE_KEYS.TOKEN);
-    localStorage.removeItem(STORAGE_KEYS.REFRESH_TOKEN);
-    localStorage.removeItem(STORAGE_KEYS.USER);
-    localStorage.removeItem(STORAGE_KEYS.REMEMBER_ME);
-  }, []);
+    storeLogout();
+  }, [storeLogout]);
 
   const forgotPassword = useCallback(async (data: ForgotPasswordData): Promise<void> => {
-    setState(prev => ({ ...prev, isLoading: true, error: null }));
+    setLoading(true);
+    setError(null);
 
     try {
       // Verificar se email existe
@@ -340,21 +290,18 @@ export const useAuth = ({ autoLogin = true, persistSession = true }: UseAuthOpti
       // Simular envio de email
       await new Promise(resolve => setTimeout(resolve, 1000));
 
-      setState(prev => ({ ...prev, isLoading: false }));
-
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Erro ao enviar email';
-      setState(prev => ({
-        ...prev,
-        isLoading: false,
-        error: errorMessage
-      }));
+      setError(errorMessage);
       throw error;
+    } finally {
+      setLoading(false);
     }
-  }, []);
+  }, [setLoading, setError]);
 
   const resetPassword = useCallback(async (data: ResetPasswordData): Promise<void> => {
-    setState(prev => ({ ...prev, isLoading: true, error: null }));
+    setLoading(true);
+    setError(null);
 
     try {
       if (data.password !== data.confirmPassword) {
@@ -368,105 +315,71 @@ export const useAuth = ({ autoLogin = true, persistSession = true }: UseAuthOpti
       // Simular reset de senha
       await new Promise(resolve => setTimeout(resolve, 1000));
 
-      setState(prev => ({ ...prev, isLoading: false }));
-
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Erro ao redefinir senha';
-      setState(prev => ({
-        ...prev,
-        isLoading: false,
-        error: errorMessage
-      }));
+      setError(errorMessage);
       throw error;
+    } finally {
+      setLoading(false);
     }
-  }, []);
+  }, [setLoading, setError]);
 
   const updateProfile = useCallback(async (data: Partial<User>): Promise<void> => {
-    if (!state.user) {
+    if (!user) {
       throw new Error('Usuário não autenticado');
     }
 
-    setState(prev => ({ ...prev, isLoading: true, error: null }));
+    setLoading(true);
+    setError(null);
 
     try {
       // Simular update
       await new Promise(resolve => setTimeout(resolve, 1000));
 
-      const updatedUser = { ...state.user, ...data, updatedAt: new Date() };
-
-      setState(prev => ({
-        ...prev,
-        user: updatedUser,
-        isLoading: false
-      }));
-
-      // Atualizar storage
-      if (persistSession) {
-        localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(updatedUser));
-      }
+      const updatedUser = { ...user, ...data, updatedAt: new Date() };
+      storeUpdateUser(updatedUser);
 
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Erro ao atualizar perfil';
-      setState(prev => ({
-        ...prev,
-        isLoading: false,
-        error: errorMessage
-      }));
+      setError(errorMessage);
       throw error;
+    } finally {
+      setLoading(false);
     }
-  }, [state.user, persistSession]);
+  }, [user, storeUpdateUser, setLoading, setError]);
 
   const verifyEmail = useCallback(async (token: string): Promise<void> => {
-    setState(prev => ({ ...prev, isLoading: true, error: null }));
+    setLoading(true);
+    setError(null);
 
     try {
       // Simular verificação
       await new Promise(resolve => setTimeout(resolve, 1000));
 
-      if (state.user) {
-        const updatedUser = { ...state.user, emailVerified: true, status: 'active' as const };
-        setState(prev => ({ ...prev, user: updatedUser, isLoading: false }));
-        
-        if (persistSession) {
-          localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(updatedUser));
-        }
+      if (user) {
+        const updatedUser = { ...user, emailVerified: true, status: 'active' as const };
+        storeUpdateUser(updatedUser);
       }
 
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Erro ao verificar email';
-      setState(prev => ({
-        ...prev,
-        isLoading: false,
-        error: errorMessage
-      }));
+      setError(errorMessage);
       throw error;
+    } finally {
+      setLoading(false);
     }
-  }, [state.user, persistSession]);
+  }, [user, storeUpdateUser, setLoading, setError]);
 
   const refreshToken = useCallback(async (): Promise<void> => {
     await tryRefreshToken();
   }, []);
 
   // Utilitários de autorização
-  const hasPermission = useCallback((permission: string): boolean => {
-    if (!state.user) return false;
-    
-    // Admins têm todas as permissões
-    if (state.user.role === 'admin') return true;
-    
-    // Implementar lógica de permissões específicas aqui
-    return false;
-  }, [state.user]);
-
-  const hasRole = useCallback((role: UserRole): boolean => {
-    return state.user?.role === role;
-  }, [state.user]);
-
   const canAccess = useCallback((resource: string, action: string): boolean => {
-    if (!state.user) return false;
+    if (!user) return false;
     
     // Lógica simplificada para desenvolvimento
-    const userRole = state.user.role;
+    const userRole = user.role;
     
     switch (userRole) {
       case 'admin':
@@ -478,7 +391,7 @@ export const useAuth = ({ autoLogin = true, persistSession = true }: UseAuthOpti
       default:
         return false;
     }
-  }, [state.user]);
+  }, [user]);
 
   const generateMockToken = (user: User): string => {
     const header = btoa(JSON.stringify({ alg: 'HS256', typ: 'JWT' }));
@@ -501,11 +414,11 @@ export const useAuth = ({ autoLogin = true, persistSession = true }: UseAuthOpti
 
   return {
     // Estado
-    user: state.user,
-    isAuthenticated: state.isAuthenticated,
-    isLoading: state.isLoading,
-    error: state.error,
-    token: state.token,
+    user,
+    isAuthenticated,
+    isLoading,
+    error,
+    token: tokens?.token || null,
 
     // Ações
     login,

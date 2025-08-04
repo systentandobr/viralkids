@@ -16,7 +16,7 @@ interface StoreProviderProps {
 
 export const StoreProvider: React.FC<StoreProviderProps> = ({ 
   children, 
-  fallback = <div>Carregando...</div> 
+  fallback = (<div>Carregando...</div>) 
 }) => {
   const [isInitialized, setIsInitialized] = useState(false);
   const [error, setError] = useState<string | null>(null);

@@ -3,6 +3,7 @@ import { Product } from '../types/ecommerce.types';
 import { Button } from '@/components/ui/button';
 import { Heart, ShoppingCart, Star, MapPin, Badge, Eye, Image } from 'lucide-react';
 import { useRouter } from '@/router';
+import { useNavigationStore } from '@/stores/additional/navigation.store';
 
 interface ProductCardProps {
   product: Product;
@@ -19,6 +20,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [imageError, setImageError] = useState(false);
   const { navigate } = useRouter();
+  const { setSelectedProductId } = useNavigationStore();
 
   const handleWishlistToggle = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -37,10 +39,9 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   };
 
   const handleProductClick = () => {
-    // Salvar o ID do produto no localStorage para acessar na página de detalhes
-    localStorage.setItem('selectedProductId', product.id);
-    // Navegar para a página de detalhes do produto
-    navigate('/product');
+    // Navegar para a página de detalhes do produto usando o ID na URL
+    setSelectedProductId(product.id);
+    navigate(`/product/detail/${product.id}`);
   };
 
   const renderStars = (rating: number) => {

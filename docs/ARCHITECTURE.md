@@ -2,7 +2,7 @@
 
 ## 🏗️ Visão Geral da Arquitetura
 
-O projeto ViralKids segue os princípios de **Clean Architecture** e **SOLID**, organizando o código em camadas bem definidas com responsabilidades claras.
+O projeto ViralKids segue os princípios de **Clean Architecture** e **SOLID**, organizando o código em camadas bem definidas com responsabilidades claras. O gerenciamento de estado é feito através do **Zustand** com persistência automática.
 
 ## 📐 Princípios Arquiteturais
 
@@ -22,7 +22,8 @@ O projeto ViralKids segue os princípios de **Clean Architecture** e **SOLID**, 
 ├─────────────────────────────────────────────────────────────┤
 │                      Data Layer                             │
 │  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────┐  │
-│  │   API Calls     │  │ State Management│  │   Storage   │  │
+│  │   API Calls     │  │   Zustand       │  │   Storage   │  │
+│  │                 │  │   Stores        │  │             │  │
 │  └─────────────────┘  └─────────────────┘  └─────────────┘  │
 └─────────────────────────────────────────────────────────────┘
 ```
@@ -160,7 +161,66 @@ export class ProductService {
 
 ### Data Layer
 
-Gerencia dados, estado e comunicação externa.
+Gerencia dados, estado e comunicação externa através do Zustand.
+
+#### Zustand Stores
+```typescript
+// stores/cart.store.ts - Exemplo de store com persistência
+import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
+
+interface CartStore {
+  cart: CartItem[];
+  addItem: (product: Product) => void;
+  removeItem: (productId: string) => void;
+  clearCart: () => void;
+  getCartTotal: () => number;
+  getCartItemsCount: () => number;
+}
+
+export const useCartStore = create<CartStore>()(
+  persist(
+    (set, get) => ({
+      cart: [],
+      addItem: (product) => {
+        set((state) => {
+          const existingItem = state.cart.find(item => item.id === product.id);
+          if (existingItem) {
+            return {
+              cart: state.cart.map(item =>
+                item.id === product.id
+                  ? { ...item, quantity: item.quantity + 1 }
+                  : item
+              )
+            };
+          }
+          return {
+            cart: [...state.cart, { ...product, quantity: 1 }]
+          };
+        });
+      },
+      removeItem: (productId) => {
+        set((state) => ({
+          cart: state.cart.filter(item => item.id !== productId)
+        }));
+      },
+      clearCart: () => set({ cart: [] }),
+      getCartTotal: () => {
+        return get().cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+      },
+      getCartItemsCount: () => {
+        return get().cart.reduce((sum, item) => sum + item.quantity, 0);
+      }
+    }),
+    {
+      name: 'viralkids-cart-storage',
+      storage: createJSONStorage(() => localStorage),
+      partialize: (state) => ({ cart: state.cart }), // Só persiste cart
+      version: 1, // Versionamento para invalidar cache antigo
+    }
+  )
+);
+```
 
 #### API Client
 ```typescript
@@ -198,9 +258,9 @@ export class ApiClient {
 
 ## 🔄 Fluxo de Dados
 
-### Padrão Unidirecional
+### Padrão Unidirecional com Zustand
 ```
-User Action → Component → Hook → Service → API → Response → State → UI Update
+User Action → Component → Zustand Store → Service → API → Response → Store Update → UI Update
 ```
 
 ### Exemplo Prático
@@ -208,37 +268,44 @@ User Action → Component → Hook → Service → API → Response → State �
 // 1. Usuário clica no botão
 <Button onClick={handleAddToCart}>Adicionar ao Carrinho</Button>
 
-// 2. Componente chama função
+// 2. Componente chama função da store
 const handleAddToCart = () => {
-  addToCart(product);
+  addItem(product);
 };
 
-// 3. Hook gerencia estado
-const { addToCart } = useCart();
+// 3. Zustand store gerencia estado
+const { addItem } = useCartStore();
 
-// 4. Serviço processa lógica
-const addToCart = (product: Product) => {
-  setCart(prev => [...prev, product]);
-  cartService.add(product);
+// 4. Store atualiza estado automaticamente
+const addItem = (product: Product) => {
+  set((state) => {
+    // Lógica de adição
+    return { cart: [...state.cart, product] };
+  });
 };
 
-// 5. UI atualiza automaticamente
+// 5. UI atualiza automaticamente via seletores
+const cart = useCartStore(state => state.cart);
 ```
 
 ## 🎯 Padrões de Design
 
 ### 1. Container/Presentational Pattern
 ```typescript
-// Container (lógica)
+// Container (lógica com Zustand)
 const ProductListContainer = () => {
-  const { products, loading } = useProducts();
-  const { addToCart } = useCart();
+  const { products, loading, fetchProducts } = useProductsStore();
+  const { addItem } = useCartStore();
+
+  useEffect(() => {
+    fetchProducts();
+  }, [fetchProducts]);
 
   return (
     <ProductList 
       products={products}
       loading={loading}
-      onAddToCart={addToCart}
+      onAddToCart={addItem}
     />
   );
 };
@@ -261,35 +328,49 @@ const ProductList = ({ products, loading, onAddToCart }: ProductListProps) => {
 };
 ```
 
-### 2. Custom Hook Pattern
+### 2. Custom Hook Pattern com Zustand
 ```typescript
 // Hook customizado para lógica reutilizável
-export const useLocalStorage = <T>(key: string, initialValue: T) => {
-  const [storedValue, setStoredValue] = useState<T>(() => {
-    try {
-      const item = window.localStorage.getItem(key);
-      return item ? JSON.parse(item) : initialValue;
-    } catch (error) {
-      console.error(error);
-      return initialValue;
-    }
-  });
+export const useCart = () => {
+  const cart = useCartStore(state => state.cart);
+  const addItem = useCartStore(state => state.addItem);
+  const removeItem = useCartStore(state => state.removeItem);
+  const clearCart = useCartStore(state => state.clearCart);
+  const getCartTotal = useCartStore(state => state.getCartTotal);
+  const getCartItemsCount = useCartStore(state => state.getCartItemsCount);
 
-  const setValue = (value: T | ((val: T) => T)) => {
-    try {
-      const valueToStore = value instanceof Function ? value(storedValue) : value;
-      setStoredValue(valueToStore);
-      window.localStorage.setItem(key, JSON.stringify(valueToStore));
-    } catch (error) {
-      console.error(error);
-    }
+  return {
+    cart,
+    addItem,
+    removeItem,
+    clearCart,
+    getCartTotal,
+    getCartItemsCount
   };
-
-  return [storedValue, setValue] as const;
 };
 ```
 
-### 3. Render Props Pattern
+### 3. Store Selector Pattern
+```typescript
+// Uso otimizado de seletores para performance
+const CartSummary = () => {
+  // Só re-renderiza quando cart muda
+  const cart = useCartStore(state => state.cart);
+  // Só re-renderiza quando total muda
+  const total = useCartStore(state => state.getCartTotal());
+  // Só re-renderiza quando count muda
+  const count = useCartStore(state => state.getCartItemsCount());
+
+  return (
+    <div className="cart-summary">
+      <p>Itens: {count}</p>
+      <p>Total: R$ {total.toFixed(2)}</p>
+    </div>
+  );
+};
+```
+
+### 4. Render Props Pattern
 ```typescript
 // Componente com render props
 interface DataFetcherProps<T> {
@@ -353,12 +434,18 @@ src/
 │   ├── hooks/        # Hooks compartilhados
 │   ├── utils/        # Utilitários
 │   └── types/        # Tipos TypeScript
+├── stores/           # Stores Zustand
+│   ├── cart.store.ts
+│   ├── products.store.ts
+│   ├── filters.store.ts
+│   ├── user-preferences.store.ts
+│   └── index.ts
 └── core/             # Núcleo da aplicação
     ├── api/          # Cliente API
-    ├── store/        # Gerenciamento de estado
+    ├── providers/    # Providers da aplicação
     └── config/       # Configurações
 ```
 
 ---
 
-**Próximos passos**: Implementar sistema de rotas, gerenciamento de estado global e integração com backend. 
+**Próximos passos**: Implementar sistema de rotas, middleware de analytics para stores e integração com backend. 

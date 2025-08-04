@@ -5,6 +5,7 @@ import { AdminDashboard } from '@/pages/AdminDashboard';
 import { FranchiseeDashboard } from '@/pages/FranchiseeDashboard';
 import EcommercePage from '@/pages/Ecommerce/EcommercePage';
 import ProductDetailPage from '@/pages/ProductDetail/ProductDetailPage';
+import RouteTest from '@/components/RouteTest';
 import { Route } from '.';
 
 // Definição das rotas
@@ -14,9 +15,21 @@ const routes: Route[] = [
     component: EcommercePage,
     exact: true
   },
-  // Página de detalhes do produto
+  // Rota de teste para debug
   {
-    path: '/product',
+    path: '/test-routes',
+    component: RouteTest,
+    exact: true
+  },
+  // Página de detalhes do produto (deve vir antes de /products)
+  {
+    path: '/product/detail/:id',
+    component: ProductDetailPage,
+    exact: false
+  },
+  // Página de produtos (deve vir depois das rotas mais específicas)
+  {
+    path: '/products',
     component: ProductDetailPage,
     exact: true
   },

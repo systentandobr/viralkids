@@ -9,7 +9,7 @@ O **ViralKids** é uma plataforma de vendas focada em produtos infantis, desenvo
 ### 📖 [README.md](./README.md)
 **Documentação principal do projeto**
 - Visão geral e objetivos
-- Stack tecnológica
+- Stack tecnológica (Zustand para state management)
 - Arquitetura e princípios SOLID
 - Design system
 - Guia de desenvolvimento
@@ -22,7 +22,7 @@ O **ViralKids** é uma plataforma de vendas focada em produtos infantis, desenvo
 - Princípios de Clean Architecture
 - Aplicação dos princípios SOLID
 - Estrutura de camadas
-- Padrões de design
+- Padrões de design com Zustand
 - Fluxo de dados
 - Configurações e ferramentas
 - Preparação para escalabilidade
@@ -45,7 +45,7 @@ O **ViralKids** é uma plataforma de vendas focada em produtos infantis, desenvo
 - Estrutura de componentes
 - Hooks customizados
 - Tipagem TypeScript
-- Gerenciamento de estado
+- Gerenciamento de estado com Zustand
 - Estilização com Tailwind
 - Configurações
 - Testes
@@ -61,6 +61,25 @@ O **ViralKids** é uma plataforma de vendas focada em produtos infantis, desenvo
 - KPIs e métricas
 - Próximos passos
 - Considerações técnicas
+
+### 🔄 [ZUSTAND_MIGRATION.md](./ZUSTAND_MIGRATION.md)
+**Documentação da migração para Zustand**
+- Resumo da migração
+- Benefícios da mudança
+- Como usar as novas stores
+- Migração automática
+- Troubleshooting
+- Próximos passos
+
+### 🗃️ [ZUSTAND_STORES.md](./ZUSTAND_STORES.md)
+**Documentação detalhada das stores Zustand**
+- Arquitetura das stores
+- Cart Store (carrinho de compras)
+- Filters Store (filtros de produtos)
+- Products Store (cache de produtos)
+- User Preferences Store (preferências)
+- Configuração avançada
+- Middleware e otimizações
 
 ## 🎯 Como Usar Esta Documentação
 
@@ -84,11 +103,18 @@ O **ViralKids** é uma plataforma de vendas focada em produtos infantis, desenvo
 ## 🔄 Atualizações
 
 ### Versão Atual
-- **Versão**: 1.0.0
-- **Data**: Dezembro 2024
-- **Status**: MVP em desenvolvimento
+- **Versão**: 1.1.0
+- **Data**: Dezembro 2025
+- **Status**: MVP com Zustand implementado
 
 ### Histórico de Versões
+- **v1.1.0**: Migração para Zustand
+  - Substituição de localStorage por Zustand
+  - Implementação de stores com persistência
+  - Cache inteligente de produtos
+  - Migração automática de dados
+  - Performance otimizada
+
 - **v1.0.0**: Documentação inicial completa
   - Estrutura base definida
   - Arquitetura documentada
