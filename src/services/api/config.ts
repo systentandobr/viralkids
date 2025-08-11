@@ -6,64 +6,8 @@ export const API_CONFIG = {
   RETRY_DELAY: 1000, // 1 segundo
 };
 
-// Endpoints da API
-export const API_ENDPOINTS = {
-  // Autenticação
-  AUTH: {
-    LOGIN: '/auth/login',
-    REGISTER: '/auth/register',
-    REFRESH: '/auth/refresh',
-    LOGOUT: '/auth/logout',
-    FORGOT_PASSWORD: '/auth/forgot-password',
-    RESET_PASSWORD: '/auth/reset-password',
-  },
-  
-  // Usuários
-  USERS: {
-    PROFILE: '/users/profile',
-    UPDATE: '/users/update',
-    CHANGE_PASSWORD: '/users/change-password',
-  },
-  
-  // Franquias
-  FRANCHISE: {
-    LIST: '/franchise',
-    CREATE: '/franchise',
-    DETAILS: (id: string) => `/franchise/${id}`,
-    UPDATE: (id: string) => `/franchise/${id}`,
-    DELETE: (id: string) => `/franchise/${id}`,
-    APPLY: '/franchise/apply',
-  },
-  
-  // Produtos
-  PRODUCTS: {
-    LIST: '/products',
-    DETAILS: (id: string) => `/products/${id}`,
-    CATEGORIES: '/products/categories',
-    SEARCH: '/products/search',
-  },
-  
-  // Chatbot
-  CHATBOT: {
-    SEND_MESSAGE: '/chatbot/message',
-    GET_HISTORY: '/chatbot/history',
-    SUBMIT_LEAD: '/chatbot/lead',
-  },
-  
-  // Leads
-  LEADS: {
-    CREATE: '/leads',
-    LIST: '/leads',
-    UPDATE: (id: string) => `/leads/${id}`,
-    DELETE: (id: string) => `/leads/${id}`,
-  },
-  
-  // Upload
-  UPLOAD: {
-    IMAGE: '/upload/image',
-    FILE: '/upload/file',
-  },
-};
+export const runMockMode: boolean = 
+  (import.meta.env.VITE_RUN_MOCK_MODE === 'true' || true) as boolean;
 
 // Headers padrão
 export const DEFAULT_HEADERS = {

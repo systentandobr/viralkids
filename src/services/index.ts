@@ -1,7 +1,8 @@
 // API Core
 export { httpClient } from './api/httpClient';
 export type { ApiResponse } from './api/httpClient';
-export { API_CONFIG, API_ENDPOINTS, DEFAULT_HEADERS, SUCCESS_STATUS_CODES, ERROR_STATUS_CODES } from './api/config';
+export { API_CONFIG, DEFAULT_HEADERS, SUCCESS_STATUS_CODES, ERROR_STATUS_CODES } from './api/config';
+export { API_ENDPOINTS } from './api/endpoints';
 
 // Auth Service
 export { AuthService } from './auth/authService';
@@ -32,7 +33,7 @@ export type {
   UpdateFranchiseData,
   FranchiseFilters,
   FranchiseStats,
-} from './franchise/franchiseService';
+} from './franchise/types';
 
 // Product Service
 export { ProductService } from './products/productService';
@@ -44,7 +45,7 @@ export type {
   UpdateProductData,
   ProductReview,
   ProductStats,
-} from './products/productService';
+} from './products/types';
 
 // Service Provider - Classe principal para gerenciar todos os serviços
 import { AuthService } from './auth/authService';
@@ -70,7 +71,9 @@ export class ServiceProvider {
 
   // Método para limpar dados de todos os serviços
   static clearAllData(): void {
-    AuthService.clearAuthData();
-    ChatbotService.clearLocalData();
+    ServiceProvider.auth.clearAuthData();
+    ServiceProvider.chatbot.clearLocalData();
+    ServiceProvider.franchise.clearLocalData();
+    ServiceProvider.product.clearLocalData();
   }
 } 

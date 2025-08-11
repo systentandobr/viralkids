@@ -1,5 +1,5 @@
 import { httpClient, ApiResponse } from '../api/httpClient';
-import { API_ENDPOINTS } from '../api/config';
+import { API_ENDPOINTS } from '../api/endpoints';
 import { useAuthStore } from '@/stores/auth.store';
 
 // Interfaces para autenticação

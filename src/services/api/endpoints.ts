@@ -13,12 +13,13 @@ export const API_ENDPOINTS = {
   },
   
   // Usuário
-  USER: {
+  USERS: {
     PROFILE: '/user/profile',
     UPDATE: '/user/profile',
     PREFERENCES: '/user/preferences',
     ORDERS: '/user/orders',
     ADDRESSES: '/user/addresses',
+    CHANGE_PASSWORD: '/user/change-password',
   },
   
   // Pedidos
@@ -38,6 +39,7 @@ export const API_ENDPOINTS = {
     REGISTER: '/auth/register',
     FORGOT_PASSWORD: '/auth/forgot-password',
     RESET_PASSWORD: '/auth/reset-password',
+    
   },
 
   // Carrinho
@@ -55,13 +57,19 @@ export const API_ENDPOINTS = {
     DETAIL: (id: string) => `/franchise/${id}`,
     APPLY: '/franchise/apply',
     CONTACT: '/franchise/contact',
+
+    CREATE: '/franchise',
+    DETAILS: (id: string) => `/franchise/${id}`,
+    UPDATE: (id: string) => `/franchise/${id}`,
+    DELETE: (id: string) => `/franchise/${id}`,
   },
 
   // Chatbot
   CHATBOT: {
-    MESSAGE: '/chatbot/message',
-    HISTORY: '/chatbot/history',
     RESET: '/chatbot/reset',
+    SEND_MESSAGE: '/chatbot/message',
+    GET_HISTORY: '/chatbot/history',
+    SUBMIT_LEAD: '/chatbot/lead',
   },
 
   // Admin
@@ -78,11 +86,33 @@ export const API_ENDPOINTS = {
     IMAGE: '/upload/image',
     FILE: '/upload/file',
   },
+
+  // Marcas
+  BRANDS: {
+    LIST: '/brands',
+  },
+
+  // Fornecedores
+  SUPPLIERS: {
+    LIST: '/suppliers',
+  },
+  
+  // Leads ou potenciais clientes
+  LEADS: {
+    CREATE: '/leads',
+    LIST: '/leads',
+    UPDATE: (id: string) => `/leads/${id}`,
+    DELETE: (id: string) => `/leads/${id}`,
+  },
+  
+
 } as const;
+
+
 
 // Tipos para os endpoints
 export type ApiEndpoint = typeof API_ENDPOINTS;
 export type ProductEndpoint = typeof API_ENDPOINTS.PRODUCTS;
-export type UserEndpoint = typeof API_ENDPOINTS.USER;
+export type UserEndpoint = typeof API_ENDPOINTS.USERS;
 export type OrderEndpoint = typeof API_ENDPOINTS.ORDERS;
 export type AuthEndpoint = typeof API_ENDPOINTS.AUTH; 

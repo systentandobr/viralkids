@@ -57,7 +57,7 @@ const Header = () => {
               onClick={handleHomeClick}
               className="text-foreground hover:text-bronze transition-colors"
             >
-              Início
+              Nossas Lojas
             </button>
             <button 
               onClick={() => scrollToSection('produtos')}
