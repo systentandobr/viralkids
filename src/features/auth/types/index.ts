@@ -15,7 +15,18 @@ export interface User {
   preferences: UserPreferences;
 }
 
-export type UserRole = 'admin' | 'franchisee' | 'lead' | 'support';
+export type UserRole = 
+  | 'admin' 
+  | 'franchisee' 
+  | 'lead' 
+  | 'support'
+  | 'sistema'
+  | 'system'
+  | 'gerente'
+  | 'franquia'
+  | 'franqueado'
+  | 'parceiro'
+  | 'vendedor';
 
 export type UserStatus = 'active' | 'inactive' | 'pending' | 'suspended';
 

@@ -98,7 +98,10 @@ export const AdminDashboard: React.FC = () => {
               
               <div className="flex items-center space-x-2">
                 <UserCircle className="h-6 w-6 text-gray-600" />
-                <span className="text-md font-medium">{user?.name}</span>
+                <div className="flex flex-col">
+                  <span className="text-md font-medium">{user?.name}</span>
+                  <span className="text-xs text-gray-500">{user?.role}</span>
+                </div>
               </div>
               
               <Button variant="ghost" size="sm" onClick={() => {

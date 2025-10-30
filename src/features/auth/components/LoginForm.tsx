@@ -195,14 +195,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
             )}
           </Button>
 
-          {/* Demo Credentials */}
-          <div className="mt-4 p-3 bg-blue-50 rounded-lg">
-            <p className="text-md text-blue-800 font-medium mb-2">Credenciais para teste:</p>
-            <div className="text-xs text-blue-700 space-y-1">
-              <p><strong>Admin:</strong> admin@viralkids.com.br | 123456</p>
-              <p><strong>Franqueado:</strong> franqueado@natal.com | 123456</p>
-            </div>
-          </div>
+          {/* Removido: Demo Credentials - agora usando API real */}
 
           {/* Register Link */}
           <div className="text-center pt-4 border-t">

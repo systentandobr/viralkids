@@ -1,5 +1,6 @@
 import React, { useState, useEffect, ReactNode } from 'react';
 import { useAuthContext } from '@/features/auth';
+import { canAccessRoute } from '@/features/auth/utils/roleUtils';
 
 // Tipos para o sistema de rotas
 export interface Route {
@@ -120,13 +121,19 @@ export const Router: React.FC<RouterProps> = ({ routes, fallback }) => {
   }
 
   // Verificar permissões de role
-  if (matchedRoute.allowedRoles && user && !matchedRoute.allowedRoles.includes(user.role)) {
+  if (matchedRoute.allowedRoles && user && !canAccessRoute(user.role, matchedRoute.allowedRoles)) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center space-y-4 max-w-md mx-auto p-6">
           <h2 className="text-xl font-semibold text-red-600">Acesso Negado</h2>
           <p className="text-gray-600">
             Você não tem permissão para acessar esta página.
+          </p>
+          <p className="text-sm text-gray-500">
+            Role atual: <span className="font-medium">{user.role}</span>
+          </p>
+          <p className="text-sm text-gray-500">
+            Roles permitidos: {matchedRoute.allowedRoles.join(', ')}
           </p>
           <button
             onClick={() => window.location.hash = '/'}

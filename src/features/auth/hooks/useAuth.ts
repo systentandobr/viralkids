@@ -1,5 +1,6 @@
 import { useCallback, useEffect } from 'react';
 import { useAuthStore } from '@/stores/auth.store';
+import { securityClient } from '@/services/auth/securityClient';
 import { 
   User, 
   LoginCredentials, 
@@ -9,70 +10,17 @@ import {
   UserRole,
   TokenPayload 
 } from '../types';
+import { getDefaultRedirectPath, getRoleDisplayName, getRoleDescription } from '../utils/roleUtils';
 
 interface UseAuthOptions {
   autoLogin?: boolean;
   persistSession?: boolean;
+  autoRedirect?: boolean;
 }
 
-// Mock users para desenvolvimento
-const MOCK_USERS: User[] = [
-  {
-    id: 'admin_001',
-    email: 'admin@viralkids.com.br',
-    name: 'Administrador',
-    role: 'admin',
-    avatar: undefined,
-    phone: '(84) 99999-9999',
-    createdAt: new Date('2024-01-01'),
-    updatedAt: new Date(),
-    lastLogin: new Date(),
-    emailVerified: true,
-    status: 'active',
-    preferences: {
-      theme: 'light',
-      language: 'pt-BR',
-      notifications: {
-        email: true,
-        push: true,
-        sms: false,
-        marketing: true
-      },
-      privacy: {
-        shareData: false,
-        allowAnalytics: true
-      }
-    }
-  },
-  {
-    id: 'franchisee_001',
-    email: 'franqueado@natal.com',
-    name: 'Maria Silva',
-    role: 'franchisee',
-    phone: '(84) 98888-8888',
-    createdAt: new Date('2024-02-01'),
-    updatedAt: new Date(),
-    lastLogin: new Date(Date.now() - 30 * 60 * 1000), // 30 min ago
-    emailVerified: true,
-    status: 'active',
-    preferences: {
-      theme: 'light',
-      language: 'pt-BR',
-      notifications: {
-        email: true,
-        push: true,
-        sms: true,
-        marketing: false
-      },
-      privacy: {
-        shareData: true,
-        allowAnalytics: true
-      }
-    }
-  }
-];
+// Removido: MOCK_USERS - agora usando API real
 
-export const useAuth = ({ autoLogin = true, persistSession = true }: UseAuthOptions = {}) => {
+export const useAuth = ({ autoLogin = true, persistSession = true, autoRedirect = true }: UseAuthOptions = {}) => {
   // Estado da store
   const user = useAuthStore(state => state.user);
   const isAuthenticated = useAuthStore(state => state.isAuthenticated);
@@ -101,15 +49,45 @@ export const useAuth = ({ autoLogin = true, persistSession = true }: UseAuthOpti
 
   const checkExistingSession = useCallback(async () => {
     try {
-      // A store Zustand com persist já gerencia a sessão automaticamente
-      // Não precisamos fazer nada aqui, apenas garantir que loading seja false
+      // Verificar se há token válido usando a biblioteca de segurança
+      const isTokenValid = await securityClient.isTokenValid();
+      
+      if (isTokenValid) {
+        // Obter informações do usuário armazenadas
+        const userInfo = await securityClient.getStoredUserInfo();
+        if (userInfo) {
+          // Converter para o formato esperado pela store
+          const user: User = {
+            id: userInfo.id,
+            email: userInfo.email,
+            name: userInfo.name,
+            role: userInfo.role as UserRole,
+            phone: userInfo.phone,
+            avatar: userInfo.avatar,
+            createdAt: new Date(userInfo.createdAt),
+            updatedAt: new Date(userInfo.updatedAt),
+            lastLogin: new Date(userInfo.lastLogin),
+            emailVerified: userInfo.emailVerified,
+            status: userInfo.status as 'active' | 'pending' | 'inactive',
+            preferences: userInfo.preferences
+          };
+          
+          // Atualizar store com dados do usuário
+          storeLogin(user, { 
+            token: await securityClient.getStoredToken(),
+            refreshToken: await securityClient.getStoredRefreshToken(),
+            expiresAt: Date.now() + (24 * 60 * 60 * 1000) // 24 horas
+          }, false);
+        }
+      }
+      
       setLoading(false);
     } catch (error) {
       console.error('Erro ao verificar sessão existente:', error);
       setError('Erro ao verificar sessão');
       setLoading(false);
     }
-  }, [setError, setLoading]);
+  }, [setError, setLoading, storeLogin]);
 
   const isTokenValid = (token: string): boolean => {
     try {
@@ -132,20 +110,48 @@ export const useAuth = ({ autoLogin = true, persistSession = true }: UseAuthOpti
     return JSON.parse(jsonPayload);
   };
 
+  // Função para redirecionamento automático baseado no role
+  const redirectBasedOnRole = useCallback((userRole: UserRole) => {
+    if (!autoRedirect) return;
+    
+    const redirectPath = getDefaultRedirectPath(userRole);
+    console.log(`Redirecionando usuário com role '${userRole}' para: ${redirectPath}`);
+    
+    // Usar setTimeout para garantir que o estado foi atualizado
+    setTimeout(() => {
+      window.location.hash = redirectPath;
+    }, 100);
+  }, [autoRedirect]);
+
   const tryRefreshToken = async (): Promise<void> => {
     try {
-      if (!tokens?.refreshToken) {
-        throw new Error('No refresh token available');
-      }
-
-      // Em produção, fazer chamada para API
-      // Por enquanto, simular renovação bem-sucedida
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Usar a biblioteca de segurança para renovar token
+      const isRefreshed = await securityClient.ensureValidToken();
       
-      // Simular falha (remover em produção)
-      throw new Error('Refresh token expired');
+      if (!isRefreshed) {
+        throw new Error('Failed to refresh token');
+      }
+      
+      // Obter novos tokens
+      const newToken = await securityClient.getStoredToken();
+      const newRefreshToken = await securityClient.getStoredRefreshToken();
+      
+      if (newToken && newRefreshToken) {
+        // Atualizar tokens na store
+        const updatedTokens = {
+          token: newToken,
+          refreshToken: newRefreshToken,
+          expiresAt: Date.now() + (24 * 60 * 60 * 1000) // 24 horas
+        };
+        
+        // Atualizar store com novos tokens
+        if (user) {
+          storeLogin(user, updatedTokens, false);
+        }
+      }
       
     } catch (error) {
+      console.error('Erro ao renovar token:', error);
       // Refresh falhou, fazer logout
       storeLogout();
     }
@@ -156,34 +162,65 @@ export const useAuth = ({ autoLogin = true, persistSession = true }: UseAuthOpti
     setError(null);
 
     try {
-      // Simular delay de API
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      // Usar a biblioteca de segurança para fazer login
+      const authResult = await securityClient.login({
+        username: credentials.email,
+        password: credentials.password
+      });
 
-      // Validar credenciais (mock)
-      const user = MOCK_USERS.find(u => u.email === credentials.email);
+      // A API retorna os dados diretamente, não em um objeto com 'success'
+      // Verificar se temos os dados necessários
+      if (!authResult || !authResult.user || !authResult.accessToken) {
+        throw new Error('Resposta inválida da API de autenticação');
+      }
+
+      // Mapear o role da API para o formato esperado
+      // A API retorna um array de roles, vamos pegar o primeiro
+      const userRole = authResult.user.roles?.[0]?.name || 'franchisee';
       
-      if (!user) {
-        throw new Error('Email não encontrado');
-      }
+      // Converter dados do usuário para o formato esperado
+      const user: User = {
+        id: authResult.user.id,
+        email: authResult.user.email,
+        name: authResult.user.profile?.firstName 
+          ? `${authResult.user.profile.firstName} ${authResult.user.profile.lastName || ''}`.trim()
+          : authResult.user.username,
+        role: userRole as UserRole,
+        phone: authResult.user.profile?.phone,
+        avatar: authResult.user.profile?.avatar,
+        createdAt: new Date(), // A API não retorna createdAt
+        updatedAt: new Date(), // A API não retorna updatedAt
+        lastLogin: new Date(),
+        emailVerified: true, // Assumir que usuários da API estão verificados
+        status: 'active' as const, // Assumir que usuários ativos
+        preferences: {
+          theme: 'light',
+          language: 'pt-BR',
+          notifications: {
+            email: true,
+            push: true,
+            sms: false,
+            marketing: false
+          },
+          privacy: {
+            shareData: false,
+            allowAnalytics: true
+          }
+        }
+      };
 
-      // Em produção, validar senha no backend
-      if (credentials.password !== '123456') {
-        throw new Error('Senha incorreta');
-      }
-
-      // Simular geração de token JWT
-      const token = generateMockToken(user);
-      const refreshToken = generateMockRefreshToken(user);
-
-      // Criar tokens para a store
+      // Criar tokens para a store - mapear accessToken para token
       const authTokens = {
-        token,
-        refreshToken,
+        token: authResult.accessToken,
+        refreshToken: authResult.refreshToken,
         expiresAt: Date.now() + (24 * 60 * 60 * 1000), // 24 horas
       };
 
       // Usar store para login
-      storeLogin({ ...user, lastLogin: new Date() }, authTokens, credentials.rememberMe || false);
+      storeLogin(user, authTokens, credentials.rememberMe || false);
+
+      // Redirecionar baseado no role do usuário
+      redirectBasedOnRole(user.role);
 
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Erro ao fazer login';
@@ -192,7 +229,7 @@ export const useAuth = ({ autoLogin = true, persistSession = true }: UseAuthOpti
     } finally {
       setLoading(false);
     }
-  }, [storeLogin, setLoading, setError]);
+  }, [storeLogin, setLoading, setError, redirectBasedOnRole]);
 
   const register = useCallback(async (data: RegisterData): Promise<void> => {
     setLoading(true);
@@ -212,26 +249,39 @@ export const useAuth = ({ autoLogin = true, persistSession = true }: UseAuthOpti
         throw new Error('Você deve aceitar os termos de uso');
       }
 
-      // Verificar se email já existe
-      const existingUser = MOCK_USERS.find(u => u.email === data.email);
-      if (existingUser) {
-        throw new Error('Este email já está em uso');
+      // Usar a biblioteca de segurança para registrar usuário
+      const registerResult = await securityClient.register({
+        email: data.email,
+        password: data.password,
+        name: data.name,
+        phone: data.phone,
+        role: data.role || 'franchisee'
+      });
+
+      // A API retorna os dados diretamente, não em um objeto com 'success'
+      // Verificar se temos os dados necessários
+      if (!registerResult || !registerResult.user || !registerResult.accessToken) {
+        throw new Error('Resposta inválida da API de registro');
       }
 
-      // Simular delay de API
-      await new Promise(resolve => setTimeout(resolve, 2000));
-
-      // Criar novo usuário
+      // Mapear o role da API para o formato esperado
+      const userRole = registerResult.user.roles?.[0]?.name || data.role || 'franchisee';
+      
+      // Converter dados do usuário para o formato esperado
       const newUser: User = {
-        id: `user_${Date.now()}`,
-        email: data.email,
-        name: data.name,
-        role: data.role || 'franchisee',
-        phone: data.phone,
+        id: registerResult.user.id,
+        email: registerResult.user.email,
+        name: registerResult.user.profile?.firstName 
+          ? `${registerResult.user.profile.firstName} ${registerResult.user.profile.lastName || ''}`.trim()
+          : registerResult.user.username,
+        role: userRole as UserRole,
+        phone: registerResult.user.profile?.phone,
+        avatar: registerResult.user.profile?.avatar,
         createdAt: new Date(),
         updatedAt: new Date(),
-        emailVerified: false,
-        status: 'pending',
+        lastLogin: new Date(),
+        emailVerified: true,
+        status: 'active' as const,
         preferences: {
           theme: 'light',
           language: 'pt-BR',
@@ -248,20 +298,17 @@ export const useAuth = ({ autoLogin = true, persistSession = true }: UseAuthOpti
         }
       };
 
-      // Adicionar à lista mock (em produção seria salvo no backend)
-      MOCK_USERS.push(newUser);
-
-      // Auto-login após registro
-      const token = generateMockToken(newUser);
-      const refreshToken = generateMockRefreshToken(newUser);
-
+      // Auto-login após registro - mapear accessToken para token
       const authTokens = {
-        token,
-        refreshToken,
+        token: registerResult.accessToken,
+        refreshToken: registerResult.refreshToken,
         expiresAt: Date.now() + (24 * 60 * 60 * 1000),
       };
 
       storeLogin(newUser, authTokens, false);
+
+      // Redirecionar baseado no role do usuário
+      redirectBasedOnRole(newUser.role);
 
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Erro ao criar conta';
@@ -270,10 +317,18 @@ export const useAuth = ({ autoLogin = true, persistSession = true }: UseAuthOpti
     } finally {
       setLoading(false);
     }
-  }, [storeLogin, setLoading, setError]);
+  }, [storeLogin, setLoading, setError, redirectBasedOnRole]);
 
-  const logout = useCallback((): void => {
-    storeLogout();
+  const logout = useCallback(async (): Promise<void> => {
+    try {
+      // Usar a biblioteca de segurança para fazer logout
+      await securityClient.logout();
+    } catch (error) {
+      console.error('Erro ao fazer logout:', error);
+    } finally {
+      // Sempre limpar a store local
+      storeLogout();
+    }
   }, [storeLogout]);
 
   const forgotPassword = useCallback(async (data: ForgotPasswordData): Promise<void> => {
@@ -281,14 +336,14 @@ export const useAuth = ({ autoLogin = true, persistSession = true }: UseAuthOpti
     setError(null);
 
     try {
-      // Verificar se email existe
-      const user = MOCK_USERS.find(u => u.email === data.email);
-      if (!user) {
-        throw new Error('Email não encontrado');
-      }
+      // Usar a biblioteca de segurança para solicitar reset de senha
+      const result = await securityClient.forgotPassword({
+        email: data.email
+      });
 
-      // Simular envio de email
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      if (!result.success) {
+        throw new Error(result.message || 'Erro ao enviar email de recuperação');
+      }
 
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Erro ao enviar email';
@@ -312,8 +367,15 @@ export const useAuth = ({ autoLogin = true, persistSession = true }: UseAuthOpti
         throw new Error('Senha deve ter pelo menos 6 caracteres');
       }
 
-      // Simular reset de senha
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Usar a biblioteca de segurança para resetar senha
+      const result = await securityClient.resetPassword({
+        token: data.token,
+        password: data.password
+      });
+
+      if (!result.success) {
+        throw new Error(result.message || 'Erro ao redefinir senha');
+      }
 
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Erro ao redefinir senha';
@@ -333,8 +395,17 @@ export const useAuth = ({ autoLogin = true, persistSession = true }: UseAuthOpti
     setError(null);
 
     try {
-      // Simular update
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Usar a biblioteca de segurança para atualizar perfil
+      const result = await securityClient.updateProfile({
+        name: data.name,
+        phone: data.phone,
+        avatar: data.avatar,
+        preferences: data.preferences
+      });
+
+      if (!result.success) {
+        throw new Error(result.message || 'Erro ao atualizar perfil');
+      }
 
       const updatedUser = { ...user, ...data, updatedAt: new Date() };
       storeUpdateUser(updatedUser);
@@ -353,8 +424,14 @@ export const useAuth = ({ autoLogin = true, persistSession = true }: UseAuthOpti
     setError(null);
 
     try {
-      // Simular verificação
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Usar a biblioteca de segurança para verificar email
+      const result = await securityClient.verifyEmail({
+        token: token
+      });
+
+      if (!result.success) {
+        throw new Error(result.message || 'Erro ao verificar email');
+      }
 
       if (user) {
         const updatedUser = { ...user, emailVerified: true, status: 'active' as const };
@@ -375,42 +452,35 @@ export const useAuth = ({ autoLogin = true, persistSession = true }: UseAuthOpti
   }, []);
 
   // Utilitários de autorização
-  const canAccess = useCallback((resource: string, action: string): boolean => {
+  const canAccess = useCallback(async (resource: string, action: string): Promise<boolean> => {
     if (!user) return false;
     
-    // Lógica simplificada para desenvolvimento
-    const userRole = user.role;
-    
-    switch (userRole) {
-      case 'admin':
-        return true; // Admin pode tudo
-      case 'franchisee':
-        return ['dashboard', 'tasks', 'suppliers', 'profile'].includes(resource);
-      case 'support':
-        return ['leads', 'support', 'dashboard'].includes(resource);
-      default:
-        return false;
+    try {
+      // Usar a biblioteca de segurança para verificar permissões
+      return await securityClient.hasPermission(`${action}:${resource}`);
+    } catch (error) {
+      console.error('Erro ao verificar permissão:', error);
+      return false;
     }
   }, [user]);
 
-  const generateMockToken = (user: User): string => {
-    const header = btoa(JSON.stringify({ alg: 'HS256', typ: 'JWT' }));
-    const payload = btoa(JSON.stringify({
-      userId: user.id,
-      email: user.email,
-      role: user.role,
-      iat: Math.floor(Date.now() / 1000),
-      exp: Math.floor(Date.now() / 1000) + (24 * 60 * 60), // 24 horas
-      sub: user.id
-    }));
-    const signature = btoa('mock-signature');
-    
-    return `${header}.${payload}.${signature}`;
-  };
+  // Utilitários para roles
+  const getUserRoleDisplayName = useCallback((): string => {
+    if (!user) return 'Usuário';
+    return getRoleDisplayName(user.role);
+  }, [user]);
 
-  const generateMockRefreshToken = (user: User): string => {
-    return btoa(`refresh_${user.id}_${Date.now()}`);
-  };
+  const getUserRoleDescription = useCallback((): string => {
+    if (!user) return 'Usuário não autenticado';
+    return getRoleDescription(user.role);
+  }, [user]);
+
+  const getDefaultRedirect = useCallback((): string => {
+    if (!user) return '/';
+    return getDefaultRedirectPath(user.role);
+  }, [user]);
+
+  // Removido: generateMockToken e generateMockRefreshToken - agora usando API real
 
   return {
     // Estado
@@ -433,6 +503,11 @@ export const useAuth = ({ autoLogin = true, persistSession = true }: UseAuthOpti
     // Utilitários
     hasPermission,
     hasRole,
-    canAccess
+    canAccess,
+    
+    // Utilitários de Role
+    getUserRoleDisplayName,
+    getUserRoleDescription,
+    getDefaultRedirect
   };
 };

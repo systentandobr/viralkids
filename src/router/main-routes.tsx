@@ -59,13 +59,13 @@ const routes: Route[] = [
     path: '/admin',
     component: AdminDashboard,
     requireAuth: true,
-    allowedRoles: ['admin', 'support']
+    allowedRoles: ['admin', 'support', 'sistema', 'system']
   },
   {
     path: '/dashboard',
     component: FranchiseeDashboard,
     requireAuth: true,
-    allowedRoles: ['franchisee']
+    allowedRoles: ['franchisee', 'gerente', 'franquia', 'franqueado', 'parceiro', 'vendedor']
   }
 ];
 
