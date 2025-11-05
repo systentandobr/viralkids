@@ -3,8 +3,10 @@ import { MessageCircle, Play, Star } from "lucide-react";
 import { Chatbot } from "@/features/chatbot";
 import { useState, useRef } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
-import heroVideo from "@/assets/videos/apresentando_viral_kids.mp4";
 import { useIsMobile } from "@/hooks/use-mobile";
+
+// Vídeo na pasta public - servido diretamente sem processamento do bundler
+const heroVideo = "/videos/apresentando_viral_kids.mp4";
 const Hero = () => {
   const [isChatbotOpen, setIsChatbotOpen] = useState(false);
   const [isVideoLoaded, setIsVideoLoaded] = useState(false);
