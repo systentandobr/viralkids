@@ -8,14 +8,43 @@ import {
   Menu,
   X
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useChatbot } from "@/features/chatbot/hooks/useChatbot";
 import { useRouter } from "@/router";
 
 const EcommerceHeader = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isBannerVisible, setIsBannerVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
   const { openChatbot } = useChatbot();
   const { navigate } = useRouter();
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      
+      // Se estiver no topo, sempre mostra o banner
+      if (currentScrollY === 0) {
+        setIsBannerVisible(true);
+      } 
+      // Se estiver descendo e passou do threshold, esconde
+      else if (currentScrollY > lastScrollY && currentScrollY > 100) {
+        setIsBannerVisible(false);
+      } 
+      // Se estiver subindo, mostra
+      else if (currentScrollY < lastScrollY) {
+        setIsBannerVisible(true);
+      }
+      
+      setLastScrollY(currentScrollY);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, [lastScrollY]);
 
   const handleChatbotClick = () => {
     openChatbot();
@@ -40,10 +69,16 @@ const EcommerceHeader = () => {
   return (
     <header className="bg-white/95 backdrop-blur-sm border-b border-bronze/20 sticky top-0 z-50">
       {/* Top Banner */}
-      <div className="bg-gradient-to-r from-bronze to-gold text-white py-2 text-center text-sm">
+      <div 
+        className={`bg-gradient-to-r from-bronze to-gold text-white py-2 text-center text-sm transition-all duration-300 ease-in-out transform ${
+          isBannerVisible 
+            ? 'translate-y-0 opacity-100 max-h-20' 
+            : '-translate-y-full opacity-0 max-h-0'
+        } overflow-hidden`}
+      >
         <div className="container mx-auto px-4">
           <p className="font-medium">
-            🎉 Produtos Especiais para seu Pequeno - Frete Grátis acima de R$ 150!
+            🎉 Produtos Especiais para seus Pequenos - Frete Grátis acima de R$ 199. Ou consulte com nosso assistente
           </p>
         </div>
       </div>
@@ -52,10 +87,10 @@ const EcommerceHeader = () => {
         <div className="flex items-center justify-between">
           {/* Logo */}
           <div className="flex items-center space-x-3">
-            <div>
+            <button onClick={handleHomeClick}>
               <h1 className="text-xl font-bold text-bronze">VIRAL KIDS</h1>
               <p className="text-xs text-muted-foreground">Produtos Únicos</p>
-            </div>
+            </button>
           </div>
 
           {/* Desktop Navigation */}
