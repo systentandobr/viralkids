@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -6,6 +6,9 @@ import { ChevronLeft, ChevronRight, Maximize2 } from "lucide-react";
 import storeLayoutA from "@/assets/store-layout-a.png";
 import storeLayoutB from "@/assets/store-layout-b.png";
 import layoutAnimation from "@/assets/layout-animation.gif";
+import environmentA from "@/assets/videos/animacao_cenario1.mp4";
+import environmentB from "@/assets/videos/ambientacao_cenariob.mp4";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const layouts = [
   {
@@ -29,12 +32,31 @@ const layouts = [
     image: layoutAnimation,
     features: ["Animação completa", "Transições suaves", "Visão 360°", "Elementos dinâmicos"],
     isGif: true
-  }
+  },
+  {
+    id: 4,
+    title: "Ambientação do Layout A",
+    description: "Visualize a transformação e dinâmica dos espaços em movimento.",
+    video: environmentA,
+    features: ["Animação completa", "Transições suaves", "Visão 360°", "Elementos dinâmicos"],
+    isGif: true
+  },
+  {
+    id: 5,
+    title: "Ambientação do Layout B",
+    description: "Visualize a transformação e dinâmica dos espaços em movimento.",
+    video: environmentB,
+    features: ["Animação completa", "Transições suaves", "Visão 360°", "Elementos dinâmicos"],
+    isGif: true
+  },
 ];
 
 const StoreLayoutGallery = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [direction, setDirection] = useState(0);
+  const [isVideoLoaded, setIsVideoLoaded] = useState<{ [key: number]: boolean }>({});
+  const videoRef = useRef<HTMLVideoElement>(null);
+
 
   const slideVariants = {
     enter: (direction: number) => ({
@@ -110,15 +132,45 @@ const StoreLayoutGallery = () => {
               <Card className="overflow-hidden shadow-2xl border-2">
                 <div className="grid md:grid-cols-2 gap-0">
                   <div className="relative aspect-[4/3] md:aspect-auto overflow-hidden bg-muted group">
+                    {!layouts[currentIndex].video && (
                     <img
                       src={layouts[currentIndex].image}
                       alt={layouts[currentIndex].title}
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                     />
+                    )}
                     {layouts[currentIndex].isGif && (
                       <div className="absolute top-4 right-4 bg-accent text-accent-foreground px-3 py-1 rounded-full text-sm font-medium">
                         GIF Animado
                       </div>
+                    )}
+                    {layouts[currentIndex].video && (
+                      <>
+                        {!isVideoLoaded[currentIndex] && (
+                          <Skeleton className="w-full h-[400px] md:h-[500px] lg:h-[600px] rounded-2xl shadow-card" />
+                        )}
+                        <video
+                          ref={videoRef}
+                          src={layouts[currentIndex].video}
+                          className={`w-full h-auto rounded-2xl shadow-card animate-float ${
+                            isVideoLoaded[currentIndex] ? 'block' : 'hidden'
+                          }`}
+                          autoPlay
+                          loop
+                          muted
+                          playsInline
+                          preload="auto"
+                          onLoadedData={() => setIsVideoLoaded({
+                            [currentIndex]: true
+                          })}
+                          onCanPlay={() => setIsVideoLoaded({
+                            [currentIndex]: true
+                          })}
+                        />
+                        <div className="absolute top-4 right-4 bg-accent text-accent-foreground px-3 py-1 rounded-full text-sm font-medium">
+                          Video
+                        </div>
+                      </>
                     )}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
                       <Button
