@@ -13,6 +13,8 @@
       "moduleDetection": "force",
       "noEmit": true,
       "jsx": "react-jsx",
+      "esModuleInterop": true,
+      "allowSyntheticDefaultImports": true,
   
       /* Linting */
       "strict": false,
@@ -26,6 +28,6 @@
         "@/*": ["./src/*"]
       }
     },
-    "include": ["src", "src/types"]
+    "include": ["src", "src/types", "src/vite-env.d.ts"]
   }
   

@@ -1,11 +1,14 @@
 import { Button } from "@/components/ui/button";
 import { MessageCircle, Play, Star } from "lucide-react";
 import { Chatbot } from "@/features/chatbot";
-import { useState } from "react";
-import heroImage from "@/assets/hero-image.jpg";
+import { useState, useRef } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
+import heroVideo from "@/assets/videos/apresentando_viral_kids.mp4";
 import { useIsMobile } from "@/hooks/use-mobile";
 const Hero = () => {
   const [isChatbotOpen, setIsChatbotOpen] = useState(false);
+  const [isVideoLoaded, setIsVideoLoaded] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
   const isMobile  = useIsMobile();
   const openChatbot = () => {
     setIsChatbotOpen(true);
@@ -92,13 +95,25 @@ const Hero = () => {
               </div>
             </div>
 
-            {/* Hero Image */}
+            {/* Hero Video */}
             <div className="relative">
               <div className="relative z-10">
-                <img 
-                  src={heroImage} 
-                  alt="Produtos Viral Kids"
-                  className="w-full h-auto rounded-2xl shadow-card animate-float"
+                {!isVideoLoaded && (
+                  <Skeleton className="w-full h-[400px] md:h-[500px] lg:h-[600px] rounded-2xl shadow-card" />
+                )}
+                <video
+                  ref={videoRef}
+                  src={heroVideo}
+                  className={`w-full h-auto rounded-2xl shadow-card animate-float ${
+                    isVideoLoaded ? 'block' : 'hidden'
+                  }`}
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  preload="auto"
+                  onLoadedData={() => setIsVideoLoaded(true)}
+                  onCanPlay={() => setIsVideoLoaded(true)}
                 />
               </div>
               
