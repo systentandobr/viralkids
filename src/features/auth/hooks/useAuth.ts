@@ -186,6 +186,7 @@ export const useAuth = ({ autoLogin = true, persistSession = true, autoRedirect 
           ? `${authResult.user.profile.firstName} ${authResult.user.profile.lastName || ''}`.trim()
           : authResult.user.username,
         role: userRole as UserRole,
+        unitId: authResult.user.profile?.unitId,
         phone: authResult.user.profile?.phone,
         avatar: authResult.user.profile?.avatar,
         createdAt: new Date(), // A API não retorna createdAt

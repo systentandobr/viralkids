@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import { ProductFiltersType } from '@/pages/Ecommerce/types/ecommerce.types';
 import { Product, ProductCategory, CreateProductData, UpdateProductData, ProductReview, ProductStats } from './types';
+import { InventoryApi, InventoryAvailabilityResponse } from '../inventory/inventory.api';
 
 // Classe do serviço de produtos
 export class ProductService {
@@ -18,9 +19,42 @@ export class ProductService {
     return httpClient.get<Product[]>(API_ENDPOINTS.PRODUCTS.LIST, { params });
   }
 
+  // Listar produtos com availability por unidade
+  static async listWithAvailability(unitId: string, filters?: ProductFiltersType): Promise<ApiResponse<(Product & { availabilityInfo?: InventoryAvailabilityResponse[number] })[]>> {
+    const productsResp = await this.listProducts(filters);
+    if (!productsResp.success || !productsResp.data || productsResp.data.length === 0) return productsResp as any;
+
+    const productIds = productsResp.data.map(p => p.id);
+    const availabilityResp = await InventoryApi.availability({ productIds, unitId });
+
+    if (!availabilityResp.success || !availabilityResp.data) {
+      return { ...productsResp } as any;
+    }
+
+    const availabilityMap = new Map(availabilityResp.data.map(item => [item.productId, item]));
+    const merged = productsResp.data.map(p => ({
+      ...p,
+      availabilityInfo: availabilityMap.get(p.id),
+    }));
+
+    return { success: true, data: merged } as ApiResponse<any>;
+  }
+
   // Obter detalhes de um produto
   static async getProduct(id: string): Promise<ApiResponse<Product>> {
     return httpClient.get<Product>(API_ENDPOINTS.PRODUCTS.DETAIL(id));
+  }
+
+  // Obter detalhe com availability por unidade
+  static async getWithAvailability(id: string, unitId: string): Promise<ApiResponse<Product & { availabilityInfo?: InventoryAvailabilityResponse[number] }>> {
+    const [productResp, availabilityResp] = await Promise.all([
+      this.getProduct(id),
+      InventoryApi.availability({ productIds: [id], unitId })
+    ]);
+
+    if (!productResp.success || !productResp.data) return productResp as any;
+    const info = availabilityResp.success && availabilityResp.data ? availabilityResp.data[0] : undefined;
+    return { success: true, data: { ...productResp.data, availabilityInfo: info } } as any;
   }
 
   // Criar novo produto

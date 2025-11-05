@@ -6,5 +6,6 @@ export const ENV_CONFIG = {
   
   // API Principal
   API_BASE_URL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001/api',
+  BACKEND_BASE_URL: import.meta.env.VITE_BACKEND_BASE_URL || import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001/api',
   RUN_MOCK_MODE: import.meta.env.VITE_RUN_MOCK_MODE === 'true' || false,
 } as const;

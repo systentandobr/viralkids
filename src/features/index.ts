@@ -30,7 +30,7 @@ export {
 } from '@/features/admin';
 
 // Pages
-export { AdminDashboard } from '@/pages/AdminDashboard';
+export { AdminDashboard } from '@/pages/Admin/AdminDashboard';
 export { FranchiseeDashboard } from '@/pages/FranchiseeDashboard';
 
 // Types (principais)

@@ -1,6 +1,8 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { httpClient } from '../api/httpClient';
 import { API_ENDPOINTS } from '../api/endpoints';
+import { ProductService } from '../products/productService';
+import { useAuthContext } from '@/features/auth';
 
 // Tipos
 export interface Product {
@@ -126,21 +128,51 @@ const searchProducts = async (query: string): Promise<Product[]> => {
 
 // Query Hooks
 export const useProducts = (filters?: ProductFilters) => {
+  const { user } = useAuthContext();
+  const unitId = user?.unitId;
+
   return useQuery({
-    queryKey: productKeys.list(filters || {}),
-    queryFn: () => fetchProducts(filters),
-    staleTime: 5 * 60 * 1000, // 5 minutos
-    cacheTime: 10 * 60 * 1000, // 10 minutos
+    queryKey: [...productKeys.list(filters || {}), unitId || 'no-unit'],
+    queryFn: async () => {
+      if (unitId) {
+        const resp = await ProductService.listWithAvailability(unitId, filters);
+        if (!resp.success) throw new Error(resp.error || 'Erro ao buscar produtos');
+        // Normalizar propriedades para UI
+        return (resp.data || []).map((p: any) => ({
+          ...p,
+          inStock: p.availabilityInfo ? p.availabilityInfo.virtualAvailable > 0 : p.inStock,
+          stockQuantity: p.availabilityInfo?.virtualAvailable ?? p.stockQuantity,
+        }));
+      }
+      return fetchProducts(filters);
+    },
+    staleTime: 5 * 60 * 1000,
+    cacheTime: 10 * 60 * 1000,
     refetchOnWindowFocus: false,
   });
 };
 
 export const useProduct = (id: string) => {
+  const { user } = useAuthContext();
+  const unitId = user?.unitId;
+
   return useQuery({
-    queryKey: productKeys.detail(id),
-    queryFn: () => fetchProduct(id),
+    queryKey: [...productKeys.detail(id), unitId || 'no-unit'],
+    queryFn: async () => {
+      if (unitId) {
+        const resp = await ProductService.getWithAvailability(id, unitId);
+        if (!resp.success || !resp.data) throw new Error(resp.error || 'Erro ao buscar produto');
+        const p: any = resp.data;
+        return {
+          ...p,
+          inStock: p.availabilityInfo ? p.availabilityInfo.virtualAvailable > 0 : p.inStock,
+          stockQuantity: p.availabilityInfo?.virtualAvailable ?? p.stockQuantity,
+        };
+      }
+      return fetchProduct(id);
+    },
     enabled: !!id,
-    staleTime: 10 * 60 * 1000, // 10 minutos
+    staleTime: 10 * 60 * 1000,
   });
 };
 

@@ -6,7 +6,7 @@ import Contact from '@/components/Contact';
 import Footer from '@/components/Footer';
 import Franchise from '@/components/Franchise';
 import { Button } from '@/components/ui/button';
-import { User, LogIn } from 'lucide-react';
+import { LogIn } from 'lucide-react';
 import { useAuthContext } from '@/features/auth/context/AuthContext';
 import { useRouter } from '@/router';
 

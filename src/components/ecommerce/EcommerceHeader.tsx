@@ -52,11 +52,6 @@ const EcommerceHeader = () => {
         <div className="flex items-center justify-between">
           {/* Logo */}
           <div className="flex items-center space-x-3">
-            <img 
-              src="/lovable-uploads/b97e3ab2-d896-4aff-9fdf-47c3d4ba590f.png" 
-              alt="Viral Kids Logo" 
-              className="h-12 w-auto"
-            />
             <div>
               <h1 className="text-xl font-bold text-bronze">VIRAL KIDS</h1>
               <p className="text-xs text-muted-foreground">Produtos Únicos</p>

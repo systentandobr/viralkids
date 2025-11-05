@@ -122,41 +122,6 @@ export const BrandSelector: React.FC<BrandSelectorProps> = ({
         </div>
       </div>
 
-      {/* Botão Ver Todos (versão desktop) */}
-      <div className="hidden md:flex justify-center mt-6">
-        <Button
-          variant="outline"
-          onClick={() => onBrandSelect('all')}
-          className="text-primary border-primary hover:bg-primary hover:text-white"
-        >
-          Ver todos os parceiros
-        </Button>
-      </div>
-
-      {/* Stats das marcas */}
-      <div className="grid grid-cols-3 gap-4 mt-6 pt-6 border-t border-gray-100">
-        <div className="text-center">
-          <div className="text-2xl font-bold text-primary">{stats?.totalBrands || 0}</div>
-          <div className="text-xs text-gray-600">Marcas Parceiras</div>
-        </div>
-        <div className="text-center">
-          <div className="text-2xl font-bold text-primary">{stats?.totalProducts || 0}</div>
-          <div className="text-xs text-gray-600">Produtos Únicos</div>
-        </div>
-        <div className="text-center">
-          <div className="text-2xl font-bold text-primary">100%</div>
-          <div className="text-xs text-gray-600">Qualidade</div>
-        </div>
-      </div>
-
-      {/* Informações adicionais sobre parcerias */}
-      <div className="mt-4 pt-4 border-t border-gray-100">
-        <div className="flex justify-between text-xs text-gray-500">
-          <div>🥇 Parceiros Gold: {stats?.goldPartners || 0}</div>
-          <div>🥈 Parceiros Silver: {stats?.silverPartners || 0}</div>
-          <div>🥉 Parceiros Bronze: {stats?.bronzePartners || 0}</div>
-        </div>
-      </div>
     </section>
   );
 };

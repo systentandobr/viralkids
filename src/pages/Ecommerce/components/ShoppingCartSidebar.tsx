@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { CartItem } from '../types/ecommerce.types';
 import { Button } from '@/components/ui/button';
 import { X, Plus, Minus, ShoppingBag, Trash2 } from 'lucide-react';
+import { usePromotionPreview } from '@/features/promotions/hooks/usePromotions';
 
 interface ShoppingCartSidebarProps {
   isOpen: boolean;
@@ -32,6 +33,19 @@ export const ShoppingCartSidebar: React.FC<ShoppingCartSidebarProps> = ({
   };
 
   const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+  const subtotal = cart.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
+
+  // Promo preview hook
+  const { preview, isLoading: promoLoading, error: promoError, refresh } = usePromotionPreview();
+
+  // Auto refresh promo preview when cart changes or sidebar opens
+  const cartSignature = React.useMemo(() => (
+    cart.map(i => `${i.product.id}:${i.quantity}`).join('|')
+  ), [cart]);
+
+  useEffect(() => {
+    if (isOpen) refresh();
+  }, [isOpen, cartSignature]);
 
   if (!isOpen) return null;
 
@@ -192,10 +206,30 @@ export const ShoppingCartSidebar: React.FC<ShoppingCartSidebarProps> = ({
                 <span>Frete</span>
                 <span>Calculado no checkout</span>
               </div>
-              <div className="border-t pt-2">
-                <div className="flex justify-between font-semibold text-lg">
-                  <span>Total</span>
-                  <span className="text-primary-600">{formatPrice(total)}</span>
+              {/* Promoções (preview) */}
+              <div className="pt-2 space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span>Descontos (preview)</span>
+                  <span>{promoLoading ? '...' : formatPrice(preview?.discountTotal || 0)}</span>
+                </div>
+                {promoError && (
+                  <div className="text-xs text-red-600">{promoError}</div>
+                )}
+                {preview?.promotions?.length ? (
+                  <ul className="text-xs text-gray-600 space-y-1">
+                    {preview.promotions.map((p) => (
+                      <li key={p.id} className="flex justify-between">
+                        <span>{p.name}</span>
+                        <span>- {formatPrice(p.amount)}</span>
+                      </li>
+                    ))}
+                  </ul>
+                ) : null}
+                <div className="border-t pt-2">
+                  <div className="flex justify-between font-semibold text-lg">
+                    <span>Total (preview)</span>
+                    <span className="text-primary-600">{formatPrice(preview?.total ?? subtotal)}</span>
+                  </div>
                 </div>
               </div>
             </div>

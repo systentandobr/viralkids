@@ -1,9 +1,10 @@
 // Import das páginas
 import { LandingPage } from '@/pages/LandingPage';
 import { AuthPage } from '@/pages/AuthPage';
-import { AdminDashboard } from '@/pages/AdminDashboard';
-import { FranchiseeDashboard } from '@/pages/FranchiseeDashboard';
+import { AdminDashboard } from '@/pages/Admin/AdminDashboard';
+import { FranchiseeDashboard } from '@/pages/Admin/FranchiseeDashboard';
 import EcommercePage from '@/pages/Ecommerce/EcommercePage';
+import CheckoutPage from '@/pages/Ecommerce/CheckoutPage';
 import ProductDetailPage from '@/pages/ProductDetail/ProductDetailPage';
 import RouteTest from '@/components/RouteTest';
 import { Route } from '.';
@@ -66,6 +67,12 @@ const routes: Route[] = [
     component: FranchiseeDashboard,
     requireAuth: true,
     allowedRoles: ['franchisee', 'gerente', 'franquia', 'franqueado', 'parceiro', 'vendedor']
+  },
+  {
+    path: '/checkout',
+    component: CheckoutPage,
+    requireAuth: true,
+    allowedRoles: ['franchisee', 'gerente', 'franquia', 'franqueado', 'parceiro', 'vendedor', 'admin', 'sistema', 'system', 'support']
   }
 ];
 

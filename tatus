@@ -1,0 +1,3 @@
+[33m6e2e614[m[33m ([m[1;36mHEAD -> [m[1;32mmain[m[33m)[m fix: corrigir erro de build Vercel movendo vídeo para pasta public
+[33m96ae0e5[m[33m ([m[1;31morigin/main[m[33m)[m feat: substituir imagem por vídeo no Hero com skeleton loader
+[33m56590f7[m feat: implementar sistema de roles e redirecionamento automático

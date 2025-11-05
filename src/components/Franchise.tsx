@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { MessageCircle, TrendingUp, Users, MapPin, Clock, DollarSign, Smartphone, Headphones } from "lucide-react";
 import franchiseImage from "@/assets/franchise-team.jpg";
+import StoreLayoutGallery from "@/components/StoreLayoutGallery";
 
 const Franchise = () => {
   const openWhatsAppFranchise = () => {
@@ -100,6 +101,9 @@ const Franchise = () => {
 
   return (
     <section id="franquia" className="py-20 bg-gradient-to-b from-bronze/5 to-background">
+      {/* Store Layouts Gallery */}
+      <StoreLayoutGallery />
+      
       <div className="container mx-auto px-4">
         {/* Header */}
         <div className="text-center space-y-4 mb-16">
@@ -116,7 +120,8 @@ const Franchise = () => {
             Franquia digital com produtos únicos e suporte completo.
           </p>
         </div>
-
+        
+        
         {/* Hero Image */}
         <div className="mb-16">
           <div className="relative max-w-4xl mx-auto">
@@ -128,10 +133,11 @@ const Franchise = () => {
             <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent rounded-2xl"></div>
             <div className="absolute bottom-6 left-6 text-white">
               <h3 className="text-2xl font-bold mb-2">Junte-se aos Nossos Franqueados</h3>
-              <p className="text-lg opacity-90">Mais de 25 empreendedores já transformaram suas vidas</p>
+              <p className="text-lg opacity-90">Mais de 5 empreendedores já transformaram suas vidas</p>
             </div>
           </div>
         </div>
+
 
         {/* Benefits Grid */}
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
@@ -188,6 +194,7 @@ const Franchise = () => {
             </p>
           </div>
 
+          
           <div className="grid md:grid-cols-3 gap-8">
             {franchisePackages.map((pkg, index) => (
               <Card 

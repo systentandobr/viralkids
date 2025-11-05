@@ -29,7 +29,7 @@ const FeaturedBanner = () => {
               </h1>
               
               <p className="text-lg text-muted-foreground leading-relaxed">
-                Descubra nossa seleção curada de produtos infantis únicos, criados por nossos 
+                Descubra nossa seleção de produtos infantis criativos, gerados por nossos 
                 franqueados com amor e qualidade.
               </p>
             </div>
@@ -71,16 +71,16 @@ const FeaturedBanner = () => {
             {/* Features */}
             <div className="grid grid-cols-3 gap-4 pt-6 border-t border-bronze/20">
               <div className="text-center">
-                <div className="text-xl font-bold text-bronze">500+</div>
+                <div className="text-xl font-bold text-bronze">100+</div>
                 <div className="text-xs text-muted-foreground">Produtos Únicos</div>
               </div>
               <div className="text-center">
-                <div className="text-xl font-bold text-bronze">25+</div>
+                <div className="text-xl font-bold text-bronze">5+</div>
                 <div className="text-xs text-muted-foreground">Franquias</div>
               </div>
               <div className="text-center">
                 <div className="text-xl font-bold text-bronze">100%</div>
-                <div className="text-xs text-muted-foreground">Personalizado</div>
+                <div className="text-xs text-muted-foreground">Personalizável</div>
               </div>
             </div>
           </div>

@@ -12,6 +12,12 @@ export const API_ENDPOINTS = {
     FEATURED: '/products/featured',
   },
   
+  // Inventory / Estoque
+  INVENTORY: {
+    AVAILABILITY: '/inventory/availability',
+    REPLENISH_PLAN: '/inventory/replenish/plan',
+  },
+  
   // Usuário
   USERS: {
     PROFILE: '/user/profile',
@@ -29,6 +35,13 @@ export const API_ENDPOINTS = {
     CREATE: '/orders',
     STATUS: (id: string) => `/orders/${id}/status`,
     TRACKING: (id: string) => `/orders/${id}/tracking`,
+    CANCEL: (id: string) => `/orders/${id}/cancel`,
+  },
+  
+  // Delivery
+  DELIVERY: {
+    QUOTE: '/delivery/quote',
+    DISPATCH: '/delivery/dispatch',
   },
   
   // Autenticação
