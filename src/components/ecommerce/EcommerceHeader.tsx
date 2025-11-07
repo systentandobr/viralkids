@@ -12,7 +12,13 @@ import { useState, useEffect } from "react";
 import { useChatbot } from "@/features/chatbot/hooks/useChatbot";
 import { useRouter } from "@/router";
 
-const EcommerceHeader = () => {
+interface EcommerceHeaderProps {
+  cartItemsCount: number;
+  setIsCartOpen: (isOpen: boolean) => void;
+  scrollToSection: (sectionId: string) => void;
+}
+
+const EcommerceHeader = ({ cartItemsCount, setIsCartOpen, scrollToSection }: EcommerceHeaderProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isBannerVisible, setIsBannerVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
@@ -62,7 +68,7 @@ const EcommerceHeader = () => {
   };
 
   const handleProductsClick = () => {
-    navigate('/');
+    scrollToSection('principal-produtos')
     setIsMenuOpen(false);
   };
 
@@ -132,10 +138,10 @@ const EcommerceHeader = () => {
               </Badge>
             </Button>
             
-            <Button variant="ghost" size="sm" className="relative">
+            <Button variant="ghost" size="sm" className="relative" onClick={() => setIsCartOpen(true)}>
               <ShoppingCart className="h-5 w-5" />
               <Badge className="absolute -top-2 -right-2 bg-bronze text-white text-xs px-1.5 py-0.5 rounded-full">
-                2
+                {cartItemsCount}
               </Badge>
             </Button>
             

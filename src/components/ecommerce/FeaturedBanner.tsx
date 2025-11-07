@@ -5,17 +5,16 @@ import { useState, useEffect, useRef } from "react";
 import productsImage from "@/assets/products-showcase.jpg";
 import productsVideo from "@/assets/videos/andando_de_patinete.mp4";
 
-const FeaturedBanner = () => {
+interface FeaturedBannerProps {
+  scrollToSection: (sectionId: string) => void;
+}
+
+const FeaturedBanner = ({ scrollToSection }: FeaturedBannerProps) => {
   const [showVideo, setShowVideo] = useState(true);
   const videoRef = useRef<HTMLVideoElement>(null);
   const imageTimeoutRef = useRef<number | null>(null);
   
-  const scrollToSection = (sectionId: string) => {
-    const element = document.getElementById(sectionId);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
+  
 
   const handleVideoEnd = () => {
     // Transição suave para a imagem

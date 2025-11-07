@@ -122,10 +122,21 @@ const EcommercePage: React.FC = () => {
     setSelectedBrand('all');
   };
 
+  const scrollToSection = (sectionId: string) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
     <>
       <div className="min-h-screen bg-gradient-to-br from-primary/10 to-accent/10">
-        <EcommerceHeader />
+        <EcommerceHeader 
+          cartItemsCount={getCartItemsCount()} 
+          setIsCartOpen={setIsCartOpen}
+          scrollToSection={scrollToSection}
+          />
         
         {/* Hero Banner */}
         <FeaturedBanner />
