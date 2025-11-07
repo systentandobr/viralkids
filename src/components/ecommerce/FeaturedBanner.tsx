@@ -52,17 +52,16 @@ const FeaturedBanner = () => {
           <div className="space-y-6">
             <div className="space-y-4">
               <Badge className="bg-gradient-to-r from-bronze to-gold text-white px-4 py-2 text-md font-medium">
-                🎯 Oportunidade Única
+                🎯 Impressão 3D Personalizada
               </Badge>
               
               <h1 className="text-3xl md:text-5xl font-bold text-foreground leading-tight">
-                Produtos Especiais que suas crianças
-                <span className="text-transparent bg-gradient-hero bg-clip-text"> vão adorar</span>
+                Produtos que Inspiram 
+                <span className="text-transparent bg-gradient-hero bg-clip-text"> Momentos Únicos</span>
               </h1>
               
               <p className="text-lg text-muted-foreground leading-relaxed">
-                Descubra nossa seleção de produtos infantis criativos, gerados por nossos 
-                franqueados com amor e qualidade.
+                Onde criatividade e qualidade se encontram para mostrar um universo de possibilidades
               </p>
             </div>
 
@@ -73,7 +72,7 @@ const FeaturedBanner = () => {
                   <Star key={i} className="h-4 w-4 fill-gold text-gold" />
                 ))}
               </div>
-              <span>4.9/5 • Mais de 1.000 famílias satisfeitas</span>
+              <span>4.9/5 • Mais de 100+ famílias satisfeitas</span>
             </div>
 
             {/* CTA Buttons */}
@@ -90,7 +89,7 @@ const FeaturedBanner = () => {
               </Button>
               
               <Button 
-                onClick={() => scrollToSection('principal-produtos')}
+                onClick={() => scrollToSection('products-3D')}
                 variant="outline" 
                 size="lg"
                 className="group border-bronze/20 hover:bg-bronze/10"

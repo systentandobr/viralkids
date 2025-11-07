@@ -13,48 +13,54 @@ const Franchise = () => {
 
   const franchisePackages = [
     {
-      name: "Starter",
-      price: "R$ 2.997",
+      name: "Pé no chão",
+      price: "R$ 4.997",
       description: "Ideal para começar no mercado",
       features: [
-        "50 produtos no catálogo",
-        "Sistema de vendas básico",
-        "Treinamento online (8h)",
+        "Kit aproximado de 100 produtos (para começar a vender)",
+        "Selecione os produtos que deseja vender",
+        "Serviço de consultoria para redes sociais (Instagram)",
+        "Gestão de estoque (online)",
+        "Gestão de pedidos e clientes",
+        "Marketplace de vendas (online)",
+        "Treinamento online (16h)",
+        "Catálogo completo (400+ fornecedores)",
         "Suporte via WhatsApp",
-        "Material de marketing",
+        "Material de marketing (ebook e vídeo)",
         "Territorialidade garantida"
       ],
       badge: "Mais Popular",
-      popular: true
-    },
-    {
-      name: "Premium",
-      price: "R$ 4.997",
-      description: "Para quem quer escalar rapidamente",
-      features: [
-        "150 produtos no catálogo",
-        "Sistema completo + automações",
-        "Treinamento presencial (16h)",
-        "Suporte prioritário",
-        "Impressora 3D inclusa",
-        "Consultoria mensal",
-        "Campanhas exclusivas"
-      ],
-      badge: "Recomendado",
       popular: false
     },
     {
-      name: "Master",
+      name: "Bom para começar",
       price: "R$ 7.997",
+      description: "Para quem quer escalar rapidamente",
+      features: [
+        "Tudo do plano Pé no chão",
+        "200 produtos no catálogo",
+        "Vendas pelo MarketPlace (integrado)",
+        "Sistema completo + automações (online)",
+        "Treinamento online (24h)",
+        "Suporte prioritário",
+        "Consultoria Mensal e replanejamento",
+        "Campanhas exclusivas (online)"
+      ],
+      badge: "Recomendado",
+      popular: true
+    },
+    {
+      name: "Voa alto",
+      price: "R$ 17.997",
       description: "Solução completa para empreendedores",
       features: [
-        "Catálogo completo (500+ produtos)",
-        "Plataforma white label",
+        "Tudo do plano (Bom para começar)",
+        "Catálogo com 300+ produtos (para escalar ainda mais)",
+        "Consultoria Premium para vendas (Instagram e Tiktok Shop)",        
         "Treinamento completo (40h)",
         "Consultor dedicado",
-        "Kit impressão 3D profissional",
+        "Kit impressão 3D (para personalizar os produtos)",
         "Mentoria estratégica",
-        "Exclusividade regional"
       ],
       badge: "Completo",
       popular: false
@@ -233,7 +239,7 @@ const Franchise = () => {
                     onClick={openWhatsAppFranchise}
                   >
                     <MessageCircle className="h-4 w-4" />
-                    Quero ser Franqueado
+                    Falar com Consultor
                   </Button>
                 </CardContent>
               </Card>

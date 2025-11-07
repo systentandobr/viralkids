@@ -4,6 +4,32 @@ import { Chatbot } from "@/features/chatbot";
 import { useState, useRef } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { TrendingUp, Users, Store, Heart } from "lucide-react";
+import { Card } from "@/components/ui/card";
+
+
+const benefits = [
+  {
+    icon: TrendingUp,
+    title: "Crescimento Garantido",
+    description: "Marca consolidada com forte presença digital e excelente retorno sobre investimento"
+  },
+  {
+    icon: Users,
+    title: "Suporte Completo",
+    description: "Treinamento, marketing e suporte operacional contínuo para franqueados"
+  },
+  {
+    icon: Store,
+    title: "Layouts Exclusivos",
+    description: "Projetos de loja modernos e atrativos que encantam crianças e pais"
+  },
+  {
+    icon: Heart,
+    title: "Propósito",
+    description: "Faça parte de um negócio que leva alegria e qualidade para famílias"
+  }
+];
 
 // Vídeo na pasta public - servido diretamente sem processamento do bundler
 const heroVideo = "/videos/apresentando_viral_kids.mp4";
@@ -33,29 +59,19 @@ const Hero = () => {
               <div className="space-y-4">
                 <div className="flex items-center space-x-2 text-bronze">
                   <Star className="h-5 w-5 fill-current" />
-                  <span className="text-md font-medium">Franquia Digital #1 do Nordeste</span>
+                  <span className="text-md font-medium">Franquia #1 de Marketplace infantil do Nordeste</span>
                 </div>
                 
                 <h1 className="text-4xl md:text-6xl font-bold text-foreground leading-tight">
-                  Transforme 
-                  <span className="text-transparent bg-gradient-hero bg-clip-text"> Sonhos </span>
-                  em 
-                  <span className="text-transparent bg-gradient-hero bg-clip-text"> Realidade</span>
+                  Invista num modelo
+                  <span className="text-transparent bg-gradient-hero bg-clip-text"> Comprovado </span>
+                  no segmento
+                  <span className="text-transparent bg-gradient-hero bg-clip-text">  infantil</span>
                 </h1>
                 
                 <p className="text-xl text-muted-foreground leading-relaxed">
-                  Produtos únicos e personalizados para o universo infantil. 
-                  Impressão 3D exclusiva, kits temáticos e tudo que está viral na internet!
+                  Venha ser mais um franqueado Viral Kids
                 </p>
-              </div>
-
-              <div className="flex items-center space-x-2 text-md text-muted-foreground">
-                <div className="flex space-x-1">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="h-4 w-4 fill-gold text-gold" />
-                  ))}
-                </div>
-                <span>4.9/5 • Mais de 500 famílias satisfeitas</span>
               </div>
 
               <div className="flex flex-col sm:flex-row gap-4">
@@ -83,19 +99,21 @@ const Hero = () => {
               {/* Trust Indicators */}
               <div className="flex items-center space-x-8 pt-8 border-t border-bronze/20">
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-bronze">25+</div>
+                  <div className="text-2xl font-bold text-bronze">5+</div>
                   <div className="text-md text-muted-foreground">Franquias Ativas</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-bronze">500+</div>
+                  <div className="text-2xl font-bold text-bronze">100+</div>
                   <div className="text-md text-muted-foreground">Produtos Únicos</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-bronze">10k+</div>
+                  <div className="text-2xl font-bold text-bronze">1k+</div>
                   <div className="text-md text-muted-foreground">Crianças Felizes</div>
                 </div>
               </div>
             </div>
+
+            
 
             {/* Hero Video */}
             <div className="relative">
@@ -131,6 +149,27 @@ const Hero = () => {
           </div>
         </div>
       </section>
+
+      {/* Benefits Section */}
+      <section className="py-16 bg-muted/30">
+              <div className="container">
+                <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
+                  Por Que Escolher a ViralKids?
+                </h2>
+                <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                  {benefits.map((benefit, idx) => (
+                    <Card
+                      key={idx}
+                      className="p-6 hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border-2"
+                    >
+                      <benefit.icon className="h-12 w-12 text-primary mb-4" />
+                      <h3 className="text-xl font-semibold mb-3">{benefit.title}</h3>
+                      <p className="text-muted-foreground">{benefit.description}</p>
+                    </Card>
+                  ))}
+                </div>
+              </div>
+            </section>
 
       {/* Chatbot */}
       {isChatbotOpen && <Chatbot position={isMobile ? "relative" : "fixed"} isChatbotOpen={isChatbotOpen} />}

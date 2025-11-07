@@ -1,5 +1,5 @@
 // Import das páginas
-import { LandingPage } from '@/pages/LandingPage';
+import { LandingPage } from '@/pages/Franchise/LandingPage';
 import { AuthPage } from '@/pages/AuthPage';
 import { AdminDashboard } from '@/pages/Admin/AdminDashboard';
 import { FranchiseeDashboard } from '@/pages/Admin/FranchiseeDashboard';
@@ -30,7 +30,7 @@ const routes: Route[] = [
   },
   // Página de produtos (deve vir depois das rotas mais específicas)
   {
-    path: '/products',
+    path: '/products-details',
     component: ProductDetailPage,
     exact: true
   },

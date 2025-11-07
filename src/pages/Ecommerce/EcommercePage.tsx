@@ -7,9 +7,7 @@ import AssistantButton from '@/components/ecommerce/AssistantButton';
 import { ProductGrid } from './components/ProductGrid';
 import { ProductFilters } from './components/ProductFilters';
 import { ShoppingCartSidebar } from './components/ShoppingCartSidebar';
-import { ProductCategories } from './components/ProductCategories';
 import { FeaturedProducts } from './components/FeaturedProducts';
-import { SearchBar } from './components/SearchBar';
 import { BrandSelector } from './components/BrandSelector';
 import { useProducts } from './hooks/useProducts';
 import { useCart } from './hooks/useCart';
@@ -19,6 +17,7 @@ import { ShoppingCart, Filter, Grid, List, Star, TrendingUp } from 'lucide-react
 import { Button } from '@/components/ui/button';
 import EcommerceHeader from '@/components/ecommerce/EcommerceHeader';
 import FeaturedBanner from '@/components/ecommerce/FeaturedBanner';
+import ProductSection from '@/components/ecommerce/ProductSection';
 
 const EcommercePage: React.FC = () => {
   // Estados do componente
@@ -130,6 +129,9 @@ const EcommercePage: React.FC = () => {
         
         {/* Hero Banner */}
         <FeaturedBanner />
+
+        <ProductSection />
+
         
         <main className="container mx-auto px-4 py-8 space-y-12">
           

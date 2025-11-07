@@ -78,7 +78,7 @@ const EcommerceHeader = () => {
       >
         <div className="container mx-auto px-4">
           <p className="font-medium">
-            🎉 Produtos Especiais para seus Pequenos - Frete Grátis acima de R$ 199. Ou consulte com nosso assistente
+            🎉 Produtos Especiais para seus Pequenos - Frete Grátis acima de R$ 199. Consulte nosso assistente virtual
           </p>
         </div>
       </div>
