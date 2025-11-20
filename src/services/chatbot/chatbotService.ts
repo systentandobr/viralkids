@@ -67,20 +67,79 @@ export class ChatbotService {
     return httpClient.post<{ id: string }>(API_ENDPOINTS.CHATBOT.SUBMIT_LEAD, leadData);
   }
 
-  // Processar resposta do usuário e gerar resposta do bot
+  // Processar resposta do usuário usando Agno Agent
   static async processUserInput(
     userInput: string,
     currentFlow?: string,
     leadData?: Partial<LeadData>
-  ): Promise<ApiResponse<ChatbotResponse>> {
+  ): Promise<ApiResponse<ChatbotResponse & { metadata?: { leadData?: any; shouldSubmitLead?: boolean } }>> {
+    const sessionId = this.generateSessionId();
+    
     const payload = {
-      userInput,
-      currentFlow,
-      leadData,
-      timestamp: new Date().toISOString(),
+      message: userInput,
+      session_id: sessionId,
+      context: {
+        currentFlow,
+        leadData,
+        ...leadData,
+      },
     };
 
-    return httpClient.post<ChatbotResponse>(API_ENDPOINTS.CHATBOT.SEND_MESSAGE, payload);
+    // Chamar API do agente Agno (backend Python)
+    const agnoApiUrl = import.meta.env.VITE_AGNO_API_URL || 'http://localhost:8001';
+    
+    try {
+      const response = await fetch(`${agnoApiUrl}/chat`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        throw new Error('Erro ao processar mensagem');
+      }
+
+      const data = await response.json();
+      
+      // Detectar se deve submeter lead baseado na resposta
+      const shouldSubmitLead = this._shouldSubmitLead(data.lead_data, leadData);
+      
+      return {
+        success: true,
+        data: {
+          message: data.message,
+          quickReplies: [],
+          metadata: {
+            leadData: data.lead_data,
+            shouldSubmitLead,
+            sessionId: data.session_id,
+          },
+        },
+      };
+    } catch (error) {
+      console.error('Erro ao chamar Agno Agent:', error);
+      // Fallback para API padrão
+      return httpClient.post<ChatbotResponse>(API_ENDPOINTS.CHATBOT.SEND_MESSAGE, {
+        userInput,
+        currentFlow,
+        leadData,
+        timestamp: new Date().toISOString(),
+      });
+    }
+  }
+
+  private static _shouldSubmitLead(
+    detectedLeadData: any,
+    currentLeadData?: Partial<LeadData>
+  ): boolean {
+    // Verificar se temos informações mínimas para criar lead
+    const hasName = detectedLeadData?.name || currentLeadData?.name;
+    const hasEmail = detectedLeadData?.email || currentLeadData?.email;
+    const hasPhone = detectedLeadData?.phone || currentLeadData?.phone;
+    
+    return !!(hasName && hasEmail && hasPhone);
   }
 
   // Iniciar nova conversa

@@ -186,8 +186,28 @@ export class HttpClient {
   }
 }
 
-// Instância padrão do cliente HTTP
-export const httpClient = new HttpClient();
+// Instância padrão do cliente HTTP configurada com autenticação
+export const httpClient = new HttpClient({
+  getAuthToken: () => {
+    // Importar dinamicamente para evitar dependência circular
+    try {
+      const { useAuthStore } = require('@/stores/auth.store');
+      const token = useAuthStore.getState().tokens?.token;
+      return token || null;
+    } catch {
+      return null;
+    }
+  },
+  onAuthError: () => {
+    // Importar dinamicamente para evitar dependência circular
+    try {
+      const { useAuthStore } = require('@/stores/auth.store');
+      useAuthStore.getState().logout();
+    } catch {
+      // Ignorar erro se store não estiver disponível
+    }
+  },
+});
 
 // Exportar tipos úteis
 export type { AxiosRequestConfig, AxiosResponse }; 

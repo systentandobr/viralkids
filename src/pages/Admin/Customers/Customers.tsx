@@ -1,0 +1,289 @@
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { 
+  Users, 
+  Plus, 
+  Search, 
+  Edit, 
+  Trash2,
+  Filter,
+  Download,
+  UserPlus,
+  Star
+} from "lucide-react";
+import { useState, useMemo } from "react";
+import { useCustomers, useCustomerStats } from "@/services/queries/customers";
+import { CustomerForm } from "./components/CustomerForm";
+
+const Customers = () => {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState<string | undefined>(undefined);
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [createAsLead, setCreateAsLead] = useState(false);
+
+  // Buscar clientes da API
+  const { data: customersData, isLoading, error } = useCustomers({
+    search: searchTerm || undefined,
+    status: statusFilter as 'vip' | 'ativo' | 'novo' | undefined,
+  });
+
+  const { data: stats } = useCustomerStats();
+
+  const customers = customersData?.data || [];
+  const filteredCustomers = customers; // Já filtrado pela API
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background p-6 lg:p-8">
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center space-y-4">
+            <div className="w-8 h-8 border-4 border-purple-600 border-t-transparent rounded-full animate-spin mx-auto" />
+            <p className="text-muted-foreground">Carregando clientes...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-background p-6 lg:p-8">
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center space-y-4">
+            <p className="text-red-600">Erro ao carregar clientes: {error instanceof Error ? error.message : 'Erro desconhecido'}</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <>
+    <div id="content" className="min-h-screen p-6 lg:p-8">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-8">
+        <div className="flex items-center gap-3">
+          <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center shadow-neon">
+            <Users className="h-6 w-6 text-white" />
+          </div>
+          <div>
+            <h1 className="text-3xl font-bold">Gerenciamento de Clientes</h1>
+            <p className="text-muted-foreground">
+              Gerencie sua base de clientes e histórico de compras
+            </p>
+          </div>
+        </div>
+        <div className="flex gap-2">
+          <Button
+            variant="outline"
+            onClick={() => {
+              setCreateAsLead(true);
+              setIsFormOpen(true);
+            }}
+            className="border-purple-500/50 hover:border-purple-500"
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            Novo Lead
+          </Button>
+          <Button
+            onClick={() => {
+              setCreateAsLead(false);
+              setIsFormOpen(true);
+            }}
+            className="bg-gradient-to-r from-purple-500 to-pink-500 hover:opacity-90 transition-opacity shadow-neon"
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            Novo Cliente
+          </Button>
+        </div>
+      </div>
+
+      {/* Stats Cards */}
+      <div className="grid md:grid-cols-4 gap-6 mb-8">
+        <Card className="p-6 bg-gradient-to-br from-purple-500/10 to-pink-500/10 border-purple-500/20">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
+              <Users className="h-5 w-5 text-white" />
+            </div>
+            <div>
+              <p className="text-sm text-muted-foreground">Total Clientes</p>
+              <h2 className="text-2xl font-bold text-purple-600 dark:text-purple-400">
+                {stats?.total || customers.length}
+              </h2>
+            </div>
+          </div>
+        </Card>
+
+        <Card className="p-6 bg-gradient-to-br from-neon-green/10 to-emerald-500/10 border-neon-green/20">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-neon-green to-emerald-500 flex items-center justify-center">
+              <UserPlus className="h-5 w-5 text-white" />
+            </div>
+            <div>
+              <p className="text-sm text-muted-foreground">Novos (mês)</p>
+              <h2 className="text-2xl font-bold text-neon-green">
+                {stats?.new || customers.filter(c => c.status === "novo").length}
+              </h2>
+            </div>
+          </div>
+        </Card>
+
+        <Card className="p-6 bg-gradient-to-br from-amber-500/10 to-orange-500/10 border-amber-500/20">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center">
+              <Star className="h-5 w-5 text-white" />
+            </div>
+            <div>
+              <p className="text-sm text-muted-foreground">Clientes VIP</p>
+              <h2 className="text-2xl font-bold text-amber-600 dark:text-amber-400">
+                {stats?.vip || customers.filter(c => c.status === "vip").length}
+              </h2>
+            </div>
+          </div>
+        </Card>
+
+        <Card className="p-6 bg-gradient-to-br from-neon-cyan/10 to-neon-blue/10 border-neon-cyan/20">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-neon-cyan to-neon-blue flex items-center justify-center">
+              <Users className="h-5 w-5 text-white" />
+            </div>
+            <div>
+              <p className="text-sm text-muted-foreground">Ticket Médio</p>
+              <h2 className="text-2xl font-bold text-neon-cyan">
+                R$ {stats?.averageTicket 
+                  ? stats.averageTicket.toFixed(0)
+                  : customers.length > 0 
+                    ? (customers.reduce((acc, c) => acc + (c.totalSpent || 0), 0) / customers.length).toFixed(0)
+                    : '0'}
+              </h2>
+            </div>
+          </div>
+        </Card>
+      </div>
+
+      {/* Filters and Search */}
+      <Card className="p-6 mb-6">
+        <div className="flex flex-col md:flex-row gap-4">
+          <div className="flex-1 relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Buscar por nome, email ou ID..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10 bg-background border-border/50 focus:border-purple-500"
+            />
+          </div>
+          <div className="flex gap-2">
+            <Button variant="outline" className="gap-2 border-border/50 hover:border-purple-500">
+              <Filter className="h-4 w-4" />
+              Filtros
+            </Button>
+            <Button variant="outline" className="gap-2 border-border/50 hover:border-pink-500">
+              <Download className="h-4 w-4" />
+              Exportar
+            </Button>
+          </div>
+        </div>
+      </Card>
+
+      {/* Customers Table */}
+      <Card className="p-6">
+        <Table>
+          <TableHeader>
+            <TableRow className="border-border/50 hover:bg-muted/50">
+              <TableHead className="text-foreground font-semibold">ID</TableHead>
+              <TableHead className="text-foreground font-semibold">Nome</TableHead>
+              <TableHead className="text-foreground font-semibold">Contato</TableHead>
+              <TableHead className="text-foreground font-semibold text-center">Compras</TableHead>
+              <TableHead className="text-foreground font-semibold text-right">Total Gasto</TableHead>
+              <TableHead className="text-foreground font-semibold text-center">Status</TableHead>
+              <TableHead className="text-foreground font-semibold text-right">Ações</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {filteredCustomers.map((customer) => (
+              <TableRow key={customer.id} className="border-border/50 hover:bg-muted/30 transition-colors">
+                <TableCell className="font-mono text-sm text-muted-foreground">
+                  {customer.id}
+                </TableCell>
+                <TableCell className="font-medium">{customer.name}</TableCell>
+                <TableCell className="text-muted-foreground">
+                  <div className="flex flex-col gap-1">
+                    <span className="text-sm">{customer.email}</span>
+                    <span className="text-xs">{customer.phone}</span>
+                  </div>
+                </TableCell>
+                <TableCell className="text-center font-semibold">
+                  {customer.totalPurchases || 0}
+                </TableCell>
+                <TableCell className="text-right font-semibold text-neon-cyan">
+                  R$ {(customer.totalSpent || 0).toFixed(2)}
+                </TableCell>
+                <TableCell className="text-center">
+                  <Badge
+                    variant="secondary"
+                    className={
+                      customer.status === "vip"
+                        ? "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20"
+                        : customer.status === "ativo"
+                        ? "bg-neon-green/10 text-neon-green border-neon-green/20"
+                        : "bg-neon-blue/10 text-neon-blue border-neon-blue/20"
+                    }
+                  >
+                    {customer.status === "vip" ? (
+                      <span className="flex items-center gap-1">
+                        <Star className="h-3 w-3" />
+                        VIP
+                      </span>
+                    ) : customer.status === "ativo" ? "Ativo" : "Novo"}
+                  </Badge>
+                </TableCell>
+                <TableCell className="text-right">
+                  <div className="flex justify-end gap-2">
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="h-8 w-8 p-0 hover:bg-purple-500/10 hover:text-purple-500"
+                    >
+                      <Edit className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="h-8 w-8 p-0 hover:bg-neon-red/10 hover:text-neon-red"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </Card>
+
+      {/* Formulário de Cadastro */}
+      <CustomerForm
+        open={isFormOpen}
+        onOpenChange={setIsFormOpen}
+        createAsLead={createAsLead}
+        onSuccess={() => {
+          // Recarregar dados após criar
+        }}
+      />
+    </div>
+    </>
+  );
+};
+
+export default Customers;

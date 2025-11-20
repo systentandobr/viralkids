@@ -12,7 +12,6 @@ import { Label } from '@/components/ui/label';
 import { 
   Search, 
   Filter, 
-  MoreHorizontal, 
   Phone, 
   Mail, 
   MapPin, 
@@ -130,7 +129,7 @@ export const LeadsManagement: React.FC<LeadsManagementProps> = ({
   };
 
   return (
-    <div className="space-y-6">
+    <div id="content" className="space-y-6">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
         <div>

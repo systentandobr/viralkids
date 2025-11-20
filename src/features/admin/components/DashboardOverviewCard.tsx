@@ -92,7 +92,7 @@ export const DashboardOverviewCard: React.FC<DashboardOverviewCardProps> = ({ ov
   ];
 
   return (
-    <div className="space-y-6">
+    <div id="content" className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>

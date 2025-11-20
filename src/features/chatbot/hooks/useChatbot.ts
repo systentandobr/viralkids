@@ -59,30 +59,67 @@ export const useChatbot = () => {
     }
   }, [setCurrentFlow, setCurrentStep, addMessage]);
 
-  // Processar resposta do usuário
+  // Processar resposta do usuário usando Agno Agent
   const processUserMessage = useCallback(async (text: string) => {
     // Adicionar mensagem do usuário
     addMessage(text, 'user');
     setLoading(true);
 
     try {
+      // Usar ChatbotService para enviar mensagem ao agente Agno
+      const { ChatbotService } = await import('@/services/chatbot/chatbotService');
+      
+      const sessionId = currentSession?.id || `session_${Date.now()}`;
+      
+      const response = await ChatbotService.processUserInput(
+        text,
+        currentFlow,
+        leadData
+      );
+
+      if (response.success && response.data) {
+        // Adicionar resposta do bot
+        addMessage(response.data.message, 'bot');
+        
+        // Atualizar dados do lead se detectados
+        if (response.data.metadata?.leadData) {
+          updateLeadData(response.data.metadata.leadData);
+        }
+        
+        // Se o agente detectou que coletou informações suficientes, submeter lead
+        if (response.data.metadata?.shouldSubmitLead && leadData.name && leadData.email && leadData.phone) {
+          await submitLead(leadData);
+        }
+      } else {
+        // Fallback para fluxo manual se API falhar
+        await processManualFlow(text);
+      }
+      
+      setLoading(false);
+    } catch (error) {
+      console.error('Erro ao processar mensagem:', error);
+      // Fallback para fluxo manual
+      await processManualFlow(text);
+    }
+  }, [currentFlow, currentStep, leadData, addMessage, setLoading, setError, updateLeadData, setCurrentStep, currentSession]);
+
+  // Processar fluxo manual (fallback)
+  const processManualFlow = useCallback(async (text: string) => {
+    try {
       if (!currentFlow || !currentStep) {
-        // Se não há fluxo ativo, iniciar fluxo padrão
         startFlow(franchiseLeadFlow);
         return;
       }
 
-      const flow = franchiseLeadFlow; // Em produção, buscar flow pelo ID
+      const flow = franchiseLeadFlow;
       const currentStepObj = flow.steps.find(step => step.id === currentStep);
       if (!currentStepObj) {
         throw new Error('Step não encontrado');
       }
 
-      // Processar baseado no tipo do step
       let nextStepId = currentStepObj.nextStep;
 
       if (currentStepObj.type === 'question' || currentStepObj.type === 'form') {
-        // Validar resposta se necessário
         if (currentStepObj.validation) {
           const isValid = validateInput(text, currentStepObj.validation);
           if (!isValid) {
@@ -92,14 +129,12 @@ export const useChatbot = () => {
           }
         }
 
-        // Salvar dados do lead
         const fieldName = getFieldNameFromStep(currentStepObj);
         if (fieldName) {
           updateLeadData({ [fieldName]: text });
         }
       }
 
-      // Verificar condições para próximo step
       if (currentStepObj.conditions) {
         for (const condition of currentStepObj.conditions) {
           if (evaluateCondition(condition, text, leadData)) {
@@ -109,19 +144,16 @@ export const useChatbot = () => {
         }
       }
 
-      // Ir para próximo step
       if (nextStepId) {
         const nextStep = flow.steps.find(step => step.id === nextStepId);
         if (nextStep) {
           setCurrentStep(nextStepId);
-          
           setTimeout(() => {
             addMessage(nextStep.content, 'bot');
             setLoading(false);
           }, 1000);
         }
       } else {
-        // Fim do fluxo - enviar dados para API
         await submitLead(leadData);
         addMessage(
           'Obrigado! Recebemos suas informações e entraremos em contato em breve. 🚀',
@@ -130,7 +162,7 @@ export const useChatbot = () => {
         setLoading(false);
       }
     } catch (error) {
-      console.error('Erro ao processar mensagem:', error);
+      console.error('Erro no fluxo manual:', error);
       setError('Desculpe, ocorreu um erro. Tente novamente.');
       setLoading(false);
     }
@@ -205,22 +237,42 @@ export const useChatbot = () => {
   // Enviar lead para API
   const submitLead = async (leadData: Partial<LeadData>) => {
     try {
-      // TODO: Implementar chamada para API real
-      console.log('Enviando lead:', leadData);
+      const { LeadService } = await import('@/services/leads/leadService');
+      const { LeadSource } = await import('@/services/leads/leadService');
       
-      // Simular delay de API
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Validar dados mínimos
+      if (!leadData.name || !leadData.email || !leadData.phone) {
+        throw new Error('Dados incompletos para criar lead');
+      }
       
-      // Usar store para salvar lead
-      const leadToSave = {
-        ...leadData,
-        id: generateId(),
-        source: 'chatbot',
-        createdAt: new Date(),
-        status: 'new' as const,
-      };
+      // Criar lead via API
+      const response = await LeadService.create({
+        name: leadData.name,
+        email: leadData.email,
+        phone: leadData.phone,
+        city: leadData.city,
+        source: LeadSource.CHATBOT,
+        metadata: {
+          franchiseType: leadData.franchiseType,
+          experience: leadData.experience,
+          budget: leadData.budget,
+          timeToStart: leadData.timeToStart,
+          chatbotSessionId: currentSession?.id,
+        },
+      });
       
-      await saveLead(leadToSave);
+      if (response.success) {
+        // Salvar também na store local
+        const leadToSave = {
+          ...leadData,
+          id: response.data?.id || generateId(),
+          source: 'chatbot',
+          createdAt: new Date(),
+          status: 'new' as const,
+        };
+        
+        await saveLead(leadToSave);
+      }
     } catch (error) {
       console.error('Erro ao enviar lead:', error);
       throw error;

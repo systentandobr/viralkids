@@ -114,8 +114,32 @@ export const API_ENDPOINTS = {
   LEADS: {
     CREATE: '/leads',
     LIST: '/leads',
+    DETAIL: (id: string) => `/leads/${id}`,
     UPDATE: (id: string) => `/leads/${id}`,
     DELETE: (id: string) => `/leads/${id}`,
+    PIPELINE_STATS: '/leads/pipeline/stats',
+    CONVERT: (id: string) => `/leads/${id}/convert`,
+  },
+
+  // Clientes
+  CUSTOMERS: {
+    LIST: '/customers',
+    DETAIL: (id: string) => `/customers/${id}`,
+    CREATE: '/customers',
+    UPDATE: (id: string) => `/customers/${id}`,
+    DELETE: (id: string) => `/customers/${id}`,
+    STATS: '/customers/stats',
+  },
+
+  // Franquias
+  FRANCHISES: {
+    LIST: '/franchises',
+    DETAIL: (id: string) => `/franchises/${id}`,
+    CREATE: '/franchises',
+    UPDATE: (id: string) => `/franchises/${id}`,
+    DELETE: (id: string) => `/franchises/${id}`,
+    METRICS: (id: string) => `/franchises/${id}/metrics`,
+    REGIONAL_TRENDS: '/franchises/regional-trends',
   },
   
 

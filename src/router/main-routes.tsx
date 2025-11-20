@@ -6,6 +6,10 @@ import { FranchiseeDashboard } from '@/pages/Admin/FranchiseeDashboard';
 import EcommercePage from '@/pages/Ecommerce/EcommercePage';
 import CheckoutPage from '@/pages/Ecommerce/CheckoutPage';
 import ProductDetailPage from '@/pages/ProductDetail/ProductDetailPage';
+import Customers from '@/pages/Admin/Customers/Customers';
+import Orders from '@/pages/Admin/Orders/Orders';
+import ProductsManagement from '@/pages/Admin/Products/ProductsManagement';
+import LeadsPipeline from '@/pages/Admin/Leads/LeadsPipeline';
 import RouteTest from '@/components/RouteTest';
 import { Route } from '.';
 
@@ -60,7 +64,31 @@ const routes: Route[] = [
     path: '/admin',
     component: AdminDashboard,
     requireAuth: true,
-    allowedRoles: ['admin', 'support', 'sistema', 'system']
+    allowedRoles: ['admin', 'support', 'sistema', 'system', 'franchisee', 'gerente', 'franquia', 'franqueado', 'parceiro', 'vendedor']
+  },
+  {
+    path: '/admin/customers',
+    component: Customers,
+    requireAuth: true,
+    allowedRoles: ['admin', 'support', 'sistema', 'system', 'franchisee', 'gerente', 'franquia', 'franqueado', 'parceiro', 'vendedor']
+  },
+  {
+    path: '/admin/orders',
+    component: Orders,
+    requireAuth: true,
+    allowedRoles: ['admin', 'support', 'sistema', 'system', 'franchisee', 'gerente', 'franquia', 'franqueado', 'parceiro', 'vendedor']
+  },
+  {
+    path: '/admin/products',
+    component: ProductsManagement,
+    requireAuth: true,
+    allowedRoles: ['admin', 'support', 'sistema', 'system', 'franchisee', 'gerente', 'franquia', 'franqueado', 'parceiro', 'vendedor']
+  },
+  {
+    path: '/admin/leads',
+    component: LeadsPipeline,
+    requireAuth: true,
+    allowedRoles: ['admin', 'support', 'sistema', 'system', 'franchisee', 'gerente', 'franquia', 'franqueado', 'parceiro', 'vendedor']
   },
   {
     path: '/dashboard',

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useGameification } from '@/features/franchise/hooks/useGameification';
 import { SupplierCatalog } from '@/features/suppliers';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -23,11 +23,16 @@ import {
   ExternalLink,
   Download,
   UserCircle,
-  LogOut
+  LogOut,
+  ShoppingCart,
+  Package
 } from 'lucide-react';
 import { useAuthContext } from '@/features/auth';
 import { useRouter } from '@/router';
 import { useReplenishmentPlan } from '@/features/inventory/hooks/useReplenishment';
+import Customers from './Customers/Customers';
+import Orders from './Orders/Orders';
+import ProductsManagement from './Products/ProductsManagement';
 
 export const FranchiseeDashboard: React.FC = () => {
   // Simulando ID do franqueado logado
@@ -47,12 +52,34 @@ export const FranchiseeDashboard: React.FC = () => {
     getNextLevelPoints
   } = useGameification({ franchiseeId });
 
-  const [activeTab, setActiveTab] = useState('dashboard');
-
   const { logout, user } = useAuthContext();
-  const { navigate } = useRouter();
 
   const [maxSuppliers, setMaxSuppliers] = useState(12);
+
+  const { navigate, currentPath } = useRouter();
+
+  // Detectar a rota atual para destacar o menu correto
+  const getActiveTab = (path: string) => {
+    if (path === '/dashboard/tasks') return 'tasks';
+    if (path === '/dashboard/suppliers') return 'suppliers';
+    if (path === '/dashboard/products') return 'products';
+    if (path === '/dashboard/analytics') return 'analytics';
+    if (path === '/dashboard/leads') return 'leads';
+    if (path === '/dashboard/replenishment') return 'replenishment';
+    if (path === '/dashboard/training') return 'training';
+    if (path === '/dashboard/customers') return 'customers';
+    if (path === '/dashboard/orders') return 'orders';
+    if (path === '/dashboard/products-management') return 'products-management';
+    return '/dashboard/overview';
+  };
+
+  const [activeTab, setActiveTab] = useState(() => getActiveTab(currentPath));
+
+  // Atualizar activeTab quando a rota mudar
+  useEffect(() => {
+    const newTab = getActiveTab(currentPath);
+    setActiveTab(newTab);
+  }, [currentPath]);
 
   const availableTasks = getAvailableTasks();
   const nextLevelPoints = getNextLevelPoints();
@@ -151,18 +178,24 @@ export const FranchiseeDashboard: React.FC = () => {
         <aside className="w-64 bg-white border-r border-gray-200 min-h-screen">
           <nav className="p-4 space-y-2">
             <Button
-              variant={activeTab === 'dashboard' ? 'default' : 'ghost'}
+              variant={activeTab === '/dashboard/overview' ? 'default' : 'ghost'}
               className="w-full justify-start"
-              onClick={() => setActiveTab('dashboard')}
+              onClick={() => {
+                setActiveTab('/dashboard/overview');
+                navigate('#/dashboard/overview');
+              }}
             >
               <Target className="h-4 w-4 mr-2" />
-              Dashboard
+              Visão Geral
             </Button>
             
             <Button
-              variant={activeTab === 'tasks' ? 'default' : 'ghost'}
+              variant={activeTab === '/dashboard/tasks' ? 'default' : 'ghost'}
               className="w-full justify-start"
-              onClick={() => setActiveTab('tasks')}
+              onClick={() => {
+                setActiveTab('/dashboard/tasks');
+                navigate('#/dashboard/tasks');
+              }}
             >
               <CheckCircle className="h-4 w-4 mr-2" />
               Tarefas
@@ -174,37 +207,82 @@ export const FranchiseeDashboard: React.FC = () => {
             </Button>
             
             <Button
-              variant={activeTab === 'suppliers' ? 'default' : 'ghost'}
+              variant={activeTab === '/dashboard/suppliers' ? 'default' : 'ghost'}
               className="w-full justify-start"
-              onClick={() => setActiveTab('suppliers')}
+              onClick={() => {
+                setActiveTab('/dashboard/suppliers');
+                navigate('#/dashboard/suppliers');
+              }}
             >
               <ShoppingBag className="h-4 w-4 mr-2" />
               Fornecedores
             </Button>
 
             <Button
-                variant={activeTab === 'replenishment' ? 'default' : 'ghost'}
+                variant={activeTab === '/dashboard/replenishment' ? 'default' : 'ghost'}
                 className="w-full justify-start"
-                onClick={() => setActiveTab('replenishment')}
+                onClick={() => {
+                  setActiveTab('/dashboard/replenishment');
+                  navigate('#/dashboard/replenishment');
+                }}
               >
                 <TrendingUp className="h-4 w-4 mr-2" />
                 Reposição
             </Button>
             
             <Button
-              variant={activeTab === 'training' ? 'default' : 'ghost'}
+              variant={activeTab === '/dashboard/training' ? 'default' : 'ghost'}
               className="w-full justify-start"
-              onClick={() => setActiveTab('training')}
+              onClick={() => {
+                setActiveTab('/dashboard/training');
+                navigate('#/dashboard/training');
+              }}
             >
               <BookOpen className="h-4 w-4 mr-2" />
               Treinamentos
+            </Button>
+
+            <Button
+              variant={activeTab === '/dashboard/customers' ? 'default' : 'ghost'}
+              className="w-full justify-start"
+              onClick={() => {
+                setActiveTab('/dashboard/customers');
+                navigate('#/dashboard/customers');
+              }}
+            >
+              <Users className="h-4 w-4 mr-2" />
+              Clientes
+            </Button>
+            
+            <Button
+              variant={activeTab === 'orders' ? 'default' : 'ghost'}
+              className="w-full justify-start"
+              onClick={() => {
+                setActiveTab('orders');
+                navigate('#/dashboard/orders');
+              }}
+            >
+              <ShoppingCart className="h-4 w-4 mr-2" />
+              Pedidos
+            </Button>
+            
+            <Button
+              variant={activeTab === 'products-management' ? 'default' : 'ghost'}
+              className="w-full justify-start"
+              onClick={() => {
+                setActiveTab('products-management');
+                navigate('#/dashboard/products-management');
+              }}
+            >
+              <Package className="h-4 w-4 mr-2" />
+              Produtos
             </Button>
           </nav>
         </aside>
 
         {/* Content Area */}
         <main className="flex-1 p-6">
-          {activeTab === 'dashboard' && (
+          {activeTab === '/dashboard/overview' && (
             <div className="space-y-6">
               {/* Welcome Section */}
               <div className="space-y-4">
@@ -633,6 +711,18 @@ export const FranchiseeDashboard: React.FC = () => {
               </Card>
             )}
           </div>
+        )}
+
+        {activeTab === 'customers' && (
+          <Customers />
+        )}
+
+        {activeTab === 'orders' && (
+          <Orders />
+        )}
+
+        {activeTab === 'products-management' && (
+          <ProductsManagement />
         )}
         </main>
       </div>

@@ -1,189 +1,125 @@
 import { httpClient, ApiResponse } from '../api/httpClient';
 import { API_ENDPOINTS } from '../api/endpoints';
-import { Franchise, FranchiseFilters, CreateFranchiseData, UpdateFranchiseData, FranchiseApplication, FranchiseStats } from './types';
 
-// Classe do serviço de franquias
+export interface FranchiseLocation {
+  lat: number;
+  lng: number;
+  address: string;
+  city: string;
+  state: string;
+  zipCode: string;
+  type: 'physical' | 'digital';
+}
+
+export interface FranchiseTerritory {
+  city: string;
+  state: string;
+  exclusive: boolean;
+  radius?: number;
+}
+
+export interface FranchiseMetrics {
+  totalOrders: number;
+  totalSales: number;
+  totalLeads: number;
+  conversionRate: number;
+  averageTicket: number;
+  customerCount: number;
+  growthRate: number;
+  lastMonthSales: number;
+  lastMonthOrders: number;
+  lastMonthLeads: number;
+}
+
+export interface Franchise {
+  id: string;
+  unitId: string;
+  name: string;
+  owner: {
+    id: string;
+    name: string;
+    email: string;
+    phone?: string;
+  };
+  location: FranchiseLocation;
+  status: 'active' | 'inactive' | 'pending' | 'suspended';
+  type: 'standard' | 'premium' | 'express';
+  territory?: FranchiseTerritory;
+  metrics?: FranchiseMetrics;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface RegionalTrend {
+  region: string;
+  state: string;
+  franchisesCount: number;
+  totalSales: number;
+  growthRate: number;
+  averageTicket: number;
+  leadsCount: number;
+  conversionRate: number;
+  trend: 'up' | 'down' | 'stable';
+}
+
+export interface FranchiseFilters {
+  search?: string;
+  status?: 'active' | 'inactive' | 'pending' | 'suspended';
+  type?: 'standard' | 'premium' | 'express';
+  state?: string[];
+  city?: string[];
+  page?: number;
+  limit?: number;
+}
+
+export interface CreateFranchiseData {
+  unitId: string;
+  name: string;
+  ownerId: string;
+  ownerName: string;
+  ownerEmail: string;
+  ownerPhone?: string;
+  location: FranchiseLocation;
+  status?: 'active' | 'inactive' | 'pending' | 'suspended';
+  type?: 'standard' | 'premium' | 'express';
+  territory?: FranchiseTerritory;
+}
+
+export interface UpdateFranchiseData extends Partial<CreateFranchiseData> {}
+
 export class FranchiseService {
-  // Listar franquias
-  static async listFranchises(filters?: FranchiseFilters): Promise<ApiResponse<Franchise[]>> {
-    const params = filters ? { ...filters } : {};
-    return httpClient.get<Franchise[]>(API_ENDPOINTS.FRANCHISE.LIST, { params });
-  }
-
-  // Obter detalhes de uma franquia
-  static async getFranchise(id: string): Promise<ApiResponse<Franchise>> {
-    return httpClient.get<Franchise>(API_ENDPOINTS.FRANCHISE.DETAILS(id));
-  }
-
-  // Criar nova franquia
-  static async createFranchise(data: CreateFranchiseData): Promise<ApiResponse<Franchise>> {
-    return httpClient.post<Franchise>(API_ENDPOINTS.FRANCHISE.CREATE, data);
-  }
-
-  // Atualizar franquia
-  static async updateFranchise(id: string, data: UpdateFranchiseData): Promise<ApiResponse<Franchise>> {
-    return httpClient.put<Franchise>(API_ENDPOINTS.FRANCHISE.UPDATE(id), data);
-  }
-
-  // Deletar franquia
-  static async deleteFranchise(id: string): Promise<ApiResponse<void>> {
-    return httpClient.delete<void>(API_ENDPOINTS.FRANCHISE.DELETE(id));
-  }
-
-  // Aplicar para franquia
-  static async applyForFranchise(application: Omit<FranchiseApplication, 'id' | 'status' | 'createdAt' | 'updatedAt'>): Promise<ApiResponse<{ id: string }>> {
-    return httpClient.post<{ id: string }>(API_ENDPOINTS.FRANCHISE.APPLY, application);
-  }
-
-  // Obter estatísticas das franquias
-  static async getFranchiseStats(): Promise<ApiResponse<FranchiseStats>> {
-    return httpClient.get<FranchiseStats>('/franchise/stats');
-  }
-
-  // Obter franquias por localização
-  static async getFranchisesByLocation(city: string, state: string): Promise<ApiResponse<Franchise[]>> {
-    return httpClient.get<Franchise[]>(`/franchise/location/${state}/${city}`);
-  }
-
-  // Obter franquias próximas
-  static async getNearbyFranchises(lat: number, lng: number, radius: number = 50): Promise<ApiResponse<Franchise[]>> {
-    return httpClient.get<Franchise[]>(`/franchise/nearby?lat=${lat}&lng=${lng}&radius=${radius}`);
-  }
-
-  // Ativar/desativar franquia
-  static async toggleFranchiseStatus(id: string, status: 'active' | 'inactive' | 'suspended'): Promise<ApiResponse<Franchise>> {
-    return httpClient.patch<Franchise>(`/franchise/${id}/status`, { status });
-  }
-
-  // Obter aplicações de franquia
-  static async getFranchiseApplications(status?: string): Promise<ApiResponse<FranchiseApplication[]>> {
-    const params = status ? { status } : {};
-    return httpClient.get<FranchiseApplication[]>('/franchise/applications', { params });
-  }
-
-  // Atualizar status de aplicação
-  static async updateApplicationStatus(
-    id: string, 
-    status: 'pending' | 'approved' | 'rejected' | 'interviewed',
-    notes?: string
-  ): Promise<ApiResponse<FranchiseApplication>> {
-    return httpClient.patch<FranchiseApplication>(`/franchise/applications/${id}`, { status, notes });
-  }
-
-  // Obter métricas de uma franquia
-  static async getFranchiseMetrics(id: string, period: 'week' | 'month' | 'year' = 'month'): Promise<ApiResponse<{
-    sales: number;
-    orders: number;
-    customers: number;
-    rating: number;
-    growth: number;
-    period: string;
+  static async list(filters?: FranchiseFilters): Promise<ApiResponse<{
+    data: Franchise[];
+    total: number;
+    page: number;
+    limit: number;
   }>> {
-    return httpClient.get(`/franchise/${id}/metrics?period=${period}`);
+    return httpClient.get(API_ENDPOINTS.FRANCHISES.LIST, {
+      params: filters,
+    });
   }
 
-  // Exportar dados das franquias
-  static async exportFranchises(format: 'csv' | 'excel' = 'csv'): Promise<ApiResponse<{ downloadUrl: string }>> {
-    return httpClient.get<{ downloadUrl: string }>(`/franchise/export?format=${format}`);
+  static async getById(id: string): Promise<ApiResponse<Franchise>> {
+    return httpClient.get(API_ENDPOINTS.FRANCHISES.DETAIL(id));
   }
 
-  // Validar dados de franquia
-  static validateFranchiseData(data: Partial<CreateFranchiseData>): { isValid: boolean; errors: string[] } {
-    const errors: string[] = [];
-
-    if (!data.name || data.name.trim().length < 3) {
-      errors.push('Nome da franquia deve ter pelo menos 3 caracteres');
-    }
-
-    if (!data.location?.city || data.location.city.trim().length < 2) {
-      errors.push('Cidade é obrigatória');
-    }
-
-    if (!data.location?.state || data.location.state.trim().length < 2) {
-      errors.push('Estado é obrigatório');
-    }
-
-    if (!data.location?.address || data.location.address.trim().length < 10) {
-      errors.push('Endereço deve ter pelo menos 10 caracteres');
-    }
-
-    if (!data.type || !['standard', 'premium', 'express'].includes(data.type)) {
-      errors.push('Tipo de franquia inválido');
-    }
-
-    return {
-      isValid: errors.length === 0,
-      errors,
-    };
+  static async getMetrics(id: string): Promise<ApiResponse<FranchiseMetrics>> {
+    return httpClient.get(API_ENDPOINTS.FRANCHISES.METRICS(id));
   }
 
-  // Validar dados de aplicação
-  static validateApplicationData(data: Partial<FranchiseApplication>): { isValid: boolean; errors: string[] } {
-    const errors: string[] = [];
-
-    if (!data.applicant?.name || data.applicant.name.trim().length < 2) {
-      errors.push('Nome deve ter pelo menos 2 caracteres');
-    }
-
-    if (!data.applicant?.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.applicant.email)) {
-      errors.push('E-mail inválido');
-    }
-
-    if (!data.applicant?.phone || data.applicant.phone.trim().length < 10) {
-      errors.push('Telefone inválido');
-    }
-
-    if (!data.applicant?.city || data.applicant.city.trim().length < 2) {
-      errors.push('Cidade é obrigatória');
-    }
-
-    if (!data.applicant?.state || data.applicant.state.trim().length < 2) {
-      errors.push('Estado é obrigatório');
-    }
-
-    if (!data.franchiseType || !['standard', 'premium', 'express'].includes(data.franchiseType)) {
-      errors.push('Tipo de franquia inválido');
-    }
-
-    if (!data.experience || data.experience.trim().length < 10) {
-      errors.push('Experiência deve ter pelo menos 10 caracteres');
-    }
-
-    if (!data.budget || data.budget.trim().length < 5) {
-      errors.push('Orçamento é obrigatório');
-    }
-
-    if (!data.timeToStart || data.timeToStart.trim().length < 5) {
-      errors.push('Prazo para início é obrigatório');
-    }
-
-    return {
-      isValid: errors.length === 0,
-      errors,
-    };
+  static async getRegionalTrends(): Promise<ApiResponse<RegionalTrend[]>> {
+    return httpClient.get(API_ENDPOINTS.FRANCHISES.REGIONAL_TRENDS);
   }
 
-  // Obter tipos de franquia disponíveis
-  static getFranchiseTypes(): Array<{ value: string; label: string; description: string; investment: string }> {
-    return [
-      {
-        value: 'standard',
-        label: 'Franquia Padrão',
-        description: 'Modelo completo com todos os recursos',
-        investment: 'R$ 50.000 - R$ 100.000',
-      },
-      {
-        value: 'premium',
-        label: 'Franquia Premium',
-        description: 'Modelo avançado com recursos exclusivos',
-        investment: 'R$ 100.000 - R$ 200.000',
-      },
-      {
-        value: 'express',
-        label: 'Franquia Express',
-        description: 'Modelo simplificado para início rápido',
-        investment: 'R$ 25.000 - R$ 50.000',
-      },
-    ];
+  static async create(data: CreateFranchiseData): Promise<ApiResponse<Franchise>> {
+    return httpClient.post(API_ENDPOINTS.FRANCHISES.CREATE, data);
   }
-} 
+
+  static async update(id: string, data: UpdateFranchiseData): Promise<ApiResponse<Franchise>> {
+    return httpClient.patch(API_ENDPOINTS.FRANCHISES.UPDATE(id), data);
+  }
+
+  static async delete(id: string): Promise<ApiResponse<void>> {
+    return httpClient.delete(API_ENDPOINTS.FRANCHISES.DELETE(id));
+  }
+}

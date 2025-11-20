@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { DashboardOverviewCard } from '@/features/admin/components/DashboardOverviewCard';
 import { LeadsManagement } from '@/features/admin/components/LeadsManagement';
 import { SupplierCatalog } from '@/features/suppliers';
@@ -17,10 +17,18 @@ import {
   Bell,
   UserCircle,
   LogOut,
-  RefreshCw
+  RefreshCw,
+  ShoppingCart,
+  Package,
+  TrendingUp
 } from 'lucide-react';
 import { useAuthContext } from '@/features/auth';
 import { useRouter } from '@/router';
+import Customers from './Customers/Customers';
+import Orders from './Orders/Orders';
+import ProductsManagement from './Products/ProductsManagement';
+import LeadsPipeline from './Leads/LeadsPipeline';
+import { FranchisesManagement } from './Franchisees';
 
 export const AdminDashboard: React.FC = () => {
   const {
@@ -35,10 +43,28 @@ export const AdminDashboard: React.FC = () => {
   } = useAdminDashboard({ autoRefresh: true, refreshInterval: 60000 });
 
   const { logout, user } = useAuthContext();
-  const { navigate } = useRouter();
+  const { navigate, currentPath } = useRouter();
 
-  const [activeTab, setActiveTab] = useState('overview');
+  // Detectar a rota atual para destacar o menu correto
+  const getActiveTab = (path: string) => {
+  if (path === '/admin/customers') return 'customers';
+  if (path === '/admin/orders') return 'orders';
+  if (path === '/admin/products') return 'products';
+  if (path === '/admin/leads') return 'leads';
+  if (path === '/admin/franchises') return 'franchises';
+    if (path === '/admin/suppliers') return 'suppliers';
+    if (path === '/admin/analytics') return 'analytics';
+    if (path === '/admin/leads') return 'leads';
+    return 'overview';
+  };
+
+  const [activeTab, setActiveTab] = useState(() => getActiveTab(currentPath));
   const [maxSuppliers, setMaxSuppliers] = useState(12);
+
+  // Atualizar activeTab quando a rota mudar
+  useEffect(() => {
+    setActiveTab(getActiveTab(currentPath));
+  }, [currentPath]);
   if (loading && !dashboard) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -68,7 +94,7 @@ export const AdminDashboard: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <header className="bg-white border-b border-gray-200 sticky top-0 z-50">
+      <header className="bg-background border-b border-gray-200 sticky top-0 z-50">
         <div className="px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
@@ -118,7 +144,7 @@ export const AdminDashboard: React.FC = () => {
       {/* Main Content */}
       <div className="flex">
         {/* Sidebar */}
-        <aside className="w-64 bg-white border-r border-gray-200 min-h-screen">
+        <aside className="w-64 bg-background border-r border-gray-200 min-h-screen">
           <nav className="p-4 space-y-2">
             <Button
               variant={activeTab === 'overview' ? 'default' : 'ghost'}
@@ -167,6 +193,54 @@ export const AdminDashboard: React.FC = () => {
             </Button>
             
             <Button
+              variant={activeTab === 'customers' ? 'default' : 'ghost'}
+              className="w-full justify-start"
+              onClick={() => {
+                setActiveTab('customers');
+                navigate('#/admin/customers');
+              }}
+            >
+              <Users className="h-4 w-4 mr-2" />
+              Clientes
+            </Button>
+            
+            <Button
+              variant={activeTab === 'orders' ? 'default' : 'ghost'}
+              className="w-full justify-start"
+              onClick={() => {
+                setActiveTab('orders');
+                navigate('#/admin/orders');
+              }}
+            >
+              <ShoppingCart className="h-4 w-4 mr-2" />
+              Pedidos
+            </Button>
+            
+            <Button
+              variant={activeTab === 'products' ? 'default' : 'ghost'}
+              className="w-full justify-start"
+              onClick={() => {
+                setActiveTab('products');
+                navigate('#/admin/products');
+              }}
+            >
+              <Package className="h-4 w-4 mr-2" />
+              Produtos
+            </Button>
+            
+            <Button
+              variant={activeTab === 'leads' ? 'default' : 'ghost'}
+              className="w-full justify-start"
+              onClick={() => {
+                setActiveTab('leads');
+                navigate('#/admin/leads');
+              }}
+            >
+              <TrendingUp className="h-4 w-4 mr-2" />
+              Funil de Leads
+            </Button>
+            
+            <Button
               variant={activeTab === 'analytics' ? 'default' : 'ghost'}
               className="w-full justify-start"
               onClick={() => setActiveTab('analytics')}
@@ -184,43 +258,11 @@ export const AdminDashboard: React.FC = () => {
           )}
 
           {activeTab === 'leads' && (
-            <LeadsManagement
-              leads={leads}
-              onUpdateLeadStatus={updateLeadStatus}
-              onAddNote={addLeadNote}
-            />
+            <LeadsPipeline />
           )}
 
           {activeTab === 'franchises' && (
-            <div className="space-y-6">
-              <div>
-                <h2 className="text-2xl font-bold">Gerenciamento de Franquias</h2>
-                <p className="text-muted-foreground">
-                  Sistema de gestão das franquias ativas e seus desempenhos
-                </p>
-              </div>
-              
-              <Card>
-                <CardHeader>
-                  <CardTitle>Em Desenvolvimento</CardTitle>
-                  <CardDescription>
-                    Sistema de gamificação e gestão de tarefas para franqueados
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground">
-                    Esta funcionalidade será implementada na próxima fase, incluindo:
-                  </p>
-                  <ul className="list-disc list-inside mt-2 space-y-1 text-md text-muted-foreground">
-                    <li>Dashboard de performance dos franqueados</li>
-                    <li>Sistema de gamificação com tarefas e pontuações</li>
-                    <li>Gestão de território e exclusividade</li>
-                    <li>Métricas de vendas e crescimento</li>
-                    <li>Sistema de suporte e treinamento</li>
-                  </ul>
-                </CardContent>
-              </Card>
-            </div>
+            <FranchisesManagement />
           )}
 
           {activeTab === 'suppliers' && (
@@ -317,6 +359,16 @@ export const AdminDashboard: React.FC = () => {
                 </Card>
               </div>
             </div>
+          )}
+
+          {activeTab === 'customers' && (
+            <Customers />
+          )}
+          {activeTab === 'orders' && (
+            <Orders />
+          )}
+          {activeTab === 'products' && (
+            <ProductsManagement />
           )}
         </main>
       </div>
