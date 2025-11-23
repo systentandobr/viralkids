@@ -1,6 +1,7 @@
 import { useCallback, useEffect } from 'react';
 import { useAuthStore } from '@/stores/auth.store';
 import { securityClient } from '@/services/auth/securityClient';
+import { ENV_CONFIG } from '@/config/env';
 import { 
   User, 
   LoginCredentials, 
@@ -165,7 +166,8 @@ export const useAuth = ({ autoLogin = true, persistSession = true, autoRedirect 
       // Usar a biblioteca de segurança para fazer login
       const authResult = await securityClient.login({
         username: credentials.email,
-        password: credentials.password
+        password: credentials.password,
+        domain: ENV_CONFIG.SYS_SEGURANCA_DOMAIN
       });
 
       // A API retorna os dados diretamente, não em um objeto com 'success'
@@ -256,7 +258,8 @@ export const useAuth = ({ autoLogin = true, persistSession = true, autoRedirect 
         password: data.password,
         name: data.name,
         phone: data.phone,
-        role: data.role || 'franchisee'
+        role: data.role || 'franchisee',
+        domain: ENV_CONFIG.SYS_SEGURANCA_DOMAIN
       });
 
       // A API retorna os dados diretamente, não em um objeto com 'success'

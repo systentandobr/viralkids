@@ -86,7 +86,7 @@ export class ChatbotService {
     };
 
     // Chamar API do agente Agno (backend Python)
-    const agnoApiUrl = import.meta.env.VITE_AGNO_API_URL || 'http://localhost:8001';
+    const agnoApiUrl = import.meta.env.VITE_AGNO_API_URL || 'https://api-prd.systentando.com';
     
     try {
       const response = await fetch(`${agnoApiUrl}/chat`, {
