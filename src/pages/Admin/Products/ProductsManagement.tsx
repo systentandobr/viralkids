@@ -10,6 +10,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  Tabs,
+  TabsList,
+  TabsTrigger,
+  TabsContent,
+} from "@/components/ui/tabs";
 import { 
   Package, 
   Plus, 
@@ -18,10 +24,26 @@ import {
   Trash2,
   Filter,
   Download,
-  TrendingUp
+  TrendingUp,
+  Link2,
+  RefreshCw
 } from "lucide-react";
 import { useState, useMemo } from "react";
 import { useAuthContext } from "@/features/auth";
+import { CategoryManager } from "./components/CategoryManager";
+import { AffiliateProductForm } from "./components/AffiliateProductForm";
+import { ProcessingStatusTab } from "./components/ProcessingStatusTab";
+import {
+  ProductCategory,
+  CreateCategoryData,
+  UpdateCategoryData,
+  AffiliateProduct,
+  CreateAffiliateProductData,
+} from "./types";
+import { CategoryService } from "@/services/products/categoryService";
+import { AffiliateProductService } from "@/services/products/affiliateProductService";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 // Mock de dados - em produção, isso viria de uma API filtrada por unitId
 const allProducts = [
@@ -36,6 +58,61 @@ const allProducts = [
 const ProductsManagement = () => {
   const { user } = useAuthContext();
   const [searchTerm, setSearchTerm] = useState("");
+  const [activeTab, setActiveTab] = useState("products");
+  const queryClient = useQueryClient();
+  
+  // Query para categorias
+  const { data: categoriesData, isLoading: isLoadingCategories, error: categoriesError } = useQuery({
+    queryKey: ['categories'],
+    queryFn: async () => {
+      try {
+        const response = await CategoryService.list();
+        console.log('[ProductsManagement] Resposta de categorias:', response);
+        
+        if (response.success && response.data) {
+          return response.data;
+        }
+        
+        // Se não teve sucesso, mostrar erro
+        if (!response.success) {
+          console.error('[ProductsManagement] Erro ao carregar categorias:', response.error);
+          toast.error(response.error || 'Erro ao carregar categorias');
+        }
+        
+        return [];
+      } catch (error: any) {
+        console.error('[ProductsManagement] Erro na requisição de categorias:', error);
+        toast.error(error.message || 'Erro ao carregar categorias');
+        return [];
+      }
+    },
+    initialData: [],
+    retry: 2,
+    refetchOnWindowFocus: false,
+  });
+
+  const categories: ProductCategory[] = categoriesData || [];
+  
+  // Log de erro se houver
+  if (categoriesError) {
+    console.error('[ProductsManagement] Erro na query de categorias:', categoriesError);
+  }
+
+  // Query para produtos afiliados
+  const { data: affiliateProductsData, isLoading: isLoadingAffiliate } = useQuery({
+    queryKey: ['affiliate-products'],
+    queryFn: async () => {
+      const response = await AffiliateProductService.list();
+      if (response.success && response.data) {
+        return response.data.items;
+      }
+      return [];
+    },
+    refetchInterval: 5000, // Atualizar a cada 5 segundos para ver status
+    initialData: [],
+  });
+
+  const affiliateProducts: AffiliateProduct[] = affiliateProductsData || [];
 
   // Filtrar produtos pelo unitId do usuário autenticado
   const products = useMemo(() => {
@@ -49,6 +126,90 @@ const ProductsManagement = () => {
       p.id.toLowerCase().includes(searchTerm.toLowerCase())
     );
   }, [products, searchTerm]);
+
+  // Mutations para categorias
+  const createCategoryMutation = useMutation({
+    mutationFn: (data: CreateCategoryData) => CategoryService.create(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['categories'] });
+      toast.success('Categoria criada com sucesso!');
+    },
+    onError: (error: any) => {
+      toast.error(error.message || 'Erro ao criar categoria');
+    },
+  });
+
+  const updateCategoryMutation = useMutation({
+    mutationFn: ({ id, data }: { id: string; data: UpdateCategoryData }) =>
+      CategoryService.update(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['categories'] });
+      toast.success('Categoria atualizada com sucesso!');
+    },
+    onError: (error: any) => {
+      toast.error(error.message || 'Erro ao atualizar categoria');
+    },
+  });
+
+  const deleteCategoryMutation = useMutation({
+    mutationFn: (id: string) => CategoryService.delete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['categories'] });
+      toast.success('Categoria excluída com sucesso!');
+    },
+    onError: (error: any) => {
+      toast.error(error.message || 'Erro ao excluir categoria');
+    },
+  });
+
+  // Handlers para categorias
+  const handleCategoryCreate = async (data: CreateCategoryData) => {
+    await createCategoryMutation.mutateAsync(data);
+  };
+
+  const handleCategoryUpdate = async (id: string, data: UpdateCategoryData) => {
+    await updateCategoryMutation.mutateAsync({ id, data });
+  };
+
+  const handleCategoryDelete = async (id: string) => {
+    await deleteCategoryMutation.mutateAsync(id);
+  };
+
+  // Mutations para produtos afiliados
+  const createAffiliateProductMutation = useMutation({
+    mutationFn: (data: CreateAffiliateProductData) => AffiliateProductService.create(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['affiliate-products'] });
+      toast.success('Produto afiliado cadastrado! Processamento iniciado.');
+    },
+    onError: (error: any) => {
+      toast.error(error.message || 'Erro ao cadastrar produto afiliado');
+    },
+  });
+
+  const retryProcessingMutation = useMutation({
+    mutationFn: (id: string) => AffiliateProductService.retry(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['affiliate-products'] });
+      toast.success('Reprocessamento iniciado!');
+    },
+    onError: (error: any) => {
+      toast.error(error.message || 'Erro ao reprocessar produto');
+    },
+  });
+
+  // Handlers para produtos afiliados
+  const handleAffiliateProductSubmit = async (data: CreateAffiliateProductData) => {
+    await createAffiliateProductMutation.mutateAsync(data);
+  };
+
+  const handleRetryProcessing = async (id: string) => {
+    await retryProcessingMutation.mutateAsync(id);
+  };
+
+  const handleRefreshProcessing = async () => {
+    queryClient.invalidateQueries({ queryKey: ['affiliate-products'] });
+  };
 
   return (
     <div id="content" className="min-h-screen p-6 lg:p-8">
@@ -65,10 +226,19 @@ const ProductsManagement = () => {
             </p>
           </div>
         </div>
-        <Button className="bg-gradient-to-r from-neon-cyan to-neon-blue hover:opacity-90 transition-opacity shadow-neon">
-          <Plus className="h-4 w-4 mr-2" />
-          Novo Produto
-        </Button>
+        <div className="flex gap-2">
+          <CategoryManager
+            categories={categories}
+            onCategoryCreate={handleCategoryCreate}
+            onCategoryUpdate={handleCategoryUpdate}
+            onCategoryDelete={handleCategoryDelete}
+            isLoading={isLoadingCategories}
+          />
+          <Button className="bg-gradient-to-r from-neon-cyan to-neon-blue hover:opacity-90 transition-opacity shadow-neon">
+            <Plus className="h-4 w-4 mr-2" />
+            Novo Produto
+          </Button>
+        </div>
       </div>
 
       {/* Stats Cards */}
@@ -153,73 +323,123 @@ const ProductsManagement = () => {
         </div>
       </Card>
 
-      {/* Products Table */}
-      <Card className="p-6">
-        <Table>
-          <TableHeader>
-            <TableRow className="border-border/50 hover:bg-muted/50">
-              <TableHead className="text-foreground font-semibold">Código</TableHead>
-              <TableHead className="text-foreground font-semibold">Produto</TableHead>
-              <TableHead className="text-foreground font-semibold">Categoria</TableHead>
-              <TableHead className="text-foreground font-semibold text-right">Preço</TableHead>
-              <TableHead className="text-foreground font-semibold text-center">Estoque</TableHead>
-              <TableHead className="text-foreground font-semibold text-center">Status</TableHead>
-              <TableHead className="text-foreground font-semibold text-right">Ações</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {filteredProducts.map((product) => (
-              <TableRow key={product.id} className="border-border/50 hover:bg-muted/30 transition-colors">
-                <TableCell className="font-mono text-sm text-muted-foreground">
-                  {product.id}
-                </TableCell>
-                <TableCell className="font-medium">{product.name}</TableCell>
-                <TableCell className="text-muted-foreground">{product.category}</TableCell>
-                <TableCell className="text-right font-semibold text-neon-cyan">
-                  R$ {product.price.toFixed(2)}
-                </TableCell>
-                <TableCell className="text-center">
-                  <span className={product.stock <= 5 ? "text-yellow-600 dark:text-yellow-400 font-semibold" : ""}>
-                    {product.stock}
-                  </span>
-                </TableCell>
-                <TableCell className="text-center">
-                  <Badge
-                    variant="secondary"
-                    className={
-                      product.status === "ativo"
-                        ? "bg-neon-green/10 text-neon-green border-neon-green/20"
-                        : product.status === "baixo"
-                        ? "bg-yellow-500/10 text-yellow-600 dark:text-yellow-400 border-yellow-500/20"
-                        : "bg-neon-red/10 text-neon-red border-neon-red/20"
-                    }
-                  >
-                    {product.status === "ativo" ? "Ativo" : product.status === "baixo" ? "Baixo" : "Esgotado"}
-                  </Badge>
-                </TableCell>
-                <TableCell className="text-right">
-                  <div className="flex justify-end gap-2">
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      className="h-8 w-8 p-0 hover:bg-neon-blue/10 hover:text-neon-blue"
-                    >
-                      <Edit className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      className="h-8 w-8 p-0 hover:bg-neon-red/10 hover:text-neon-red"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </Card>
+      {/* Tabs */}
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+        <TabsList className="grid w-full grid-cols-3">
+          <TabsTrigger value="products">
+            <Package className="h-4 w-4 mr-2" />
+            Produtos
+          </TabsTrigger>
+          <TabsTrigger value="affiliate">
+            <Link2 className="h-4 w-4 mr-2" />
+            Produtos Afiliados
+          </TabsTrigger>
+          <TabsTrigger value="processing">
+            <RefreshCw className="h-4 w-4 mr-2" />
+            Status Processamento
+          </TabsTrigger>
+        </TabsList>
+
+        {/* Tab: Produtos */}
+        <TabsContent value="products" className="space-y-6">
+          <Card className="p-6">
+            <Table>
+              <TableHeader>
+                <TableRow className="border-border/50 hover:bg-muted/50">
+                  <TableHead className="text-foreground font-semibold">Código</TableHead>
+                  <TableHead className="text-foreground font-semibold">Produto</TableHead>
+                  <TableHead className="text-foreground font-semibold">Categoria</TableHead>
+                  <TableHead className="text-foreground font-semibold text-right">Preço</TableHead>
+                  <TableHead className="text-foreground font-semibold text-center">Estoque</TableHead>
+                  <TableHead className="text-foreground font-semibold text-center">Status</TableHead>
+                  <TableHead className="text-foreground font-semibold text-right">Ações</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {filteredProducts.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={7} className="text-center text-muted-foreground py-8">
+                      Nenhum produto encontrado
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  filteredProducts.map((product) => (
+                    <TableRow key={product.id} className="border-border/50 hover:bg-muted/30 transition-colors">
+                      <TableCell className="font-mono text-sm text-muted-foreground">
+                        {product.id}
+                      </TableCell>
+                      <TableCell className="font-medium">{product.name}</TableCell>
+                      <TableCell className="text-muted-foreground">{product.category}</TableCell>
+                      <TableCell className="text-right font-semibold text-neon-cyan">
+                        R$ {product.price.toFixed(2)}
+                      </TableCell>
+                      <TableCell className="text-center">
+                        <span className={product.stock <= 5 ? "text-yellow-600 dark:text-yellow-400 font-semibold" : ""}>
+                          {product.stock}
+                        </span>
+                      </TableCell>
+                      <TableCell className="text-center">
+                        <Badge
+                          variant="secondary"
+                          className={
+                            product.status === "ativo"
+                              ? "bg-neon-green/10 text-neon-green border-neon-green/20"
+                              : product.status === "baixo"
+                              ? "bg-yellow-500/10 text-yellow-600 dark:text-yellow-400 border-yellow-500/20"
+                              : "bg-neon-red/10 text-neon-red border-neon-red/20"
+                          }
+                        >
+                          {product.status === "ativo" ? "Ativo" : product.status === "baixo" ? "Baixo" : "Esgotado"}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <div className="flex justify-end gap-2">
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            className="h-8 w-8 p-0 hover:bg-neon-blue/10 hover:text-neon-blue"
+                          >
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            className="h-8 w-8 p-0 hover:bg-neon-red/10 hover:text-neon-red"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </Card>
+        </TabsContent>
+
+        {/* Tab: Produtos Afiliados */}
+        <TabsContent value="affiliate" className="space-y-6">
+          <AffiliateProductForm
+            categories={categories}
+            onCategoryCreate={handleCategoryCreate}
+            onCategoryUpdate={handleCategoryUpdate}
+            onCategoryDelete={handleCategoryDelete}
+            onSubmit={handleAffiliateProductSubmit}
+            isLoading={createAffiliateProductMutation.isPending}
+          />
+        </TabsContent>
+
+        {/* Tab: Status de Processamento */}
+        <TabsContent value="processing" className="space-y-6">
+          <ProcessingStatusTab
+            affiliateProducts={affiliateProducts}
+            onRetry={handleRetryProcessing}
+            onRefresh={handleRefreshProcessing}
+            isLoading={isLoadingAffiliate || retryProcessingMutation.isPending}
+          />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };

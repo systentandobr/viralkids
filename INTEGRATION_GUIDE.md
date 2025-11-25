@@ -25,6 +25,7 @@
 - ✅ Criado `src/config/env.ts` para configurações de ambiente
 - ✅ Criado `src/services/auth/securityClient.ts` para cliente de segurança
 - ✅ Configurado gerenciamento automático de tokens
+- ✅ Configurado `domain` nas credenciais de login e register (requerido na versão 2.1.2+)
 
 ## 🔧 Configuração Necessária
 
@@ -35,11 +36,14 @@ Crie um arquivo `.env` na raiz do projeto com:
 # API de Segurança
 VITE_SYS_SEGURANCA_API_KEY=sua-api-key-aqui
 VITE_SYS_SEGURANCA_BASE_URL=https://auth.systentando.com
+VITE_SYS_SEGURANCA_DOMAIN=viralkids-web
 
 # API Principal
 VITE_API_BASE_URL=http://localhost:3001/api
 VITE_RUN_MOCK_MODE=false
 ```
+
+**Importante**: O `VITE_SYS_SEGURANCA_DOMAIN` deve corresponder ao `name` do registro da aplicação no sistema de segurança. O valor padrão é `viralkids-web` conforme o registro da aplicação. Este parâmetro é passado diretamente nas credenciais de `login()` e `register()`, não no construtor do cliente.
 
 ### Dependências
 A biblioteca `systentando-security-client` já foi instalada e está configurada.
@@ -90,6 +94,14 @@ Verifique se a `VITE_SYS_SEGURANCA_API_KEY` está configurada corretamente.
 
 ### Erro de Conexão
 Verifique se a `VITE_SYS_SEGURANCA_BASE_URL` está apontando para o endpoint correto.
+
+### Erro de Domain
+Se receber o erro `"domain must be a string"`, verifique se:
+1. A variável `VITE_SYS_SEGURANCA_DOMAIN` está configurada no arquivo `.env`
+2. O valor corresponde ao `name` do registro da aplicação no sistema de segurança (ex: `viralkids-web`)
+3. O `domain` está sendo passado diretamente nas credenciais de `login()` e `register()`, não apenas no construtor do cliente
+
+**Nota**: Na versão 2.1.2+ do `systentando-security-client`, o `domain` deve ser passado nas credenciais das chamadas de autenticação, não no construtor do cliente.
 
 ## 📚 Documentação
 

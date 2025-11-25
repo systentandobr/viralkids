@@ -66,8 +66,11 @@ export class AuthService {
       
       authStore.login(response.data.user as any, tokens, false);
       
-      // Configurar token no cliente HTTP
+      // Configurar token no cliente HTTP (tanto no header padrão quanto no interceptor)
       httpClient.setAuthToken(response.data.token);
+      
+      // Garantir que o token está sendo usado
+      console.debug('[AuthService] Token configurado após login');
     }
     
     return response;

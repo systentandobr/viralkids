@@ -1,6 +1,28 @@
 // Configurações da API
+// Prioridade: VITE_API_BASE_URL > VITE_BACKEND_BASE_URL > localhost:9090 (desenvolvimento)
+const getBaseURL = () => {
+  if (import.meta.env.VITE_API_BASE_URL) {
+    return import.meta.env.VITE_API_BASE_URL;
+  }
+  if (import.meta.env.VITE_BACKEND_BASE_URL) {
+    return import.meta.env.VITE_BACKEND_BASE_URL;
+  }
+  // Em desenvolvimento, usar localhost:9090
+  if (import.meta.env.DEV || import.meta.env.MODE === 'development') {
+    return 'http://localhost:9090';
+  }
+  return 'https://api-prd.systentando.com/api';
+};
+
+const baseURL = getBaseURL();
+
+// Log da URL base em desenvolvimento
+if (import.meta.env.DEV || import.meta.env.MODE === 'development') {
+  console.log('[API Config] URL Base configurada:', baseURL);
+}
+
 export const API_CONFIG = {
-  BASE_URL: import.meta.env.VITE_API_BASE_URL || 'https://api-prd.systentando.com/api',
+  BASE_URL: baseURL,
   TIMEOUT: 10000, // 10 segundos
   RETRY_ATTEMPTS: 3,
   RETRY_DELAY: 1000, // 1 segundo
@@ -15,8 +37,8 @@ export const DEFAULT_HEADERS = {
   'Accept': 'application/json',
 };
 
-// Status codes de sucesso
-export const SUCCESS_STATUS_CODES = [200, 201, 204];
+// Status codes de sucesso (incluindo 304 para compatibilidade, mas preferimos evitar)
+export const SUCCESS_STATUS_CODES = [200, 201, 204, 304];
 
 // Status codes de erro
 export const ERROR_STATUS_CODES = {
