@@ -32,6 +32,7 @@ import { useFranchises, useRegionalTrends } from "@/services/queries/franchises"
 import { FranchiseMap } from "./components/FranchiseMap";
 import { FranchisePerformanceCard } from "./components/FranchisePerformanceCard";
 import { RegionalTrendsCard } from "./components/RegionalTrendsCard";
+import { FranchiseUsersManager } from "./components/FranchiseUsersManager";
 import type { Franchise, RegionalTrend } from "@/services/franchise/franchiseService";
 
 const FranchisesManagement = () => {
@@ -40,6 +41,7 @@ const FranchisesManagement = () => {
   const [selectedType, setSelectedType] = useState<string[]>([]);
   const [selectedState, setSelectedState] = useState<string[]>([]);
   const [viewMode, setViewMode] = useState<'table' | 'map'>('table');
+  const [selectedFranchise, setSelectedFranchise] = useState<Franchise | null>(null);
 
   // Buscar franquias da API
   const { data: franchisesData, isLoading, error } = useFranchises({
@@ -289,6 +291,16 @@ const FranchisesManagement = () => {
             <RegionalTrendsCard trends={regionalTrends || []} />
           </div>
 
+          {/* Gerenciamento de Usuários - Mostrar quando uma franquia estiver selecionada */}
+          {selectedFranchise && (
+            <FranchiseUsersManager
+              franchise={selectedFranchise}
+              onUserAllocated={() => {
+                // Recarregar dados se necessário
+              }}
+            />
+          )}
+
           {/* Franchises Table */}
           <Card className="p-6">
             <Table>
@@ -356,14 +368,21 @@ const FranchisesManagement = () => {
                         <Button
                           size="sm"
                           variant="ghost"
-                          className="h-8 w-8 p-0 hover:bg-purple-500/10 hover:text-purple-500"
+                          className={`h-8 w-8 p-0 hover:bg-purple-500/10 hover:text-purple-500 ${
+                            selectedFranchise?.id === franchise.id ? "bg-purple-500/20" : ""
+                          }`}
+                          title="Gerenciar usuários"
+                          onClick={() => setSelectedFranchise(
+                            selectedFranchise?.id === franchise.id ? null : franchise
+                          )}
                         >
-                          <Eye className="h-4 w-4" />
+                          <Users className="h-4 w-4" />
                         </Button>
                         <Button
                           size="sm"
                           variant="ghost"
                           className="h-8 w-8 p-0 hover:bg-neon-blue/10 hover:text-neon-blue"
+                          title="Editar franquia"
                         >
                           <Edit className="h-4 w-4" />
                         </Button>

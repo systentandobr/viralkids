@@ -26,22 +26,26 @@ import {
   Download,
   TrendingUp,
   Link2,
-  RefreshCw
+  RefreshCw,
+  FileSpreadsheet
 } from "lucide-react";
 import { useState, useMemo } from "react";
 import { useAuthContext } from "@/features/auth";
 import { CategoryManager } from "./components/CategoryManager";
 import { AffiliateProductForm } from "./components/AffiliateProductForm";
 import { ProcessingStatusTab } from "./components/ProcessingStatusTab";
+import { BulkProductForm } from "./components/BulkProductForm";
 import {
   ProductCategory,
   CreateCategoryData,
   UpdateCategoryData,
   AffiliateProduct,
   CreateAffiliateProductData,
+  BulkProductItem,
 } from "./types";
 import { CategoryService } from "@/services/products/categoryService";
 import { AffiliateProductService } from "@/services/products/affiliateProductService";
+import { BulkProductService } from "@/services/products/bulkProductService";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
@@ -200,6 +204,12 @@ const ProductsManagement = () => {
 
   // Handlers para produtos afiliados
   const handleAffiliateProductSubmit = async (data: CreateAffiliateProductData) => {
+    if (!user?.unitId) {
+      toast.error('unitId não encontrado. Faça login novamente.');
+      return;
+    }
+    // O unitId será incluído automaticamente pelo backend via JWT
+    // Mas garantimos que o usuário está autenticado
     await createAffiliateProductMutation.mutateAsync(data);
   };
 
@@ -209,6 +219,43 @@ const ProductsManagement = () => {
 
   const handleRefreshProcessing = async () => {
     queryClient.invalidateQueries({ queryKey: ['affiliate-products'] });
+  };
+
+  // Mutation para cadastro massivo
+  const bulkCreateMutation = useMutation({
+    mutationFn: async (products: BulkProductItem[]) => {
+      if (!user?.unitId) {
+        throw new Error('unitId não encontrado. Faça login novamente.');
+      }
+
+      const createData = {
+        products: products.map((p) => {
+          const { id, errors, isValid, ...productData } = p;
+          return productData;
+        }),
+        unitId: user.unitId,
+      };
+
+      return BulkProductService.createBulk(createData);
+    },
+    onSuccess: (response) => {
+      if (response.success) {
+        queryClient.invalidateQueries({ queryKey: ['products'] });
+        toast.success(
+          `${response.data?.created || 0} produto(s) criado(s) com sucesso!`
+        );
+        if (response.data?.failed && response.data.failed > 0) {
+          toast.warning(`${response.data.failed} produto(s) falharam`);
+        }
+      }
+    },
+    onError: (error: any) => {
+      toast.error(error.message || 'Erro ao cadastrar produtos em lote');
+    },
+  });
+
+  const handleBulkProductSubmit = async (products: BulkProductItem[]) => {
+    await bulkCreateMutation.mutateAsync(products);
   };
 
   return (
@@ -325,7 +372,7 @@ const ProductsManagement = () => {
 
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="products">
             <Package className="h-4 w-4 mr-2" />
             Produtos
@@ -333,6 +380,10 @@ const ProductsManagement = () => {
           <TabsTrigger value="affiliate">
             <Link2 className="h-4 w-4 mr-2" />
             Produtos Afiliados
+          </TabsTrigger>
+          <TabsTrigger value="bulk">
+            <FileSpreadsheet className="h-4 w-4 mr-2" />
+            Cadastro Massivo
           </TabsTrigger>
           <TabsTrigger value="processing">
             <RefreshCw className="h-4 w-4 mr-2" />
@@ -427,6 +478,16 @@ const ProductsManagement = () => {
             onCategoryDelete={handleCategoryDelete}
             onSubmit={handleAffiliateProductSubmit}
             isLoading={createAffiliateProductMutation.isPending}
+            showPreview={true}
+          />
+        </TabsContent>
+
+        {/* Tab: Cadastro Massivo */}
+        <TabsContent value="bulk" className="space-y-6">
+          <BulkProductForm
+            categories={categories}
+            onSubmit={handleBulkProductSubmit}
+            isLoading={bulkCreateMutation.isPending}
           />
         </TabsContent>
 

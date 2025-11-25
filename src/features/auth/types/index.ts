@@ -129,6 +129,7 @@ export interface AuthContextType {
   updateProfile: (data: Partial<User>) => Promise<void>;
   verifyEmail: (token: string) => Promise<void>;
   refreshToken: () => Promise<void>;
+  findUsersByDomain: (domain?: string) => Promise<User[]>;
   
   // Utilitários
   hasPermission: (permission: string) => boolean;

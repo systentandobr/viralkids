@@ -136,6 +136,53 @@ export class ProductService {
     return httpClient.upload<{ url: string }>('/products/upload-image', file, onProgress);
   }
 
+  // Upload múltiplo de imagens
+  static async uploadMultipleImages(
+    files: File[],
+    onProgress?: (progress: number) => void
+  ): Promise<ApiResponse<{ urls: string[] }>> {
+    const formData = new FormData();
+    files.forEach((file) => {
+      formData.append('files', file);
+    });
+
+    return httpClient.post<{ urls: string[] }>(
+      '/products/upload-images',
+      formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      }
+    );
+  }
+
+  // Atualizar ordem das imagens
+  static async updateImageOrder(
+    productId: string,
+    imageUrls: string[]
+  ): Promise<ApiResponse<Product>> {
+    return httpClient.patch<Product>(`/products/${productId}/images/order`, {
+      imageUrls,
+    });
+  }
+
+  // Atualizar configurações de marketplace
+  static async updateMarketplaceSettings(
+    productId: string,
+    settings: {
+      isActive?: boolean;
+      isFeatured?: boolean;
+      displayOrder?: number;
+      visibleInCategories?: string[];
+      hideFromCategories?: string[];
+      showInHomepage?: boolean;
+      showInCategoryPage?: boolean;
+    }
+  ): Promise<ApiResponse<Product>> {
+    return httpClient.patch<Product>(`/products/${productId}/marketplace`, settings);
+  }
+
   // Exportar produtos
   static async exportProducts(format: 'csv' | 'excel' = 'csv', filters?: ProductFiltersType): Promise<ApiResponse<{ downloadUrl: string }>> {
     const params = { format, ...filters };

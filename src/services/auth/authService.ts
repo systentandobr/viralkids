@@ -1,6 +1,7 @@
-import { httpClient, ApiResponse } from '../api/httpClient';
+import { httpClient, ApiResponse, HttpClient } from '../api/httpClient';
 import { API_ENDPOINTS } from '../api/endpoints';
 import { useAuthStore } from '@/stores/auth.store';
+import { ENV_CONFIG } from '@/config/env';
 
 // Interfaces para autenticação
 export interface LoginCredentials {
@@ -42,6 +43,29 @@ export interface ChangePasswordData {
   currentPassword: string;
   newPassword: string;
   confirmPassword: string;
+}
+
+export interface UpdateLocationData {
+  unitName?: string;
+  address?: string;
+  localNumber?: string;
+  complement?: string;
+  neighborhood?: string;
+  city?: string;
+  state?: string;
+  zipCode?: string;
+  country?: string;
+  latitude?: number;
+  longitude?: number;
+}
+
+export interface UpdateUserProfileData {
+  unitId?: string;
+  location?: UpdateLocationData;
+  avatar?: string;
+  bio?: string;
+  phone?: string;
+  dateOfBirth?: string;
 }
 
 // Classe do serviço de autenticação
@@ -148,15 +172,68 @@ export class AuthService {
     return httpClient.get<AuthResponse['user']>(API_ENDPOINTS.USERS.PROFILE);
   }
 
+  // Cliente HTTP específico para API de segurança
+  private static getSecurityHttpClient(): HttpClient {
+    const authStore = this.getAuthStore();
+    const token = authStore.tokens?.token || null;
+    
+    return new HttpClient({
+      baseURL: ENV_CONFIG.SYS_SEGURANCA_BASE_URL,
+      getAuthToken: () => token,
+      headers: {
+        'X-API-Key': ENV_CONFIG.SYS_SEGURANCA_API_KEY,
+      },
+    });
+  }
+
   // Atualizar perfil
-  static async updateProfile(data: Partial<AuthResponse['user']>): Promise<ApiResponse<AuthResponse['user']>> {
-    const response = await httpClient.put<AuthResponse['user']>(API_ENDPOINTS.USERS.UPDATE, data);
+  static async updateProfile(data: UpdateUserProfileData): Promise<ApiResponse<AuthResponse['user']>> {
+    // Usar cliente HTTP específico para API de segurança
+    const securityClient = this.getSecurityHttpClient();
+    
+    const response = await securityClient.put<AuthResponse['user']>(
+      API_ENDPOINTS.AUTH.UPDATE_PROFILE,
+      data
+    );
     
     if (response.success && response.data) {
       // Atualizar usuário na store
       const authStore = this.getAuthStore();
-      authStore.updateUser(response.data as any);
+      
+      // Mapear dados da resposta para o formato do User
+      // A resposta vem no formato LoginResponseDto['user']
+      const apiUser = response.data as any;
+      
+      const updatedUser = {
+        ...authStore.user,
+        // Atualizar campos do profile
+        unitId: apiUser.profile?.unitId || data.unitId || authStore.user?.unitId,
+        phone: data.phone || apiUser.profile?.phone || authStore.user?.phone,
+        avatar: data.avatar || apiUser.profile?.avatar || authStore.user?.avatar,
+        // Manter outros campos
+        name: apiUser.profile?.firstName && apiUser.profile?.lastName
+          ? `${apiUser.profile.firstName} ${apiUser.profile.lastName}`.trim()
+          : authStore.user?.name || apiUser.username || apiUser.email,
+        updatedAt: new Date(),
+      };
+      
+      authStore.updateUser(updatedUser as any);
     }
+    
+    return response;
+  }
+
+  // Buscar usuários por domain
+  static async findUsersByDomain(domain?: string): Promise<ApiResponse<AuthResponse['user'][]>> {
+    // Usar cliente HTTP específico para API de segurança
+    const securityClient = this.getSecurityHttpClient();
+    
+    // Se domain não fornecido, usar o domain configurado
+    const targetDomain = domain || ENV_CONFIG.SYS_SEGURANCA_DOMAIN;
+    
+    const response = await securityClient.get<AuthResponse['user'][]>(
+      API_ENDPOINTS.AUTH.USERS_BY_DOMAIN(targetDomain)
+    );
     
     return response;
   }

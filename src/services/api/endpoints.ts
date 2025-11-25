@@ -10,6 +10,26 @@ export const API_ENDPOINTS = {
     SEARCH: '/products/search',
     CATEGORIES: '/products/categories',
     FEATURED: '/products/featured',
+    BULK: '/products/bulk',
+    IMPORT: '/products/import',
+    VALIDATE_BULK: '/products/validate-bulk',
+    UPLOAD_IMAGE: '/products/upload-image',
+    UPLOAD_IMAGES: '/products/upload-images',
+    UPDATE_IMAGE_ORDER: (id: string) => `/products/${id}/images/order`,
+    UPDATE_MARKETPLACE: (id: string) => `/products/${id}/marketplace`,
+  },
+  
+  // Produtos Afiliados
+  AFFILIATE_PRODUCTS: {
+    LIST: '/affiliate-products',
+    CREATE: '/affiliate-products',
+    PREVIEW: '/affiliate-products/preview',
+    CREATE_FROM_PREVIEW: (id: string) => `/affiliate-products/${id}/create-product`,
+    DETAIL: (id: string) => `/affiliate-products/${id}`,
+    UPDATE: (id: string) => `/affiliate-products/${id}`,
+    DELETE: (id: string) => `/affiliate-products/${id}`,
+    RETRY: (id: string) => `/affiliate-products/${id}/retry`,
+    METRICS: '/affiliate-products/metrics',
   },
   
   // Inventory / Estoque
@@ -20,8 +40,16 @@ export const API_ENDPOINTS = {
   
   // Usuário
   USERS: {
+    LIST: '/users',
+    DETAIL: (id: string) => `/users/${id}`,
+    CREATE: '/users',
+    UPDATE: (id: string) => `/users/${id}`,
+    DELETE: (id: string) => `/users/${id}`,
+    LIST_BY_UNIT: '/users/by-unit',
+    SEARCH_AVAILABLE: '/users/available',
+    UPDATE_UNIT: (id: string) => `/users/${id}/unit`,
     PROFILE: '/user/profile',
-    UPDATE: '/user/profile',
+    UPDATE_PROFILE: '/user/profile',
     PREFERENCES: '/user/preferences',
     ORDERS: '/user/orders',
     ADDRESSES: '/user/addresses',
@@ -52,7 +80,9 @@ export const API_ENDPOINTS = {
     REGISTER: '/auth/register',
     FORGOT_PASSWORD: '/auth/forgot-password',
     RESET_PASSWORD: '/auth/reset-password',
-    
+    UPDATE_PROFILE: '/auth/profile',
+    VALIDATE: '/auth/validate',
+    USERS_BY_DOMAIN: (domain: string) => `/auth/users/domain/${domain}`,
   },
 
   // Carrinho

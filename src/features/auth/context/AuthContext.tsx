@@ -14,7 +14,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     persistSession: true
   });
 
-  const contextValue: AuthContextType = {
+  // Garantir que sempre temos um valor válido para o contexto
+  const contextValue: AuthContextType = React.useMemo(() => ({
     // Estado
     user: auth.user,
     isAuthenticated: auth.isAuthenticated,
@@ -30,12 +31,30 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     updateProfile: auth.updateProfile,
     verifyEmail: auth.verifyEmail,
     refreshToken: auth.refreshToken,
+    findUsersByDomain: auth.findUsersByDomain,
 
     // Utilitários
     hasPermission: auth.hasPermission,
     hasRole: auth.hasRole,
     canAccess: auth.canAccess
-  };
+  }), [
+    auth.user,
+    auth.isAuthenticated,
+    auth.isLoading,
+    auth.error,
+    auth.login,
+    auth.register,
+    auth.logout,
+    auth.forgotPassword,
+    auth.resetPassword,
+    auth.updateProfile,
+    auth.verifyEmail,
+    auth.refreshToken,
+    auth.findUsersByDomain,
+    auth.hasPermission,
+    auth.hasRole,
+    auth.canAccess
+  ]);
 
   return (
     <AuthContext.Provider value={contextValue}>

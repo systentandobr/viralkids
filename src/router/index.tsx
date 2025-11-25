@@ -148,7 +148,20 @@ export const Router: React.FC<RouterProps> = ({ routes, fallback }) => {
 
   console.log('Rendering component for route:', matchedRoute.path);
   const Component = matchedRoute.component;
-  return <Component />;
+  
+  // Renderizar componente dentro de um wrapper que garante contexto disponível
+  return (
+    <React.Suspense fallback={
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center space-y-4">
+          <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto" />
+          <p className="text-muted-foreground">Carregando página...</p>
+        </div>
+      </div>
+    }>
+      <Component />
+    </React.Suspense>
+  );
 };
 
 // Componente Link para navegação

@@ -11,14 +11,17 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Link2, Plus, ExternalLink } from "lucide-react";
+import { Link2, Plus, ExternalLink, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import {
   CreateAffiliateProductData,
   AffiliatePlatform,
   ProductCategory,
+  ScraperPreviewData,
 } from "../types";
 import { CategoryManager } from "./CategoryManager";
+import { ScraperPreview } from "./ScraperPreview";
+import { AffiliateProductService } from "@/services/products/affiliateProductService";
 
 interface AffiliateProductFormProps {
   categories: ProductCategory[];
@@ -27,6 +30,7 @@ interface AffiliateProductFormProps {
   onCategoryDelete: (id: string) => Promise<void>;
   onSubmit: (data: CreateAffiliateProductData) => Promise<void>;
   isLoading?: boolean;
+  showPreview?: boolean;
 }
 
 const PLATFORM_OPTIONS: { value: AffiliatePlatform; label: string; icon?: string }[] = [
@@ -66,6 +70,7 @@ export const AffiliateProductForm = ({
   onCategoryDelete,
   onSubmit,
   isLoading = false,
+  showPreview = true,
 }: AffiliateProductFormProps) => {
   const [formData, setFormData] = useState<CreateAffiliateProductData>({
     categoryId: "",
@@ -73,6 +78,9 @@ export const AffiliateProductForm = ({
     platform: "shopee",
   });
   const [selectedCategoryIds, setSelectedCategoryIds] = useState<string[]>([]);
+  const [previewData, setPreviewData] = useState<ScraperPreviewData | null>(null);
+  const [isLoadingPreview, setIsLoadingPreview] = useState(false);
+  const [affiliateProductId, setAffiliateProductId] = useState<string | null>(null);
 
   const handleUrlChange = (url: string) => {
     const detectedPlatform = detectPlatform(url);
@@ -116,26 +124,100 @@ export const AffiliateProductForm = ({
       return;
     }
 
-    try {
-      await onSubmit({
-        categoryId: formData.categoryId.trim(),
-        affiliateUrl: formData.affiliateUrl.trim(),
-        platform: formData.platform,
-      });
-      
-      // Reset form após sucesso
-      setFormData({
-        categoryId: "",
-        affiliateUrl: "",
-        platform: detectPlatform(""),
-      });
-      setSelectedCategoryIds([]);
-      
-      toast.success("Produto afiliado cadastrado com sucesso! Processamento iniciado.");
-    } catch (error: any) {
-      console.error("Erro ao cadastrar produto afiliado:", error);
-      toast.error(error.message || "Erro ao cadastrar produto afiliado. Tente novamente.");
+    // Se showPreview está ativado, obter preview primeiro
+    if (showPreview) {
+      setIsLoadingPreview(true);
+      try {
+        const previewResponse = await AffiliateProductService.preview(formData);
+        
+        if (previewResponse.success && previewResponse.data) {
+          // Criar produto afiliado temporário para ter o ID
+          const createResponse = await AffiliateProductService.create(formData);
+          
+          if (createResponse.success && createResponse.data) {
+            setAffiliateProductId(createResponse.data.id);
+            setPreviewData(previewResponse.data.data);
+          } else {
+            throw new Error("Erro ao criar produto afiliado");
+          }
+        } else {
+          throw new Error(previewResponse.error || "Erro ao obter preview");
+        }
+      } catch (error: any) {
+        console.error("Erro ao obter preview:", error);
+        toast.error(error.message || "Erro ao processar URL. Tentando cadastro direto...");
+        
+        // Fallback: cadastrar sem preview
+        try {
+          await onSubmit(formData);
+          resetForm();
+        } catch (submitError: any) {
+          toast.error(submitError.message || "Erro ao cadastrar produto afiliado");
+        }
+      } finally {
+        setIsLoadingPreview(false);
+      }
+    } else {
+      // Cadastro direto sem preview
+      try {
+        await onSubmit({
+          categoryId: formData.categoryId.trim(),
+          affiliateUrl: formData.affiliateUrl.trim(),
+          platform: formData.platform,
+        });
+        resetForm();
+        toast.success("Produto afiliado cadastrado com sucesso! Processamento iniciado.");
+      } catch (error: any) {
+        console.error("Erro ao cadastrar produto afiliado:", error);
+        toast.error(error.message || "Erro ao cadastrar produto afiliado. Tente novamente.");
+      }
     }
+  };
+
+  const resetForm = () => {
+    setFormData({
+      categoryId: "",
+      affiliateUrl: "",
+      platform: detectPlatform(""),
+    });
+    setSelectedCategoryIds([]);
+    setPreviewData(null);
+    setAffiliateProductId(null);
+  };
+
+  const handlePreviewConfirm = async (editedData: ScraperPreviewData) => {
+    if (!affiliateProductId) {
+      toast.error("ID do produto afiliado não encontrado");
+      return;
+    }
+
+    setIsLoadingPreview(true);
+    try {
+      const response = await AffiliateProductService.createFromPreview(
+        affiliateProductId,
+        editedData
+      );
+
+      if (response.success) {
+        toast.success("Produto criado com sucesso!");
+        resetForm();
+      } else {
+        throw new Error(response.error || "Erro ao criar produto");
+      }
+    } catch (error: any) {
+      console.error("Erro ao confirmar preview:", error);
+      toast.error(error.message || "Erro ao criar produto final");
+    } finally {
+      setIsLoadingPreview(false);
+    }
+  };
+
+  const handlePreviewCancel = () => {
+    if (affiliateProductId) {
+      // Opcional: deletar produto afiliado criado
+      AffiliateProductService.delete(affiliateProductId).catch(console.error);
+    }
+    resetForm();
   };
 
   // Encontrar categoria selecionada (suporta id ou _id)
@@ -144,6 +226,20 @@ export const AffiliateProductForm = ({
     const formCategoryId = normalizeId(formData.categoryId);
     return categoryId === formCategoryId && categoryId !== '';
   });
+
+  // Se temos preview data, mostrar preview
+  if (previewData && affiliateProductId) {
+    return (
+      <ScraperPreview
+        previewData={previewData}
+        platform={formData.platform}
+        affiliateUrl={formData.affiliateUrl}
+        onConfirm={handlePreviewConfirm}
+        onCancel={handlePreviewCancel}
+        isLoading={isLoadingPreview}
+      />
+    );
+  }
 
   return (
     <Card className="p-6">
@@ -306,10 +402,19 @@ export const AffiliateProductForm = ({
         <Button
           type="submit"
           className="w-full bg-gradient-to-r from-neon-cyan to-neon-blue hover:opacity-90"
-          disabled={isLoading || !formData.categoryId || !formData.affiliateUrl}
+          disabled={isLoading || isLoadingPreview || !formData.categoryId || !formData.affiliateUrl}
         >
-          <Plus className="h-4 w-4 mr-2" />
-          {isLoading ? "Cadastrando..." : "Cadastrar Produto Afiliado"}
+          {isLoadingPreview ? (
+            <>
+              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+              Processando URL...
+            </>
+          ) : (
+            <>
+              <Plus className="h-4 w-4 mr-2" />
+              {isLoading ? "Cadastrando..." : "Processar e Cadastrar"}
+            </>
+          )}
         </Button>
       </form>
     </Card>

@@ -11,7 +11,7 @@ const getBaseURL = () => {
   if (import.meta.env.DEV || import.meta.env.MODE === 'development') {
     return 'http://localhost:9090';
   }
-  return 'https://api-prd.systentando.com/api';
+  return 'https://api-prd.systentando.com/';
 };
 
 const baseURL = getBaseURL();

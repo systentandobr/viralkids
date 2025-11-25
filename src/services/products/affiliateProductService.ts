@@ -6,11 +6,35 @@ import {
   UpdateAffiliateProductData,
   ProcessingMetrics,
   QueryAffiliateProductDto,
+  ScraperPreviewResponse,
+  ScraperPreviewData,
 } from '@/pages/Admin/Products/types';
 
 const API_BASE = '/affiliate-products';
 
 export class AffiliateProductService {
+  /**
+   * Obter preview dos dados do scraper sem criar produto
+   */
+  static async preview(
+    data: CreateAffiliateProductData
+  ): Promise<ApiResponse<ScraperPreviewResponse>> {
+    return httpClient.post<ScraperPreviewResponse>(`${API_BASE}/preview`, data);
+  }
+
+  /**
+   * Criar novo produto afiliado com dados editados do preview
+   */
+  static async createFromPreview(
+    affiliateProductId: string,
+    editedData: ScraperPreviewData
+  ): Promise<ApiResponse<AffiliateProduct>> {
+    return httpClient.post<AffiliateProduct>(
+      `${API_BASE}/${affiliateProductId}/create-product`,
+      editedData
+    );
+  }
+
   /**
    * Criar novo produto afiliado
    */

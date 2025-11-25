@@ -390,7 +390,24 @@ export const useAuth = ({ autoLogin = true, persistSession = true, autoRedirect 
     }
   }, [setLoading, setError]);
 
-  const updateProfile = useCallback(async (data: Partial<User>): Promise<void> => {
+  const updateProfile = useCallback(async (data: Partial<User> & {
+    unitId?: string;
+    location?: {
+      unitName?: string;
+      address?: string;
+      localNumber?: string;
+      complement?: string;
+      neighborhood?: string;
+      city?: string;
+      state?: string;
+      zipCode?: string;
+      country?: string;
+      latitude?: number;
+      longitude?: number;
+    };
+    bio?: string;
+    dateOfBirth?: string;
+  }): Promise<void> => {
     if (!user) {
       throw new Error('Usuário não autenticado');
     }
@@ -399,19 +416,60 @@ export const useAuth = ({ autoLogin = true, persistSession = true, autoRedirect 
     setError(null);
 
     try {
-      // Usar a biblioteca de segurança para atualizar perfil
-      const result = await securityClient.updateProfile({
-        name: data.name,
-        phone: data.phone,
-        avatar: data.avatar,
-        preferences: data.preferences
-      });
+      // Preparar dados no formato esperado pela API
+      const updateData: {
+        unitId?: string;
+        location?: any;
+        avatar?: string;
+        bio?: string;
+        phone?: string;
+        dateOfBirth?: string;
+      } = {};
 
-      if (!result.success) {
-        throw new Error(result.message || 'Erro ao atualizar perfil');
+      // Mapear campos do User para o formato da API
+      if (data.unitId !== undefined) {
+        updateData.unitId = data.unitId;
+      }
+      
+      if (data.location) {
+        updateData.location = data.location;
+      }
+      
+      if (data.avatar !== undefined) {
+        updateData.avatar = data.avatar;
+      }
+      
+      if (data.bio !== undefined) {
+        updateData.bio = data.bio;
+      }
+      
+      if (data.phone !== undefined) {
+        updateData.phone = data.phone;
+      }
+      
+      if (data.dateOfBirth !== undefined) {
+        updateData.dateOfBirth = data.dateOfBirth;
       }
 
-      const updatedUser = { ...user, ...data, updatedAt: new Date() };
+      // Usar AuthService para atualizar perfil via endpoint /auth/profile
+      const { AuthService } = await import('@/services/auth/authService');
+      const response = await AuthService.updateProfile(updateData);
+
+      if (!response.success || !response.data) {
+        throw new Error(response.error || 'Erro ao atualizar perfil');
+      }
+
+      // Atualizar usuário na store com os dados retornados
+      // A store já foi atualizada pelo AuthService, mas garantimos sincronização
+      const apiUser = response.data as any;
+      const updatedUser = {
+        ...user,
+        unitId: apiUser?.profile?.unitId || data.unitId || user.unitId,
+        phone: updateData.phone || apiUser?.profile?.phone || user.phone,
+        avatar: updateData.avatar || apiUser?.profile?.avatar || user.avatar,
+        updatedAt: new Date(),
+      };
+      
       storeUpdateUser(updatedUser);
 
     } catch (error) {
@@ -454,6 +512,61 @@ export const useAuth = ({ autoLogin = true, persistSession = true, autoRedirect 
   const refreshToken = useCallback(async (): Promise<void> => {
     await tryRefreshToken();
   }, []);
+
+  // Buscar usuários por domain
+  const findUsersByDomain = useCallback(async (domain?: string): Promise<User[]> => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const { AuthService } = await import('@/services/auth/authService');
+      const response = await AuthService.findUsersByDomain(domain || ENV_CONFIG.SYS_SEGURANCA_DOMAIN);
+
+      if (!response.success || !response.data) {
+        throw new Error(response.error || 'Erro ao buscar usuários por domain');
+      }
+
+      // Converter dados da API para o formato User
+      const users: User[] = (response.data as any[]).map((apiUser: any) => ({
+        id: apiUser.id,
+        email: apiUser.email,
+        name: apiUser.profile?.firstName && apiUser.profile?.lastName
+          ? `${apiUser.profile.firstName} ${apiUser.profile.lastName}`.trim()
+          : apiUser.username || apiUser.email,
+        role: (apiUser.roles?.[0]?.name || 'franchisee') as UserRole,
+        unitId: apiUser.profile?.unitId,
+        phone: apiUser.profile?.phone,
+        avatar: apiUser.profile?.avatar,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        lastLogin: new Date(),
+        emailVerified: true,
+        status: 'active' as const,
+        preferences: {
+          theme: 'light',
+          language: 'pt-BR',
+          notifications: {
+            email: true,
+            push: true,
+            sms: false,
+            marketing: false
+          },
+          privacy: {
+            shareData: false,
+            allowAnalytics: true
+          }
+        }
+      }));
+
+      return users;
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Erro ao buscar usuários por domain';
+      setError(errorMessage);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  }, [setLoading, setError]);
 
   // Utilitários de autorização
   const canAccess = useCallback(async (resource: string, action: string): Promise<boolean> => {
@@ -503,6 +616,7 @@ export const useAuth = ({ autoLogin = true, persistSession = true, autoRedirect 
     updateProfile,
     verifyEmail,
     refreshToken,
+    findUsersByDomain,
 
     // Utilitários
     hasPermission,
