@@ -9,6 +9,7 @@ interface User {
   role: 'admin' | 'franchisee' | 'supplier' | 'support';
   avatar?: string;
   phone?: string;
+  domain?: string;
   createdAt: Date;
   updatedAt: Date;
   lastLogin?: Date;

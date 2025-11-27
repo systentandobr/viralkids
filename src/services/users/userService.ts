@@ -20,6 +20,13 @@ export interface User {
   updatedAt: Date;
 }
 
+export interface AllUsersAvailableResponse {
+  data: User[];
+  total: number;
+  page: number;
+  limit: number;
+}
+
 export interface CreateUserData {
   email: string;
   username: string;
@@ -70,18 +77,49 @@ export class UserService {
    * Buscar usuários por unitId (franquia)
    */
   static async listByUnitId(unitId: string): Promise<ApiResponse<User[]>> {
-    return httpClient.get('/users/by-unit', {
+    const response = await httpClient.get('/users/by-unit', {
       params: { unitId },
     });
+    if (!response.success) {
+      throw new Error(response.error || 'Erro ao buscar usuários por unitId');
+    }
+    return response.data;
   }
 
   /**
    * Buscar usuários disponíveis (sem unitId ou com unitId diferente)
    */
-  static async searchAvailable(search: string): Promise<ApiResponse<User[]>> {
-    return httpClient.get('/users/available', {
+  static async searchAllUsersAvailable(search: string): Promise<ApiResponse<User[]>> {
+    const response = await httpClient.get<User[] | AllUsersAvailableResponse>('/users/available', {
       params: { search },
     });
+    
+    if (!response.success) {
+      throw new Error(response.error || 'Erro ao buscar usuários disponíveis');
+    }
+
+    // Se a resposta já é um array, retornar diretamente
+    if (Array.isArray(response.data)) {
+      return {
+        success: true,
+        data: response.data,
+      };
+    }
+
+    // Se a resposta tem estrutura { data: [], total, page, limit }
+    if (response.data && typeof response.data === 'object' && 'data' in response.data) {
+      const dataObj = response.data as AllUsersAvailableResponse;
+      return {
+        success: true,
+        data: Array.isArray(dataObj.data) ? dataObj.data : [],
+      };
+    }
+
+    // Caso padrão: retornar array vazio
+    return {
+      success: true,
+      data: [],
+    };
   }
 
   /**

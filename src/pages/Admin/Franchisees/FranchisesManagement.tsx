@@ -14,19 +14,16 @@ import {
   Building, 
   Plus, 
   Search, 
-  Eye, 
   Edit,
   Filter,
   Download,
   MapPin,
   TrendingUp,
-  TrendingDown,
   Users,
-  ShoppingCart,
-  Target,
   DollarSign,
   Activity
 } from "lucide-react";
+import React from "react";
 import { useState, useMemo } from "react";
 import { useFranchises, useRegionalTrends } from "@/services/queries/franchises";
 import { FranchiseMap } from "./components/FranchiseMap";
@@ -34,6 +31,63 @@ import { FranchisePerformanceCard } from "./components/FranchisePerformanceCard"
 import { RegionalTrendsCard } from "./components/RegionalTrendsCard";
 import { FranchiseUsersManager } from "./components/FranchiseUsersManager";
 import type { Franchise, RegionalTrend } from "@/services/franchise/franchiseService";
+import { CreateFranchiseForm } from "@/components/franchises/CreateFranchiseForm";
+import { FranchiseResponse } from "@/types/franchise.types";
+// Exemplo de componente de modal/drawer (ajuste conforme sua biblioteca de UI)
+interface ModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  children: React.ReactNode;
+  title?: string;
+}
+
+const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children, title }) => {
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 overflow-y-auto">
+      <div className="flex min-h-screen items-center justify-center p-4">
+        {/* Overlay */}
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 transition-opacity"
+          onClick={onClose}
+        />
+
+        {/* Modal */}
+        <div className="relative bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+          {/* Header */}
+          {title && (
+            <div className="flex items-center justify-between p-6 border-b">
+              <h2 className="text-xl font-semibold text-gray-900">{title}</h2>
+              <button
+                onClick={onClose}
+                className="text-gray-400 hover:text-gray-500"
+              >
+                <span className="sr-only">Fechar</span>
+                <svg
+                  className="h-6 w-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+            </div>
+          )}
+
+          {/* Content */}
+          <div className="p-6">{children}</div>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const FranchisesManagement = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -42,6 +96,8 @@ const FranchisesManagement = () => {
   const [selectedState, setSelectedState] = useState<string[]>([]);
   const [viewMode, setViewMode] = useState<'table' | 'map'>('table');
   const [selectedFranchise, setSelectedFranchise] = useState<Franchise | null>(null);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   // Buscar franquias da API
   const { data: franchisesData, isLoading, error } = useFranchises({
@@ -70,6 +126,26 @@ const FranchisesManagement = () => {
         : 0
     };
   }, [filteredFranchises]);
+
+  
+  // Handler para sucesso na criação
+  const handleCreateSuccess = (franchise: FranchiseResponse) => {
+    console.log('Franquia criada com sucesso:', franchise);
+    
+    // Fechar modal
+    setIsCreateModalOpen(false);
+    
+    // Recarregar lista
+    setRefreshTrigger((prev) => prev + 1);
+    
+    // Opcional: Mostrar notificação de sucesso
+    // toast.success('Franquia criada com sucesso!');
+  };
+
+  // Handler para cancelar criação
+  const handleCreateCancel = () => {
+    setIsCreateModalOpen(false);
+  };
 
   if (isLoading) {
     return (
@@ -181,7 +257,10 @@ const FranchisesManagement = () => {
             <MapPin className="h-4 w-4" />
             Mapa
           </Button>
-          <Button className="bg-gradient-to-r from-purple-500 to-pink-500 hover:opacity-90 transition-opacity shadow-neon">
+          <Button
+             className="bg-gradient-to-r from-purple-500 to-pink-500 hover:opacity-90 transition-opacity shadow-neon"
+             onClick={() => { setIsCreateModalOpen(true); alert('Modal aberto'); }}
+             >
             <Plus className="h-4 w-4 mr-2" />
             Nova Franquia
           </Button>
@@ -394,7 +473,19 @@ const FranchisesManagement = () => {
             </Table>
           </Card>
         </div>
-      )}
+      )}  
+
+       {/* Modal de criação */}
+        <Modal
+          isOpen={isCreateModalOpen}
+          onClose={handleCreateCancel}
+          title="Criar Nova Franquia"
+        >
+          <CreateFranchiseForm
+            onSuccess={handleCreateSuccess}
+            onCancel={handleCreateCancel}
+          />
+        </Modal>  
     </div>
   );
 };

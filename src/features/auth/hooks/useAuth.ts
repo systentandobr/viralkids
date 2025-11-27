@@ -191,6 +191,7 @@ export const useAuth = ({ autoLogin = true, persistSession = true, autoRedirect 
         unitId: authResult.user.profile?.unitId,
         phone: authResult.user.profile?.phone,
         avatar: authResult.user.profile?.avatar,
+        domain: authResult.user.profile?.domain,
         createdAt: new Date(), // A API não retorna createdAt
         updatedAt: new Date(), // A API não retorna updatedAt
         lastLogin: new Date(),
@@ -281,6 +282,7 @@ export const useAuth = ({ autoLogin = true, persistSession = true, autoRedirect 
         role: userRole as UserRole,
         phone: registerResult.user.profile?.phone,
         avatar: registerResult.user.profile?.avatar,
+        domain: registerResult.user.profile?.domain,
         createdAt: new Date(),
         updatedAt: new Date(),
         lastLogin: new Date(),

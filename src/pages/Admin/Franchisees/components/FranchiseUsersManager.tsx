@@ -74,11 +74,8 @@ export const FranchiseUsersManager = ({
     setIsLoading(true);
     try {
       const response = await UserService.listByUnitId(franchise.unitId);
-      if (response.success && response.data) {
-        setUsers(response.data);
-      } else {
-        setUsers([]);
-      }
+      const usersArray = Array.isArray(response.data) ? response.data : [];
+      setUsers(usersArray);
     } catch (error: any) {
       console.error("Erro ao carregar usuários:", error);
       toast.error(error.message || "Erro ao carregar usuários");
@@ -97,9 +94,12 @@ export const FranchiseUsersManager = ({
     
     setIsSearching(true);
     try {
-      const response = await UserService.searchAvailable(search);
+      const response = await UserService.searchAllUsersAvailable(search);
+      
+      // Garantir que response.data seja um array
       if (response.success && response.data) {
-        setAvailableUsers(response.data);
+        const usersArray = Array.isArray(response.data) ? response.data : [];
+        setAvailableUsers(usersArray);
       } else {
         setAvailableUsers([]);
       }
@@ -171,10 +171,18 @@ export const FranchiseUsersManager = ({
     }
   };
 
-  const filteredUsers = users.filter((user) =>
-    user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    user.email.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredUsers = users.filter((user) => {
+    if (!user) return false;
+    
+    const name = user.name || '';
+    const email = user.email || '';
+    const searchLower = searchTerm.toLowerCase();
+    
+    return (
+      name.toLowerCase().includes(searchLower) ||
+      email.toLowerCase().includes(searchLower)
+    );
+  });
 
   const getStatusBadge = (status: FranchiseUser['status']) => {
     const config = {
@@ -250,8 +258,8 @@ export const FranchiseUsersManager = ({
                       >
                         <div className="flex items-center justify-between">
                           <div>
-                            <p className="text-sm font-medium">{user.name}</p>
-                            <p className="text-xs text-muted-foreground">{user.email}</p>
+                            <p className="text-sm font-medium">{user.name || user.username || 'Sem nome'}</p>
+                            <p className="text-xs text-muted-foreground">{user.email || 'Sem email'}</p>
                           </div>
                           {selectedUserId === user.id && (
                             <CheckCircle2 className="h-4 w-4 text-neon-green" />
@@ -349,14 +357,14 @@ export const FranchiseUsersManager = ({
           <TableBody>
             {filteredUsers.map((user) => (
               <TableRow key={user.id}>
-                <TableCell className="font-medium">{user.name}</TableCell>
-                <TableCell className="text-muted-foreground">{user.email}</TableCell>
+                <TableCell className="font-medium">{user.name || user.username || 'Sem nome'}</TableCell>
+                <TableCell className="text-muted-foreground">{user.email || 'Sem email'}</TableCell>
                 <TableCell>
-                  <Badge variant="outline">{user.role}</Badge>
+                  <Badge variant="outline">{user.role || 'N/A'}</Badge>
                 </TableCell>
-                <TableCell>{getStatusBadge(user.status)}</TableCell>
+                <TableCell>{getStatusBadge(user.status || 'inactive')}</TableCell>
                 <TableCell className="text-muted-foreground text-sm">
-                  {new Date(user.createdAt).toLocaleDateString()}
+                  {user.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'N/A'}
                 </TableCell>
                 <TableCell className="text-right">
                   <Button
