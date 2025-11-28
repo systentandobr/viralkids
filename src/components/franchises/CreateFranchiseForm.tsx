@@ -1,535 +1,647 @@
-'use client';
-
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import {
-  CreateFranchiseSchema,
-  CreateFranchiseFormData,
-} from '../../schemas/franchise.schema';
-import { franchisesService } from '../../services/api/franchises.service';
-import { FranchiseResponse } from '../../types/franchise.types';
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Progress } from '@/components/ui/progress';
+import { Badge } from '@/components/ui/badge';
+import { useToast } from '@/hooks/use-toast';
+import { useGoogleMaps } from '@/hooks/useGoogleMaps';
+import { GoogleMapsAutocomplete, AddressData } from './GoogleMapsAutocomplete';
+import { MapView } from './MapView';
+import { generateUnitId, validateUnitIdFormat } from '@/utils/unitIdGenerator';
+import { generateTempPassword } from '@/utils/passwordGenerator';
+import { UserService } from '@/services/users/userService';
+import { notificationService } from '@/services/api/notifications.service';
+import { franchisesService } from '@/services/api/franchises.service';
+import { useAuthStore } from '@/stores/auth.store';
+import { 
+  ChevronRight, 
+  ChevronLeft, 
+  CheckCircle, 
+  Building2, 
+  User, 
+  MapPin, 
+  Map as MapIcon,
+  Loader2
+} from 'lucide-react';
+import { BRAZILIAN_STATES } from './BrazilianStatesSelect';
 
-// Estados brasileiros
-const BRAZILIAN_STATES = [
-  { value: 'AC', label: 'Acre' },
-  { value: 'AL', label: 'Alagoas' },
-  { value: 'AP', label: 'Amapá' },
-  { value: 'AM', label: 'Amazonas' },
-  { value: 'BA', label: 'Bahia' },
-  { value: 'CE', label: 'Ceará' },
-  { value: 'DF', label: 'Distrito Federal' },
-  { value: 'ES', label: 'Espírito Santo' },
-  { value: 'GO', label: 'Goiás' },
-  { value: 'MA', label: 'Maranhão' },
-  { value: 'MT', label: 'Mato Grosso' },
-  { value: 'MS', label: 'Mato Grosso do Sul' },
-  { value: 'MG', label: 'Minas Gerais' },
-  { value: 'PA', label: 'Pará' },
-  { value: 'PB', label: 'Paraíba' },
-  { value: 'PR', label: 'Paraná' },
-  { value: 'PE', label: 'Pernambuco' },
-  { value: 'PI', label: 'Piauí' },
-  { value: 'RJ', label: 'Rio de Janeiro' },
-  { value: 'RN', label: 'Rio Grande do Norte' },
-  { value: 'RS', label: 'Rio Grande do Sul' },
-  { value: 'RO', label: 'Rondônia' },
-  { value: 'RR', label: 'Roraima' },
-  { value: 'SC', label: 'Santa Catarina' },
-  { value: 'SP', label: 'São Paulo' },
-  { value: 'SE', label: 'Sergipe' },
-  { value: 'TO', label: 'Tocantins' },
+// Schema de validação
+const franchiseSchema = z.object({
+  // Step 1: Informações Básicas
+  unitId: z.string().optional(),
+  franchiseName: z.string().min(3, 'Nome deve ter no mínimo 3 caracteres'),
+  status: z.enum(['active', 'pending', 'inactive']),
+  type: z.enum(['standard', 'premium', 'express']),
+
+  // Step 2: Proprietário
+  ownerName: z.string().min(3, 'Nome do proprietário obrigatório'),
+  ownerEmail: z.string().email('Email inválido'),
+  ownerPhone: z.string().optional(),
+
+  // Step 3: Localização
+  address: z.string().min(5, 'Endereço completo obrigatório'),
+  city: z.string().min(2, 'Cidade obrigatória'),
+  state: z.string().min(2, 'Estado obrigatório'),
+  postalCode: z.string().optional(),
+  latitude: z.number(),
+  longitude: z.number(),
+  neighborhood: z.string().optional(),
+  number: z.string().optional(),
+
+  // Step 4: Território (Opcional)
+  hasTerritory: z.boolean().default(false),
+  territoryCity: z.string().optional(),
+  territoryState: z.string().optional(),
+  territoryRadius: z.string().optional(),
+  territoryExclusive: z.boolean().default(false),
+});
+
+type FranchiseFormData = z.infer<typeof franchiseSchema>;
+
+const STEPS = [
+  { id: 1, title: 'Informações Básicas', icon: Building2 },
+  { id: 2, title: 'Proprietário', icon: User },
+  { id: 3, title: 'Localização', icon: MapPin },
+  { id: 4, title: 'Território', icon: MapIcon },
 ];
 
 interface CreateFranchiseFormProps {
-  onSuccess?: (franchise: FranchiseResponse) => void;
+  onSuccess?: () => void;
   onCancel?: () => void;
-  initialData?: Partial<CreateFranchiseFormData>;
 }
 
-export const CreateFranchiseForm: React.FC<CreateFranchiseFormProps> = ({
-  onSuccess,
-  onCancel,
-  initialData,
-}) => {
+export function CreateFranchiseForm({ onSuccess, onCancel }: CreateFranchiseFormProps) {
+  const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [showTerritory, setShowTerritory] = useState(false);
+  const [addressData, setAddressData] = useState<AddressData | null>(null);
+  const { toast } = useToast();
+  const { isLoaded: mapsLoaded, loadError: mapsError } = useGoogleMaps();
+  const currentUser = useAuthStore(state => state.user);
 
   const {
     register,
     handleSubmit,
     formState: { errors },
-    watch,
     setValue,
-  } = useForm<CreateFranchiseFormData>({
-    resolver: zodResolver(CreateFranchiseSchema),
+    watch,
+    trigger,
+  } = useForm<FranchiseFormData>({
+    resolver: zodResolver(franchiseSchema),
     defaultValues: {
       status: 'pending',
       type: 'standard',
-      location: {
-        type: 'physical',
-        ...initialData?.location,
-      },
-      ...initialData,
+      hasTerritory: false,
+      territoryExclusive: false,
+      latitude: -23.5505,
+      longitude: -46.6333,
     },
   });
 
-  const locationType = watch('location.type');
+  const watchedValues = watch();
+  const progress = (currentStep / STEPS.length) * 100;
 
-  const onSubmit = async (data: CreateFranchiseFormData) => {
+  // Validação por step
+  const validateStep = async (step: number): Promise<boolean> => {
+    let fieldsToValidate: (keyof FranchiseFormData)[] = [];
+
+    switch (step) {
+      case 1:
+        fieldsToValidate = ['franchiseName', 'status', 'type'];
+        break;
+      case 2:
+        fieldsToValidate = ['ownerName', 'ownerEmail'];
+        break;
+      case 3:
+        fieldsToValidate = ['address', 'city', 'state', 'latitude', 'longitude'];
+        break;
+      case 4:
+        if (watchedValues.hasTerritory) {
+          fieldsToValidate = ['territoryCity', 'territoryState'];
+        }
+        break;
+    }
+
+    const result = await trigger(fieldsToValidate);
+    return result;
+  };
+
+  const handleNext = async () => {
+    const isValid = await validateStep(currentStep);
+    if (isValid && currentStep < STEPS.length) {
+      setCurrentStep(currentStep + 1);
+    }
+  };
+
+  const handlePrevious = () => {
+    if (currentStep > 1) {
+      setCurrentStep(currentStep - 1);
+    }
+  };
+
+  const handleAddressSelect = (data: AddressData) => {
+    setAddressData(data);
+    setValue('address', data.fullAddress);
+    setValue('city', data.city);
+    setValue('state', data.state);
+    setValue('postalCode', data.postalCode);
+    setValue('latitude', data.latitude);
+    setValue('longitude', data.longitude);
+    setValue('neighborhood', data.neighborhood);
+    setValue('number', data.number);
+
+    // Gera unitId automaticamente se estiver vazio
+    if (!watchedValues.unitId) {
+      const generatedId = generateUnitId({
+        country: data.country,
+        state: data.state,
+        city: data.city,
+        neighborhood: data.neighborhood,
+        number: data.number,
+      });
+      setValue('unitId', generatedId);
+    }
+  };
+
+  const handleCoordinatesChange = (lat: number, lng: number) => {
+    setValue('latitude', lat);
+    setValue('longitude', lng);
+  };
+
+  const onSubmit = async (data: FranchiseFormData) => {
     setIsSubmitting(true);
-    setError(null);
 
     try {
-      // Limpar campos opcionais vazios
-      const submitData = {
-        ...data,
-        ownerPhone: data.ownerPhone || undefined,
-        territory: showTerritory && data.territory ? data.territory : undefined,
+      // 1. Obter domain do usuário logado
+      const domain = currentUser?.domain || 'viralkids'; // fallback
+
+      // 2. Preparar dados do proprietário
+      const [firstName, ...lastNameParts] = data.ownerName.split(' ');
+      const lastName = lastNameParts.join(' ') || firstName;
+
+      // 3. Gerar username e password temporário
+      const username = data.ownerEmail.split('@')[0]; // parte antes do @
+      const tempPassword = generateTempPassword(12);
+
+      // 4. Criar usuário franqueado
+      // Nota: O backend cria o usuário com o domain do usuário logado automaticamente
+      // O SYS-SEGURANÇA requer informações completas de endereço
+      const userResponse = await UserService.create({
+        email: data.ownerEmail,
+        username: username,
+        password: tempPassword,
+        firstName,
+        lastName,
+        country: 'BR',
+        state: data.state,
+        zipCode: data.postalCode || '00000-000',
+        localNumber: data.number || 'S/N',
+        unitName: data.franchiseName,
+        address: data.address,
+        complement: 'N/A', // Campo obrigatório - usar valor padrão se não houver complemento
+        neighborhood: data.neighborhood || data.city,
+        city: data.city,
+        latitude: data.latitude,
+        longitude: data.longitude,
+      });
+
+      if (!userResponse.success || !userResponse.data) {
+        throw new Error(userResponse.error || 'Erro ao criar usuário');
+      }
+
+      const createdUser = userResponse.data;
+
+      // 5. Gerar unitId se não existir
+      const unitId = data.unitId || generateUnitId({
+        country: 'BR',
+        state: data.state,
+        city: data.city,
+        neighborhood: data.neighborhood,
+        number: data.number,
+      });
+
+      // 6. Preparar dados da franquia no formato esperado pela API
+      const franchiseData = {
+        unitId: unitId,
+        name: data.franchiseName,
+        ownerId: createdUser.id,
+        ownerName: data.ownerName,
+        ownerEmail: data.ownerEmail,
+        ownerPhone: data.ownerPhone,
+        location: {
+          lat: data.latitude,
+          lng: data.longitude,
+          address: data.address,
+          city: data.city,
+          state: data.state,
+          zipCode: data.postalCode || '',
+          type: 'physical' as const,
+        },
+        status: data.status as 'active' | 'inactive' | 'pending' | 'suspended',
+        type: data.type as 'standard' | 'premium' | 'express',
+        territory: data.hasTerritory && data.territoryCity && data.territoryState ? {
+          city: data.territoryCity,
+          state: data.territoryState,
+          exclusive: data.territoryExclusive,
+          radius: data.territoryRadius ? parseFloat(data.territoryRadius) : undefined,
+        } : undefined,
       };
 
-      const response = await franchisesService.createFranchise(submitData);
-      
-      if (onSuccess) {
-        onSuccess(response);
+      // 7. Criar franquia na API
+      const franchiseResponse = await franchisesService.createFranchise(franchiseData);
+
+      // 8. Enviar notificação (não bloqueia o fluxo se falhar)
+      try {
+        const notificationResult = await notificationService.sendNotification({
+          title: 'Nova Franquia Cadastrada',
+          message: `A franquia ${data.franchiseName} foi cadastrada com sucesso. O proprietário ${data.ownerName} receberá um email de confirmação.`,
+          type: 'success',
+          metadata: {
+            'ID da Franquia': franchiseResponse.unitId,
+            'ID do Proprietário': createdUser.id,
+            'Email': data.ownerEmail,
+            'Nome': data.ownerName,
+            'Status': data.status,
+          },
+        });
+
+        if (!notificationResult.success) {
+          console.warn('Notificação não foi enviada:', notificationResult.error);
+        }
+      } catch (notificationError) {
+        // Não bloquear o fluxo se a notificação falhar
+        console.warn('Erro ao enviar notificação:', notificationError);
       }
-    } catch (err: any) {
-      console.error('Erro ao criar franquia:', err);
-      setError(
-        err.message || 'Erro ao criar franquia. Tente novamente.'
-      );
+
+      toast({
+        title: '✅ Franquia criada com sucesso!',
+        description: `${data.franchiseName} foi cadastrada. Um email de ativação foi enviado para ${data.ownerEmail}.`,
+      });
+
+      onSuccess?.();
+    } catch (error) {
+      console.error('Error creating franchise:', error);
+      toast({
+        title: '❌ Erro ao criar franquia',
+        description: error instanceof Error ? error.message : 'Erro desconhecido',
+        variant: 'destructive',
+      });
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  // Função para formatar CEP
-  const formatCEP = (value: string) => {
-    const numbers = value.replace(/\D/g, '');
-    if (numbers.length <= 5) return numbers;
-    return `${numbers.slice(0, 5)}-${numbers.slice(5, 8)}`;
-  };
+  const renderStepContent = () => {
+    switch (currentStep) {
+      case 1:
+        return (
+          <div className='space-y-4'>
+            <div>
+              <Label htmlFor='unitId'>Unit ID (Auto-gerado)</Label>
+              <Input
+                id='unitId'
+                {...register('unitId')}
+                placeholder='Será gerado automaticamente'
+                disabled
+              />
+              <p className='text-xs text-muted-foreground mt-1'>
+                Formato: #BR#UF#CIDADE#BAIRRO#NUMERO
+              </p>
+            </div>
 
-  // Função para formatar telefone
-  const formatPhone = (value: string) => {
-    const numbers = value.replace(/\D/g, '');
-    if (numbers.length <= 10) {
-      return numbers.replace(/(\d{2})(\d{4})(\d{4})/, '($1) $2-$3');
+            <div>
+              <Label htmlFor='franchiseName'>Nome da Franquia *</Label>
+              <Input
+                id='franchiseName'
+                {...register('franchiseName')}
+                placeholder='Ex: Franquia Centro'
+                className={errors.franchiseName ? 'border-destructive' : ''}
+              />
+              {errors.franchiseName && (
+                <p className='text-sm text-destructive mt-1'>{errors.franchiseName.message}</p>
+              )}
+            </div>
+
+            <div className='grid grid-cols-2 gap-4'>
+              <div>
+                <Label htmlFor='status'>Status</Label>
+                <Select
+                  value={watchedValues.status}
+                  onValueChange={(value: any) => setValue('status', value)}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value='pending'>Pendente</SelectItem>
+                    <SelectItem value='active'>Ativa</SelectItem>
+                    <SelectItem value='inactive'>Inativa</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <Label htmlFor='type'>Tipo</Label>
+                <Select
+                  value={watchedValues.type}
+                  onValueChange={(value: any) => setValue('type', value)}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value='standard'>Standard</SelectItem>
+                    <SelectItem value='premium'>Premium</SelectItem>
+                    <SelectItem value='express'>Express</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </div>
+        );
+
+      case 2:
+        return (
+          <div className='space-y-4'>
+            <div>
+              <Label htmlFor='ownerName'>Nome do Proprietário *</Label>
+              <Input
+                id='ownerName'
+                {...register('ownerName')}
+                placeholder='Ex: João Silva'
+                className={errors.ownerName ? 'border-destructive' : ''}
+              />
+              {errors.ownerName && (
+                <p className='text-sm text-destructive mt-1'>{errors.ownerName.message}</p>
+              )}
+            </div>
+
+            <div>
+              <Label htmlFor='ownerEmail'>Email *</Label>
+              <Input
+                id='ownerEmail'
+                type='email'
+                {...register('ownerEmail')}
+                placeholder='joao@example.com'
+                className={errors.ownerEmail ? 'border-destructive' : ''}
+              />
+              {errors.ownerEmail && (
+                <p className='text-sm text-destructive mt-1'>{errors.ownerEmail.message}</p>
+              )}
+              <p className='text-xs text-muted-foreground mt-1'>
+                Um email de ativação será enviado para este endereço
+              </p>
+            </div>
+
+            <div>
+              <Label htmlFor='ownerPhone'>Telefone</Label>
+              <Input
+                id='ownerPhone'
+                {...register('ownerPhone')}
+                placeholder='(00) 00000-0000'
+              />
+            </div>
+          </div>
+        );
+
+      case 3:
+        return (
+          <div className='space-y-6'>
+            {mapsError && (
+              <div className='p-4 bg-destructive/10 border border-destructive rounded-md'>
+                <p className='text-sm text-destructive'>
+                  ⚠️ Google Maps não disponível. Configure VITE_GOOGLE_MAPS_API_KEY no .env
+                </p>
+              </div>
+            )}
+
+            {mapsLoaded && (
+              <>
+                <GoogleMapsAutocomplete
+                  onAddressSelect={handleAddressSelect}
+                  defaultValue={watchedValues.address}
+                  error={errors.address?.message}
+                />
+
+                <div className='grid grid-cols-2 gap-4'>
+                  <div>
+                    <Label htmlFor='city'>Cidade *</Label>
+                    <Input
+                      id='city'
+                      {...register('city')}
+                      className={errors.city ? 'border-destructive' : ''}
+                      readOnly
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor='state'>Estado *</Label>
+                    <Input
+                      id='state'
+                      {...register('state')}
+                      className={errors.state ? 'border-destructive' : ''}
+                      readOnly
+                    />
+                  </div>
+                </div>
+
+                {addressData && (
+                  <MapView
+                    latitude={watchedValues.latitude}
+                    longitude={watchedValues.longitude}
+                    onCoordinatesChange={handleCoordinatesChange}
+                    draggable
+                  />
+                )}
+              </>
+            )}
+
+            {!mapsLoaded && !mapsError && (
+              <div className='flex items-center justify-center h-40'>
+                <Loader2 className='w-8 h-8 animate-spin text-primary' />
+                <span className='ml-2'>Carregando Google Maps...</span>
+              </div>
+            )}
+          </div>
+        );
+
+      case 4:
+        return (
+          <div className='space-y-6'>
+            <div className='flex items-center space-x-2'>
+              <Checkbox
+                id='hasTerritory'
+                checked={watchedValues.hasTerritory}
+                onCheckedChange={(checked) => setValue('hasTerritory', !!checked)}
+              />
+              <Label htmlFor='hasTerritory' className='cursor-pointer'>
+                Adicionar território à franquia
+              </Label>
+            </div>
+
+            {watchedValues.hasTerritory && (
+              <div className='space-y-4 p-4 border rounded-md bg-card'>
+                <div className='grid grid-cols-2 gap-4'>
+
+                <div>
+                    <Label htmlFor='territoryState'>Estado</Label>
+                    <Select
+                      value={watchedValues.territoryState}
+                      onValueChange={(value) => setValue('territoryState', value)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder='Selecione...' />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {BRAZILIAN_STATES.map((state) => (
+                          <SelectItem key={state.value} value={state.value}>
+                            {state.label}
+                          </SelectItem>
+                        ))}
+                        {/* Adicionar mais estados */}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor='territoryCity'>Cidade do Território</Label>
+                    <Input
+                      id='territoryCity'
+                      {...register('territoryCity')}
+                      placeholder='Ex: São Paulo'
+                    />
+                  </div>
+
+                  
+                </div>
+
+                <div>
+                  <Label htmlFor='territoryRadius'>Raio (km)</Label>
+                  <Input
+                    id='territoryRadius'
+                    {...register('territoryRadius')}
+                    type='number'
+                    placeholder='Ex: 10'
+                  />
+                </div>
+
+                <div className='flex items-center space-x-2'>
+                  <Checkbox
+                    id='territoryExclusive'
+                    checked={watchedValues.territoryExclusive}
+                    onCheckedChange={(checked) => setValue('territoryExclusive', !!checked)}
+                  />
+                  <Label htmlFor='territoryExclusive' className='cursor-pointer'>
+                    Território exclusivo
+                  </Label>
+                </div>
+              </div>
+            )}
+
+            {!watchedValues.hasTerritory && (
+              <div className='text-center py-8 text-muted-foreground'>
+                <MapIcon className='w-12 h-12 mx-auto mb-2 opacity-50' />
+                <p>Território opcional. Marque a opção acima para configurar.</p>
+              </div>
+            )}
+          </div>
+        );
+
+      default:
+        return null;
     }
-    return numbers.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-      {error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
-          {error}
-        </div>
-      )}
+    <Card className='w-full max-w-4xl mx-auto'>
+      <CardHeader>
+        <CardTitle className='text-2xl'>Criar Nova Franquia</CardTitle>
+        <CardDescription>
+          Complete as etapas abaixo para cadastrar uma nova franquia no sistema
+        </CardDescription>
 
-      {/* Seção: Informações Básicas */}
-      <div className="border-b border-gray-200 pb-4">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">
-          Informações Básicas
-        </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label htmlFor="unitId" className="block text-sm font-medium text-gray-700">
-              Unit ID <span className="text-red-500">*</span>
-            </label>
-            <input
-              {...register('unitId')}
-              type="text"
-              id="unitId"
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-              placeholder="Ex: FR-001"
-            />
-            {errors.unitId && (
-              <p className="mt-1 text-sm text-red-600">{errors.unitId.message}</p>
-            )}
-          </div>
-
-          <div>
-            <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-              Nome da Franquia <span className="text-red-500">*</span>
-            </label>
-            <input
-              {...register('name')}
-              type="text"
-              id="name"
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-              placeholder="Ex: Franquia Centro"
-            />
-            {errors.name && (
-              <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>
-            )}
-          </div>
-
-          <div>
-            <label htmlFor="status" className="block text-sm font-medium text-gray-700">
-              Status
-            </label>
-            <select
-              {...register('status')}
-              id="status"
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-            >
-              <option value="pending">Pendente</option>
-              <option value="active">Ativa</option>
-              <option value="inactive">Inativa</option>
-              <option value="suspended">Suspensa</option>
-            </select>
-            {errors.status && (
-              <p className="mt-1 text-sm text-red-600">{errors.status.message}</p>
-            )}
-          </div>
-
-          <div>
-            <label htmlFor="type" className="block text-sm font-medium text-gray-700">
-              Tipo
-            </label>
-            <select
-              {...register('type')}
-              id="type"
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-            >
-              <option value="standard">Standard</option>
-              <option value="premium">Premium</option>
-              <option value="express">Express</option>
-            </select>
-            {errors.type && (
-              <p className="mt-1 text-sm text-red-600">{errors.type.message}</p>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* Seção: Proprietário */}
-      <div className="border-b border-gray-200 pb-4">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">
-          Informações do Proprietário
-        </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label htmlFor="ownerId" className="block text-sm font-medium text-gray-700">
-              ID do Proprietário <span className="text-red-500">*</span>
-            </label>
-            <input
-              {...register('ownerId')}
-              type="text"
-              id="ownerId"
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-              placeholder="Ex: USR-123"
-            />
-            {errors.ownerId && (
-              <p className="mt-1 text-sm text-red-600">{errors.ownerId.message}</p>
-            )}
-          </div>
-
-          <div>
-            <label htmlFor="ownerName" className="block text-sm font-medium text-gray-700">
-              Nome do Proprietário <span className="text-red-500">*</span>
-            </label>
-            <input
-              {...register('ownerName')}
-              type="text"
-              id="ownerName"
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-              placeholder="Ex: João Silva"
-            />
-            {errors.ownerName && (
-              <p className="mt-1 text-sm text-red-600">{errors.ownerName.message}</p>
-            )}
-          </div>
-
-          <div>
-            <label htmlFor="ownerEmail" className="block text-sm font-medium text-gray-700">
-              Email <span className="text-red-500">*</span>
-            </label>
-            <input
-              {...register('ownerEmail')}
-              type="email"
-              id="ownerEmail"
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-              placeholder="exemplo@email.com"
-            />
-            {errors.ownerEmail && (
-              <p className="mt-1 text-sm text-red-600">{errors.ownerEmail.message}</p>
-            )}
-          </div>
-
-          <div>
-            <label htmlFor="ownerPhone" className="block text-sm font-medium text-gray-700">
-              Telefone
-            </label>
-            <input
-              {...register('ownerPhone')}
-              type="tel"
-              id="ownerPhone"
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-              placeholder="(00) 00000-0000"
-              onChange={(e) => {
-                const formatted = formatPhone(e.target.value);
-                setValue('ownerPhone', formatted);
-              }}
-            />
-            {errors.ownerPhone && (
-              <p className="mt-1 text-sm text-red-600">{errors.ownerPhone.message}</p>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* Seção: Localização */}
-      <div className="border-b border-gray-200 pb-4">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">
-          Localização
-        </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="md:col-span-2">
-            <label htmlFor="location.address" className="block text-sm font-medium text-gray-700">
-              Endereço <span className="text-red-500">*</span>
-            </label>
-            <input
-              {...register('location.address')}
-              type="text"
-              id="location.address"
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-              placeholder="Ex: Rua das Flores, 123"
-            />
-            {errors.location?.address && (
-              <p className="mt-1 text-sm text-red-600">{errors.location.address.message}</p>
-            )}
-          </div>
-
-          <div>
-            <label htmlFor="location.city" className="block text-sm font-medium text-gray-700">
-              Cidade <span className="text-red-500">*</span>
-            </label>
-            <input
-              {...register('location.city')}
-              type="text"
-              id="location.city"
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-              placeholder="Ex: São Paulo"
-            />
-            {errors.location?.city && (
-              <p className="mt-1 text-sm text-red-600">{errors.location.city.message}</p>
-            )}
-          </div>
-
-          <div>
-            <label htmlFor="location.state" className="block text-sm font-medium text-gray-700">
-              Estado <span className="text-red-500">*</span>
-            </label>
-            <select
-              {...register('location.state')}
-              id="location.state"
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-            >
-              <option value="">Selecione...</option>
-              {BRAZILIAN_STATES.map((state) => (
-                <option key={state.value} value={state.value}>
-                  {state.label}
-                </option>
-              ))}
-            </select>
-            {errors.location?.state && (
-              <p className="mt-1 text-sm text-red-600">{errors.location.state.message}</p>
-            )}
-          </div>
-
-          <div>
-            <label htmlFor="location.zipCode" className="block text-sm font-medium text-gray-700">
-              CEP <span className="text-red-500">*</span>
-            </label>
-            <input
-              {...register('location.zipCode')}
-              type="text"
-              id="location.zipCode"
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-              placeholder="00000-000"
-              maxLength={9}
-              onChange={(e) => {
-                const formatted = formatCEP(e.target.value);
-                setValue('location.zipCode', formatted);
-              }}
-            />
-            {errors.location?.zipCode && (
-              <p className="mt-1 text-sm text-red-600">{errors.location.zipCode.message}</p>
-            )}
-          </div>
-
-          <div>
-            <label htmlFor="location.type" className="block text-sm font-medium text-gray-700">
-              Tipo de Localização <span className="text-red-500">*</span>
-            </label>
-            <select
-              {...register('location.type')}
-              id="location.type"
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-            >
-              <option value="physical">Física</option>
-              <option value="digital">Digital</option>
-            </select>
-            {errors.location?.type && (
-              <p className="mt-1 text-sm text-red-600">{errors.location.type.message}</p>
-            )}
-          </div>
-
-          {locationType === 'physical' && (
-            <>
-              <div>
-                <label htmlFor="location.lat" className="block text-sm font-medium text-gray-700">
-                  Latitude <span className="text-red-500">*</span>
-                </label>
-                <input
-                  {...register('location.lat', { valueAsNumber: true })}
-                  type="number"
-                  step="any"
-                  id="location.lat"
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                  placeholder="Ex: -23.5505"
-                />
-                {errors.location?.lat && (
-                  <p className="mt-1 text-sm text-red-600">{errors.location.lat.message}</p>
-                )}
-              </div>
-
-              <div>
-                <label htmlFor="location.lng" className="block text-sm font-medium text-gray-700">
-                  Longitude <span className="text-red-500">*</span>
-                </label>
-                <input
-                  {...register('location.lng', { valueAsNumber: true })}
-                  type="number"
-                  step="any"
-                  id="location.lng"
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                  placeholder="Ex: -46.6333"
-                />
-                {errors.location?.lng && (
-                  <p className="mt-1 text-sm text-red-600">{errors.location.lng.message}</p>
-                )}
-              </div>
-            </>
-          )}
-        </div>
-      </div>
-
-      {/* Seção: Território (Opcional) */}
-      <div className="border-b border-gray-200 pb-4">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold text-gray-900">
-            Território (Opcional)
-          </h3>
-          <label className="flex items-center">
-            <input
-              type="checkbox"
-              checked={showTerritory}
-              onChange={(e) => setShowTerritory(e.target.checked)}
-              className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-            />
-            <span className="ml-2 text-sm text-gray-700">Adicionar território</span>
-          </label>
-        </div>
-
-        {showTerritory && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label htmlFor="territory.city" className="block text-sm font-medium text-gray-700">
-                Cidade
-              </label>
-              <input
-                {...register('territory.city')}
-                type="text"
-                id="territory.city"
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                placeholder="Ex: São Paulo"
-              />
-              {errors.territory?.city && (
-                <p className="mt-1 text-sm text-red-600">{errors.territory.city.message}</p>
-              )}
-            </div>
-
-            <div>
-              <label htmlFor="territory.state" className="block text-sm font-medium text-gray-700">
-                Estado
-              </label>
-              <select
-                {...register('territory.state')}
-                id="territory.state"
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+        {/* Progress Bar */}
+        <div className='space-y-2 pt-4'>
+          <Progress value={progress} className='h-2' />
+          <div className='flex justify-between text-xs text-muted-foreground'>
+            {STEPS.map((step) => (
+              <div
+                key={step.id}
+                className={`flex items-center gap-1 ${
+                  currentStep >= step.id ? 'text-primary font-medium' : ''
+                }`}
               >
-                <option value="">Selecione...</option>
-                {BRAZILIAN_STATES.map((state) => (
-                  <option key={state.value} value={state.value}>
-                    {state.label}
-                  </option>
-                ))}
-              </select>
-              {errors.territory?.state && (
-                <p className="mt-1 text-sm text-red-600">{errors.territory.state.message}</p>
-              )}
-            </div>
-
-            <div>
-              <label htmlFor="territory.radius" className="block text-sm font-medium text-gray-700">
-                Raio (km)
-              </label>
-              <input
-                {...register('territory.radius', { valueAsNumber: true })}
-                type="number"
-                min="0"
-                step="0.1"
-                id="territory.radius"
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                placeholder="Ex: 10"
-              />
-              {errors.territory?.radius && (
-                <p className="mt-1 text-sm text-red-600">{errors.territory.radius.message}</p>
-              )}
-            </div>
-
-            <div className="flex items-center">
-              <label className="flex items-center">
-                <input
-                  {...register('territory.exclusive')}
-                  type="checkbox"
-                  defaultChecked={true}
-                  className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                />
-                <span className="ml-2 text-sm text-gray-700">Território exclusivo</span>
-              </label>
-            </div>
+                {currentStep > step.id ? (
+                  <CheckCircle className='w-4 h-4 text-neon-green' />
+                ) : (
+                  <step.icon className='w-4 h-4' />
+                )}
+                <span className='hidden sm:inline'>{step.title}</span>
+              </div>
+            ))}
           </div>
-        )}
-      </div>
+        </div>
+      </CardHeader>
 
-      {/* Botões de Ação */}
-      <div className="flex justify-end space-x-4 pt-4">
-        {onCancel && (
-          <button
-            type="button"
-            onClick={onCancel}
-            className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-            disabled={isSubmitting}
-          >
-            Cancelar
-          </button>
-        )}
-        <button
-          type="submit"
-          disabled={isSubmitting}
-          className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {isSubmitting ? 'Salvando...' : 'Criar Franquia'}
-        </button>
-      </div>
-    </form>
+      <CardContent>
+        <form onSubmit={handleSubmit(onSubmit)} className='space-y-6'>
+          {/* Step Badge */}
+          <div className='flex items-center gap-2'>
+            <Badge variant='outline' className='text-sm'>
+              Etapa {currentStep} de {STEPS.length}
+            </Badge>
+            <span className='text-sm font-medium'>{STEPS[currentStep - 1].title}</span>
+          </div>
+
+          {/* Step Content */}
+          <div className='min-h-[400px]'>{renderStepContent()}</div>
+
+          {/* Navigation Buttons */}
+          <div className='flex justify-between pt-4 border-t'>
+            <Button
+              type='button'
+              variant='outline'
+              onClick={currentStep === 1 ? onCancel : handlePrevious}
+            >
+              <ChevronLeft className='w-4 h-4 mr-2' />
+              {currentStep === 1 ? 'Cancelar' : 'Anterior'}
+            </Button>
+
+            {currentStep < STEPS.length ? (
+              <Button type='button' className='bg-primary text-white' onClick={handleNext}>
+                Próximo
+                <ChevronRight className='w-4 h-4 ml-2' />
+              </Button>
+            ) : (
+              <Button type='submit' className='bg-primary text-white' disabled={isSubmitting}>
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className='w-4 h-4 mr-2 animate-spin' />
+                    Criando...
+                  </>
+                ) : (
+                  <>
+                    <CheckCircle className='w-4 h-4 mr-2' />
+                    Criar Franquia
+                  </>
+                )}
+              </Button>
+            )}
+          </div>
+        </form>
+      </CardContent>
+    </Card>
   );
-};
-
-export default CreateFranchiseForm;
-
+}

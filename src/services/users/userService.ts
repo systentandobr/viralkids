@@ -33,9 +33,18 @@ export interface CreateUserData {
   password: string;
   firstName: string;
   lastName: string;
-  role: string;
+  country: string;
+  state: string;
+  zipCode: string;
+  localNumber: string;
+  unitName: string;
+  address: string;
+  complement: string;
+  neighborhood: string;
+  city: string;
+  latitude: number;
+  longitude: number;
   unitId?: string;
-  phone?: string;
 }
 
 export interface UpdateUserData {

@@ -305,10 +305,30 @@
     private handleError(error: any): ApiResponse {
       if (error.response) {
         // Erro da API
+        const responseData = error.response.data;
+        const statusCode = error.response.status;
+        
+        // NestJS retorna erros no formato { message: string, error: string, statusCode: number }
+        // ou pode ser uma string simples ou array de mensagens
+        let errorMessage = 'Erro na requisição';
+        
+        if (responseData) {
+          if (typeof responseData === 'string') {
+            errorMessage = responseData;
+          } else if (Array.isArray(responseData.message)) {
+            // Se message é um array, juntar as mensagens
+            errorMessage = responseData.message.join(', ');
+          } else if (responseData.message) {
+            errorMessage = responseData.message;
+          } else if (responseData.error) {
+            errorMessage = responseData.error;
+          }
+        }
+        
         return {
           success: false,
-          error: error.response.data?.message || error.response.data?.error || 'Erro na requisição',
-          statusCode: error.response.status,
+          error: errorMessage,
+          statusCode: statusCode,
         };
       } else if (error.request) {
         // Erro de rede
