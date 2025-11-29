@@ -40,7 +40,7 @@ export const NotFoundPage: React.FC = () => {
               <div className="w-32 h-32 bg-gradient-to-r from-pink-100 to-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Search className="w-16 h-16 text-purple-500" />
               </div>
-              <p className="text-md text-gray-500">
+              <p className="text-base text-gray-500">
                 Parece que nos perdemos no mundo da imaginação...
               </p>
             </div>
@@ -60,10 +60,10 @@ export const NotFoundPage: React.FC = () => {
 
             {/* Help Links */}
             <div className="mt-8 pt-8 border-t border-gray-200">
-              <p className="text-md text-gray-600 mb-4">
+              <p className="text-base text-gray-600 mb-4">
                 Precisa de ajuda? Experimente estas páginas:
               </p>
-              <div className="flex flex-wrap justify-center gap-4 text-sm">
+              <div className="flex flex-wrap justify-center gap-4 text-base">
                 <a 
                   href="#/"
                   className="text-blue-600 hover:text-blue-800 hover:underline"
@@ -89,7 +89,7 @@ export const NotFoundPage: React.FC = () => {
 
         {/* Additional Info */}
         <div className="text-center mt-8">
-          <p className="text-md text-gray-500">
+          <p className="text-base text-gray-500">
             Se você acha que isso é um erro, entre em contato conosco via{' '}
             <a 
               href="https://wa.me/5584999999999" 

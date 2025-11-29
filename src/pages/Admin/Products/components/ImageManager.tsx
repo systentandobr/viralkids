@@ -180,10 +180,10 @@ export const ImageManager = ({
         <Card className="p-12 border-dashed">
           <div className="flex flex-col items-center justify-center text-center">
             <ImageIcon className="h-12 w-12 text-muted-foreground mb-4" />
-            <p className="text-sm text-muted-foreground">
+            <p className="text-base text-muted-foreground">
               Nenhuma imagem adicionada
             </p>
-            <p className="text-xs text-muted-foreground mt-1">
+            <p className="text-sm text-muted-foreground mt-1">
               Adicione imagens para o produto
             </p>
           </div>
@@ -253,7 +253,7 @@ export const ImageManager = ({
                   <GripVertical className="h-4 w-4 text-white/50" />
                 </div>
               </div>
-              <div className="p-2 text-xs text-center text-muted-foreground">
+              <div className="p-2 text-sm text-center text-muted-foreground">
                 {index + 1} de {images.length}
               </div>
             </Card>
@@ -262,7 +262,7 @@ export const ImageManager = ({
       )}
 
       {images.length > 0 && (
-        <p className="text-xs text-muted-foreground">
+        <p className="text-sm text-muted-foreground">
           Arraste as imagens para reordenar. Clique na estrela para definir como imagem principal.
         </p>
       )}

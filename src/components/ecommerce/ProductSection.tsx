@@ -89,7 +89,7 @@ const ProductSection = () => {
                 />
               </div>
               <div className="p-6">
-                <div className="text-sm text-primary font-semibold mb-2">{product.category}</div>
+                <div className="text-base text-primary font-semibold mb-2">{product.category}</div>
                 <h3 className="text-2xl font-bold mb-3">{product.name}</h3>
                 <p className="text-muted-foreground mb-4">{product.description}</p>
                 

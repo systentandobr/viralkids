@@ -141,7 +141,7 @@ export const FranchiseeDashboard: React.FC = () => {
             <div className="flex items-center space-x-4">
               <div className="flex items-center space-x-2">
                 <div className="w-8 h-8 bg-gradient-to-r from-pink-500 to-purple-600 rounded-lg flex items-center justify-center">
-                  <span className="text-white font-bold text-sm">VK</span>
+                  <span className="text-white font-bold text-base">VK</span>
                 </div>
                 <h1 className="text-xl font-bold">Minha Franquia</h1>
               </div>
@@ -159,7 +159,7 @@ export const FranchiseeDashboard: React.FC = () => {
               </div>
               <div className="flex items-center space-x-2">
                 <UserCircle className="h-6 w-6 text-gray-600" />
-                <span className="text-md font-medium">{user?.name}</span>
+                <span className="text-base font-medium">{user?.name}</span>
               </div>
               
               <Button variant="ghost" size="sm" onClick={() => {
@@ -307,7 +307,7 @@ export const FranchiseeDashboard: React.FC = () => {
                         <div className="text-3xl font-bold text-yellow-600">
                           Nível {level}
                         </div>
-                        <div className="text-md text-muted-foreground">
+                        <div className="text-base text-muted-foreground">
                           {nextLevelPoints > 0 ? (
                             <>Faltam {nextLevelPoints} pontos para o próximo nível</>
                           ) : (
@@ -336,7 +336,7 @@ export const FranchiseeDashboard: React.FC = () => {
                         <div className="text-3xl font-bold text-blue-600">
                           {progress.toFixed(1)}%
                         </div>
-                        <div className="text-md text-muted-foreground">
+                        <div className="text-base text-muted-foreground">
                           {completedTasks.length} de {completedTasks.length + tasks.length} tarefas concluídas
                         </div>
                         <Progress value={progress} className="h-2" />
@@ -356,7 +356,7 @@ export const FranchiseeDashboard: React.FC = () => {
                         <div className="text-3xl font-bold text-purple-600">
                           {badges.length}
                         </div>
-                        <div className="text-md text-muted-foreground">
+                        <div className="text-base text-muted-foreground">
                           Badges conquistadas
                         </div>
                         <div className="flex space-x-1">
@@ -366,7 +366,7 @@ export const FranchiseeDashboard: React.FC = () => {
                             </span>
                           ))}
                           {badges.length > 3 && (
-                            <span className="text-md text-muted-foreground">
+                            <span className="text-base text-muted-foreground">
                               +{badges.length - 3}
                             </span>
                           )}
@@ -396,8 +396,8 @@ export const FranchiseeDashboard: React.FC = () => {
                           <div className="text-2xl">{getBadgeEmoji(badge.type)}</div>
                           <div>
                             <div className="font-medium">{badge.name}</div>
-                            <div className="text-md text-muted-foreground">{badge.description}</div>
-                            <div className="text-xs text-muted-foreground">
+                            <div className="text-base text-muted-foreground">{badge.description}</div>
+                            <div className="text-sm text-muted-foreground">
                               {badge.earnedAt instanceof Date 
                                 ? badge.earnedAt.toLocaleDateString()
                                 : new Date(badge.earnedAt).toLocaleDateString()
@@ -433,7 +433,7 @@ export const FranchiseeDashboard: React.FC = () => {
                             </div>
                             <div className="flex-1">
                               <div className="font-medium">{task.title}</div>
-                              <div className="text-md text-muted-foreground mb-2">
+                              <div className="text-base text-muted-foreground mb-2">
                                 {task.description}
                               </div>
                               <div className="flex items-center space-x-2">
@@ -512,7 +512,7 @@ export const FranchiseeDashboard: React.FC = () => {
                       <CardContent className="space-y-4">
                         <div>
                           <h4 className="font-medium mb-2">Instruções:</h4>
-                          <p className="text-md text-muted-foreground">{task.instructions}</p>
+                          <p className="text-base text-muted-foreground">{task.instructions}</p>
                         </div>
                         
                         {task.resources.length > 0 && (
@@ -520,7 +520,7 @@ export const FranchiseeDashboard: React.FC = () => {
                             <h4 className="font-medium mb-2">Recursos:</h4>
                             <div className="space-y-2">
                               {task.resources.map((resource) => (
-                                <div key={resource.id} className="flex items-center space-x-2 text-sm">
+                                <div key={resource.id} className="flex items-center space-x-2 text-base">
                                   <ExternalLink className="h-4 w-4 text-blue-600" />
                                   <a href={resource.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
                                     {resource.title}
@@ -572,7 +572,7 @@ export const FranchiseeDashboard: React.FC = () => {
                               +{task.points} pontos
                             </Badge>
                             {task.completedAt && (
-                              <p className="text-xs text-muted-foreground mt-1">
+                              <p className="text-sm text-muted-foreground mt-1">
                                 {task.completedAt.toLocaleDateString()}
                               </p>
                             )}
@@ -679,7 +679,7 @@ export const FranchiseeDashboard: React.FC = () => {
 
             {replError && (
               <Card>
-                <CardContent className="p-4 text-destructive text-sm">{replError}</CardContent>
+                <CardContent className="p-4 text-destructive text-base">{replError}</CardContent>
               </Card>
             )}
 
@@ -695,7 +695,7 @@ export const FranchiseeDashboard: React.FC = () => {
                       <div key={`${s.productId}-${s.sku}`} className="p-3 border rounded flex items-center justify-between">
                         <div>
                           <div className="font-medium">SKU {s.sku}</div>
-                          <div className="text-sm text-muted-foreground">Produto: {s.productId}</div>
+                          <div className="text-base text-muted-foreground">Produto: {s.productId}</div>
                         </div>
                         <div className="flex items-center gap-3">
                           <Badge variant="secondary">Sugerido: {s.suggestedQty}</Badge>
@@ -704,7 +704,7 @@ export const FranchiseeDashboard: React.FC = () => {
                       </div>
                     ))}
                     {plan.suggestions.length === 0 && (
-                      <p className="text-sm text-muted-foreground">Nenhuma sugestão no momento.</p>
+                      <p className="text-base text-muted-foreground">Nenhuma sugestão no momento.</p>
                     )}
                   </div>
                 </CardContent>

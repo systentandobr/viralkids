@@ -30,7 +30,7 @@ export const FranchiseMap = ({ franchises }: FranchiseMapProps) => {
               <h3 className="text-lg font-semibold text-foreground mb-2">
                 Mapa Interativo
               </h3>
-              <p className="text-sm text-muted-foreground mb-4">
+              <p className="text-base text-muted-foreground mb-4">
                 Integração com biblioteca de mapas (Leaflet/Google Maps)
               </p>
               <div className="flex flex-wrap gap-2 justify-center">
@@ -55,7 +55,7 @@ export const FranchiseMap = ({ franchises }: FranchiseMapProps) => {
 
         {/* Lista de franquias abaixo do mapa */}
         <div className="mt-4 space-y-2">
-          <h4 className="text-sm font-semibold text-foreground mb-2">
+          <h4 className="text-base font-semibold text-foreground mb-2">
             Franquias no Mapa ({franchises.length})
           </h4>
           {franchises.map((franchise) => (
@@ -71,13 +71,13 @@ export const FranchiseMap = ({ franchises }: FranchiseMapProps) => {
                     ) : (
                       <Smartphone className="h-4 w-4 text-blue-600" />
                     )}
-                    <span className="font-medium text-sm">{franchise.name}</span>
+                    <span className="font-medium text-base">{franchise.name}</span>
                   </div>
-                  <div className="text-xs text-muted-foreground flex items-center gap-1">
+                  <div className="text-sm text-muted-foreground flex items-center gap-1">
                     <MapPin className="h-3 w-3" />
                     {franchise.location.address}, {franchise.location.city} - {franchise.location.state}
                   </div>
-                  <div className="text-xs text-muted-foreground mt-1">
+                  <div className="text-sm text-muted-foreground mt-1">
                     Coordenadas: {franchise.location.lat.toFixed(4)}, {franchise.location.lng.toFixed(4)}
                   </div>
                 </div>

@@ -28,7 +28,7 @@ const CategoryCard = ({ category }: CategoryCardProps) => {
             <h3 className="text-lg font-semibold text-foreground mb-1 group-hover:text-bronze transition-colors">
               {category.description}
             </h3>
-            <p className="text-md text-muted-foreground">
+            <p className="text-base text-muted-foreground">
               {category.productCount}
             </p>
           </div>

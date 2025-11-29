@@ -27,13 +27,16 @@ import {
   Search,
   Eye,
   Edit,
+  Plus,
   CheckCircle,
   XCircle,
   Clock,
 } from "lucide-react";
 import { useState } from "react";
-import { useLeads, useLeadPipelineStats, useUpdateLead } from "@/services/queries/leads";
+import { useLeads, useLeadPipelineStats, useUpdateLead, useDeleteLead } from "@/services/queries/leads";
 import { LeadStatus, LeadSource } from "@/services/leads/leadService";
+import { CreateLeadForm } from "@/pages/Admin/components/leads/CreateLeadForm";
+import { EditLeadForm } from "@/pages/Admin/components/leads/EditLeadForm";
 import {
   Dialog,
   DialogContent,
@@ -50,6 +53,8 @@ const LeadsPipeline = () => {
   const [selectedLead, setSelectedLead] = useState<string | null>(null);
   const [noteText, setNoteText] = useState("");
   const [isNoteDialogOpen, setIsNoteDialogOpen] = useState(false);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [editingLeadId, setEditingLeadId] = useState<string | null>(null);
   
   const { data: leadsData, isLoading, error } = useLeads({
     search: searchTerm || undefined,
@@ -58,6 +63,7 @@ const LeadsPipeline = () => {
 
   const { data: stats } = useLeadPipelineStats();
   const updateLead = useUpdateLead();
+  const deleteLead = useDeleteLead();
 
   const leads = leadsData?.data || [];
 
@@ -160,6 +166,13 @@ const LeadsPipeline = () => {
             </p>
           </div>
         </div>
+        <Button
+          className="bg-gradient-to-r from-purple-500 to-pink-500 hover:opacity-90 transition-opacity shadow-neon"
+          onClick={() => setIsCreateModalOpen(true)}
+        >
+          <Plus className="h-4 w-4 mr-2" />
+          Novo Lead
+        </Button>
       </div>
 
       {/* Pipeline Stats */}
@@ -167,7 +180,7 @@ const LeadsPipeline = () => {
         <Card className="p-4 bg-blue-500/10 border-blue-500/20">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-muted-foreground">Novos</p>
+              <p className="text-base text-muted-foreground">Novos</p>
               <h3 className="text-2xl font-bold text-blue-600">{stats?.new || 0}</h3>
             </div>
             <Clock className="h-8 w-8 text-blue-600 opacity-50" />
@@ -177,7 +190,7 @@ const LeadsPipeline = () => {
         <Card className="p-4 bg-yellow-500/10 border-yellow-500/20">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-muted-foreground">Contactados</p>
+              <p className="text-base text-muted-foreground">Contactados</p>
               <h3 className="text-2xl font-bold text-yellow-600">{stats?.contacted || 0}</h3>
             </div>
             <Phone className="h-8 w-8 text-yellow-600 opacity-50" />
@@ -187,7 +200,7 @@ const LeadsPipeline = () => {
         <Card className="p-4 bg-purple-500/10 border-purple-500/20">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-muted-foreground">Qualificados</p>
+              <p className="text-base text-muted-foreground">Qualificados</p>
               <h3 className="text-2xl font-bold text-purple-600">{stats?.qualified || 0}</h3>
             </div>
             <CheckCircle className="h-8 w-8 text-purple-600 opacity-50" />
@@ -197,7 +210,7 @@ const LeadsPipeline = () => {
         <Card className="p-4 bg-neon-green/10 border-neon-green/20">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-muted-foreground">Convertidos</p>
+              <p className="text-base text-muted-foreground">Convertidos</p>
               <h3 className="text-2xl font-bold text-neon-green">{stats?.converted || 0}</h3>
             </div>
             <TrendingUp className="h-8 w-8 text-neon-green opacity-50" />
@@ -207,7 +220,7 @@ const LeadsPipeline = () => {
         <Card className="p-4 bg-gradient-to-br from-purple-500/10 to-pink-500/10 border-purple-500/20">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-muted-foreground">Taxa Conversão</p>
+              <p className="text-base text-muted-foreground">Taxa Conversão</p>
               <h3 className="text-2xl font-bold text-purple-600">
                 {stats?.conversionRate?.toFixed(1) || '0'}%
               </h3>
@@ -270,16 +283,16 @@ const LeadsPipeline = () => {
                 <TableCell className="font-medium">{lead.name}</TableCell>
                 <TableCell>
                   <div className="flex flex-col gap-1">
-                    <div className="flex items-center gap-1 text-sm">
+                    <div className="flex items-center gap-1 text-base">
                       <Mail className="h-3 w-3" />
                       {lead.email}
                     </div>
-                    <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                    <div className="flex items-center gap-1 text-base text-muted-foreground">
                       <Phone className="h-3 w-3" />
                       {lead.phone}
                     </div>
                     {lead.city && (
-                      <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                      <div className="flex items-center gap-1 text-sm text-muted-foreground">
                         <MapPin className="h-3 w-3" />
                         {lead.city}
                       </div>
@@ -287,7 +300,7 @@ const LeadsPipeline = () => {
                   </div>
                 </TableCell>
                 <TableCell>
-                  <Badge variant="secondary" className="text-xs">
+                  <Badge variant="secondary" className="text-sm">
                     {lead.source === LeadSource.CHATBOT ? 'Chatbot' :
                      lead.source === LeadSource.WEBSITE ? 'Website' :
                      lead.source === LeadSource.WHATSAPP ? 'WhatsApp' :
@@ -308,7 +321,7 @@ const LeadsPipeline = () => {
                         style={{ width: `${lead.score}%` }}
                       />
                     </div>
-                    <span className="text-sm font-medium">{lead.score}</span>
+                    <span className="text-base font-medium">{lead.score}</span>
                   </div>
                 </TableCell>
                 <TableCell>
@@ -339,17 +352,18 @@ const LeadsPipeline = () => {
                     <Button
                       size="sm"
                       variant="ghost"
-                      onClick={() => {
-                        setSelectedLead(lead.id);
-                        setIsNoteDialogOpen(true);
-                      }}
-                      className="h-8 w-8 p-0"
+                      onClick={() => setEditingLeadId(lead.id)}
+                      className="h-8 w-8 p-0 hover:bg-purple-500/10 hover:text-purple-500"
                     >
                       <Edit className="h-4 w-4" />
                     </Button>
                     <Button
                       size="sm"
                       variant="ghost"
+                      onClick={() => {
+                        setSelectedLead(lead.id);
+                        setIsNoteDialogOpen(true);
+                      }}
                       className="h-8 w-8 p-0 hover:bg-purple-500/10 hover:text-purple-500"
                     >
                       <Eye className="h-4 w-4" />
@@ -393,6 +407,33 @@ const LeadsPipeline = () => {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Modal de criação */}
+      <Dialog open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
+        <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto">
+          <CreateLeadForm
+            onSuccess={() => {
+              setIsCreateModalOpen(false);
+            }}
+            onCancel={() => setIsCreateModalOpen(false)}
+          />
+        </DialogContent>
+      </Dialog>
+
+      {/* Modal de edição */}
+      {editingLeadId && (
+        <Dialog open={!!editingLeadId} onOpenChange={(open) => !open && setEditingLeadId(null)}>
+          <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto">
+            <EditLeadForm
+              leadId={editingLeadId}
+              onSuccess={() => {
+                setEditingLeadId(null);
+              }}
+              onCancel={() => setEditingLeadId(null)}
+            />
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   );
 };

@@ -56,7 +56,7 @@ export const FranchisePerformanceCard = ({ franchises }: FranchisePerformanceCar
         {/* Métricas Principais */}
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-1">
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <div className="flex items-center gap-2 text-base text-muted-foreground">
               <DollarSign className="h-4 w-4" />
               Vendas Totais
             </div>
@@ -65,7 +65,7 @@ export const FranchisePerformanceCard = ({ franchises }: FranchisePerformanceCar
             </div>
           </div>
           <div className="space-y-1">
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <div className="flex items-center gap-2 text-base text-muted-foreground">
               <ShoppingCart className="h-4 w-4" />
               Pedidos Totais
             </div>
@@ -74,7 +74,7 @@ export const FranchisePerformanceCard = ({ franchises }: FranchisePerformanceCar
             </div>
           </div>
           <div className="space-y-1">
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <div className="flex items-center gap-2 text-base text-muted-foreground">
               <Target className="h-4 w-4" />
               Leads Totais
             </div>
@@ -83,7 +83,7 @@ export const FranchisePerformanceCard = ({ franchises }: FranchisePerformanceCar
             </div>
           </div>
           <div className="space-y-1">
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <div className="flex items-center gap-2 text-base text-muted-foreground">
               <Users className="h-4 w-4" />
               Clientes Totais
             </div>
@@ -97,21 +97,21 @@ export const FranchisePerformanceCard = ({ franchises }: FranchisePerformanceCar
         <div className="space-y-3">
           <div>
             <div className="flex items-center justify-between mb-2">
-              <span className="text-sm text-muted-foreground">Taxa de Conversão Média</span>
-              <span className="text-sm font-semibold">{metrics.averageConversionRate.toFixed(1)}%</span>
+              <span className="text-base text-muted-foreground">Taxa de Conversão Média</span>
+              <span className="text-base font-semibold">{metrics.averageConversionRate.toFixed(1)}%</span>
             </div>
             <Progress value={metrics.averageConversionRate} className="h-2" />
           </div>
           <div>
             <div className="flex items-center justify-between mb-2">
-              <span className="text-sm text-muted-foreground">Crescimento Médio</span>
+              <span className="text-base text-muted-foreground">Crescimento Médio</span>
               <div className="flex items-center gap-1">
                 {metrics.averageGrowthRate > 0 ? (
                   <TrendingUp className="h-4 w-4 text-neon-green" />
                 ) : (
                   <TrendingDown className="h-4 w-4 text-neon-red" />
                 )}
-                <span className="text-sm font-semibold">{metrics.averageGrowthRate.toFixed(1)}%</span>
+                <span className="text-base font-semibold">{metrics.averageGrowthRate.toFixed(1)}%</span>
               </div>
             </div>
             <Progress 
@@ -124,7 +124,7 @@ export const FranchisePerformanceCard = ({ franchises }: FranchisePerformanceCar
         {/* Top 3 Franquias */}
         {topFranchises.length > 0 && (
           <div>
-            <h4 className="text-sm font-semibold mb-3">Top 3 Franquias por Vendas</h4>
+            <h4 className="text-base font-semibold mb-3">Top 3 Franquias por Vendas</h4>
             <div className="space-y-2">
               {topFranchises.map((franchise, index) => (
                 <div
@@ -136,17 +136,17 @@ export const FranchisePerformanceCard = ({ franchises }: FranchisePerformanceCar
                       {index + 1}
                     </Badge>
                     <div className="flex-1 min-w-0">
-                      <div className="text-sm font-medium truncate">{franchise.name}</div>
-                      <div className="text-xs text-muted-foreground">
+                      <div className="text-base font-medium truncate">{franchise.name}</div>
+                      <div className="text-sm text-muted-foreground">
                         {franchise.location.city}, {franchise.location.state}
                       </div>
                     </div>
                   </div>
                   <div className="text-right">
-                    <div className="text-sm font-semibold text-neon-cyan">
+                    <div className="text-base font-semibold text-neon-cyan">
                       R$ {franchise.metrics ? ((franchise.metrics.totalSales / 1000).toFixed(0) + 'k') : '0'}
                     </div>
-                    <div className="text-xs text-muted-foreground">
+                    <div className="text-sm text-muted-foreground">
                       {franchise.metrics && franchise.metrics.growthRate > 0 ? (
                         <span className="text-neon-green flex items-center gap-1">
                           <TrendingUp className="h-3 w-3" />

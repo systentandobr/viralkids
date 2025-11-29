@@ -41,7 +41,7 @@ export const CoordinatesInput: React.FC<CoordinatesInputProps> = ({
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div>
-        <label htmlFor="lat" className="block text-sm font-medium text-gray-700">
+        <label htmlFor="lat" className="block text-base font-medium text-gray-700">
           Latitude {required && <span className="text-red-500">*</span>}
         </label>
         <input
@@ -57,12 +57,12 @@ export const CoordinatesInput: React.FC<CoordinatesInputProps> = ({
           min={-90}
           max={90}
         />
-        {latError && <p className="mt-1 text-sm text-red-600">{latError}</p>}
-        <p className="mt-1 text-xs text-gray-500">Valor entre -90 e 90</p>
+        {latError && <p className="mt-1 text-base text-red-600">{latError}</p>}
+        <p className="mt-1 text-sm text-gray-500">Valor entre -90 e 90</p>
       </div>
 
       <div>
-        <label htmlFor="lng" className="block text-sm font-medium text-gray-700">
+        <label htmlFor="lng" className="block text-base font-medium text-gray-700">
           Longitude {required && <span className="text-red-500">*</span>}
         </label>
         <input
@@ -78,8 +78,8 @@ export const CoordinatesInput: React.FC<CoordinatesInputProps> = ({
           min={-180}
           max={180}
         />
-        {lngError && <p className="mt-1 text-sm text-red-600">{lngError}</p>}
-        <p className="mt-1 text-xs text-gray-500">Valor entre -180 e 180</p>
+        {lngError && <p className="mt-1 text-base text-red-600">{lngError}</p>}
+        <p className="mt-1 text-sm text-gray-500">Valor entre -180 e 180</p>
       </div>
     </div>
   );

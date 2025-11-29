@@ -82,7 +82,7 @@ const ReviewStats: React.FC<{ reviews: ProductReview[] }> = ({ reviews }) => {
               {averageRating.toFixed(1)}
             </div>
             <StarRating rating={averageRating} size="lg" />
-            <div className="text-sm text-gray-600 mt-1">
+            <div className="text-base text-gray-600 mt-1">
               {totalReviews} {totalReviews === 1 ? 'avaliação' : 'avaliações'}
             </div>
           </div>
@@ -90,9 +90,9 @@ const ReviewStats: React.FC<{ reviews: ProductReview[] }> = ({ reviews }) => {
           <div className="flex-1 space-y-2">
             {ratingDistribution.map(({ star, count, percentage }) => (
               <div key={star} className="flex items-center gap-2">
-                <span className="text-sm text-gray-600 w-8">{star}★</span>
+                <span className="text-base text-gray-600 w-8">{star}★</span>
                 <Progress value={percentage} className="flex-1 h-2" />
-                <span className="text-sm text-gray-600 w-8">{count}</span>
+                <span className="text-base text-gray-600 w-8">{count}</span>
               </div>
             ))}
           </div>
@@ -105,14 +105,14 @@ const ReviewStats: React.FC<{ reviews: ProductReview[] }> = ({ reviews }) => {
               <Verified className="h-4 w-4" />
               <span className="font-medium">{verifiedCount}</span>
             </div>
-            <div className="text-xs text-gray-600">Compras verificadas</div>
+            <div className="text-sm text-gray-600">Compras verificadas</div>
           </div>
           <div className="text-center">
             <div className="flex items-center justify-center gap-1 text-blue-600 mb-1">
               <Camera className="h-4 w-4" />
               <span className="font-medium">{withPhotosCount}</span>
             </div>
-            <div className="text-xs text-gray-600">Com fotos</div>
+            <div className="text-sm text-gray-600">Com fotos</div>
           </div>
         </div>
       </CardContent>
@@ -151,7 +151,7 @@ const ReviewFiltersComponent: React.FC<{
         <CardContent className="space-y-4">
           {/* Ordenação */}
           <div>
-            <label className="text-sm font-medium text-gray-700 mb-2 block">
+            <label className="text-base font-medium text-gray-700 mb-2 block">
               Ordenar por
             </label>
             <div className="flex gap-2">
@@ -184,7 +184,7 @@ const ReviewFiltersComponent: React.FC<{
 
           {/* Filtros por avaliação */}
           <div>
-            <label className="text-sm font-medium text-gray-700 mb-2 block">
+            <label className="text-base font-medium text-gray-700 mb-2 block">
               Filtrar por estrelas
             </label>
             <div className="flex gap-2">
@@ -277,7 +277,7 @@ const ReviewCard: React.FC<{
                 <div className="flex items-center gap-2">
                   <span className="font-medium text-gray-900">{review.userName}</span>
                   {review.verified && (
-                    <Badge variant="secondary" className="text-xs">
+                    <Badge variant="secondary" className="text-sm">
                       <Verified className="h-3 w-3 mr-1" />
                       Verificado
                     </Badge>
@@ -285,7 +285,7 @@ const ReviewCard: React.FC<{
                 </div>
                 <div className="flex items-center gap-2 mt-1">
                   <StarRating rating={review.rating} size="sm" />
-                  <span className="text-xs text-gray-500">
+                  <span className="text-sm text-gray-500">
                     {formatDate(review.createdAt)}
                   </span>
                 </div>
@@ -296,20 +296,20 @@ const ReviewCard: React.FC<{
             {(review.quality || review.delivery || review.fit) && (
               <div className="text-right space-y-1">
                 {review.quality && (
-                  <div className="text-xs text-gray-600">
+                  <div className="text-sm text-gray-600">
                     Qualidade: <StarRating rating={review.quality} size="sm" />
                   </div>
                 )}
                 {review.delivery && (
-                  <div className="text-xs text-gray-600">
+                  <div className="text-sm text-gray-600">
                     Entrega: <StarRating rating={review.delivery} size="sm" />
                   </div>
                 )}
                 {review.fit && (
-                  <div className="text-xs">
+                  <div className="text-sm">
                     <Badge 
                       variant={review.fit === 'perfect' ? 'default' : 'secondary'}
-                      className="text-xs"
+                      className="text-sm"
                     >
                       Caimento: {
                         review.fit === 'small' ? 'Pequeno' :
@@ -350,20 +350,20 @@ const ReviewCard: React.FC<{
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {review.pros && review.pros.length > 0 && (
                 <div>
-                  <h5 className="text-sm font-medium text-green-700 mb-2">👍 Pontos positivos</h5>
+                  <h5 className="text-base font-medium text-green-700 mb-2">👍 Pontos positivos</h5>
                   <ul className="space-y-1">
                     {review.pros.map((pro, index) => (
-                      <li key={index} className="text-sm text-gray-600">• {pro}</li>
+                      <li key={index} className="text-base text-gray-600">• {pro}</li>
                     ))}
                   </ul>
                 </div>
               )}
               {review.cons && review.cons.length > 0 && (
                 <div>
-                  <h5 className="text-sm font-medium text-red-700 mb-2">👎 Pontos negativos</h5>
+                  <h5 className="text-base font-medium text-red-700 mb-2">👎 Pontos negativos</h5>
                   <ul className="space-y-1">
                     {review.cons.map((con, index) => (
-                      <li key={index} className="text-sm text-gray-600">• {con}</li>
+                      <li key={index} className="text-base text-gray-600">• {con}</li>
                     ))}
                   </ul>
                 </div>
@@ -374,7 +374,7 @@ const ReviewCard: React.FC<{
           {/* Imagens da avaliação */}
           {review.images && review.images.length > 0 && (
             <div>
-              <h5 className="text-sm font-medium text-gray-700 mb-2">Fotos do cliente</h5>
+              <h5 className="text-base font-medium text-gray-700 mb-2">Fotos do cliente</h5>
               <div className="grid grid-cols-3 gap-2">
                 {review.images.slice(0, 3).map((image, index) => (
                   <img
@@ -385,7 +385,7 @@ const ReviewCard: React.FC<{
                   />
                 ))}
                 {review.images.length > 3 && (
-                  <div className="aspect-square bg-gray-100 rounded-lg flex items-center justify-center text-sm text-gray-600">
+                  <div className="aspect-square bg-gray-100 rounded-lg flex items-center justify-center text-base text-gray-600">
                     +{review.images.length - 3} fotos
                   </div>
                 )}
@@ -395,7 +395,7 @@ const ReviewCard: React.FC<{
 
           {/* Informações da compra */}
           {(review.size || review.color) && (
-            <div className="flex gap-4 text-sm text-gray-600">
+            <div className="flex gap-4 text-base text-gray-600">
               {review.size && <span>Tamanho: {review.size}</span>}
               {review.color && <span>Cor: {review.color}</span>}
             </div>
@@ -404,12 +404,12 @@ const ReviewCard: React.FC<{
           {/* Ações */}
           <div className="flex items-center justify-between pt-3 border-t">
             <div className="flex items-center gap-2">
-              <span className="text-sm text-gray-600">Esta avaliação foi útil?</span>
+              <span className="text-base text-gray-600">Esta avaliação foi útil?</span>
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => handleVote(true)}
-                className={`text-xs ${userVote === 'helpful' ? 'text-green-600' : 'text-gray-500'}`}
+                className={`text-sm ${userVote === 'helpful' ? 'text-green-600' : 'text-gray-500'}`}
               >
                 <ThumbsUp className="h-3 w-3 mr-1" />
                 Sim ({review.helpful})
@@ -418,14 +418,14 @@ const ReviewCard: React.FC<{
                 variant="ghost"
                 size="sm"
                 onClick={() => handleVote(false)}
-                className={`text-xs ${userVote === 'not-helpful' ? 'text-red-600' : 'text-gray-500'}`}
+                className={`text-sm ${userVote === 'not-helpful' ? 'text-red-600' : 'text-gray-500'}`}
               >
                 <ThumbsDown className="h-3 w-3 mr-1" />
                 Não ({review.notHelpful})
               </Button>
             </div>
 
-            <Button variant="ghost" size="sm" className="text-xs">
+            <Button variant="ghost" size="sm" className="text-sm">
               <MessageSquare className="h-3 w-3 mr-1" />
               Responder
             </Button>

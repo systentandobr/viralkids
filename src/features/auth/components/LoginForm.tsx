@@ -114,7 +114,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
               />
             </div>
             {validationErrors.email && (
-              <p className="text-md text-red-600">{validationErrors.email}</p>
+              <p className="text-base text-red-600">{validationErrors.email}</p>
             )}
           </div>
 
@@ -146,7 +146,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
               </button>
             </div>
             {validationErrors.password && (
-              <p className="text-md text-red-600">{validationErrors.password}</p>
+              <p className="text-base text-red-600">{validationErrors.password}</p>
             )}
           </div>
 
@@ -161,7 +161,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
                 }
                 disabled={isLoading}
               />
-              <Label htmlFor="rememberMe" className="text-sm">
+              <Label htmlFor="rememberMe" className="text-base">
                 Lembrar de mim
               </Label>
             </div>
@@ -169,7 +169,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
             <button
               type="button"
               onClick={onForgotPasswordClick}
-              className="text-md text-blue-600 hover:text-blue-800 hover:underline"
+              className="text-base text-blue-600 hover:text-blue-800 hover:underline"
               disabled={isLoading}
             >
               Esqueceu a senha?
@@ -199,7 +199,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
 
           {/* Register Link */}
           <div className="text-center pt-4 border-t">
-            <p className="text-md text-gray-600">
+            <p className="text-base text-gray-600">
               Ainda não tem uma conta?{' '}
               <button
                 type="button"

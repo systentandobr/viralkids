@@ -316,7 +316,7 @@ export function CreateFranchiseForm({ onSuccess, onCancel }: CreateFranchiseForm
                 placeholder='Será gerado automaticamente'
                 disabled
               />
-              <p className='text-xs text-muted-foreground mt-1'>
+              <p className='text-sm text-muted-foreground mt-1'>
                 Formato: #BR#UF#CIDADE#BAIRRO#NUMERO
               </p>
             </div>
@@ -330,7 +330,7 @@ export function CreateFranchiseForm({ onSuccess, onCancel }: CreateFranchiseForm
                 className={errors.franchiseName ? 'border-destructive' : ''}
               />
               {errors.franchiseName && (
-                <p className='text-sm text-destructive mt-1'>{errors.franchiseName.message}</p>
+                <p className='text-base text-destructive mt-1'>{errors.franchiseName.message}</p>
               )}
             </div>
 
@@ -384,7 +384,7 @@ export function CreateFranchiseForm({ onSuccess, onCancel }: CreateFranchiseForm
                 className={errors.ownerName ? 'border-destructive' : ''}
               />
               {errors.ownerName && (
-                <p className='text-sm text-destructive mt-1'>{errors.ownerName.message}</p>
+                <p className='text-base text-destructive mt-1'>{errors.ownerName.message}</p>
               )}
             </div>
 
@@ -398,9 +398,9 @@ export function CreateFranchiseForm({ onSuccess, onCancel }: CreateFranchiseForm
                 className={errors.ownerEmail ? 'border-destructive' : ''}
               />
               {errors.ownerEmail && (
-                <p className='text-sm text-destructive mt-1'>{errors.ownerEmail.message}</p>
+                <p className='text-base text-destructive mt-1'>{errors.ownerEmail.message}</p>
               )}
-              <p className='text-xs text-muted-foreground mt-1'>
+              <p className='text-sm text-muted-foreground mt-1'>
                 Um email de ativação será enviado para este endereço
               </p>
             </div>
@@ -421,7 +421,7 @@ export function CreateFranchiseForm({ onSuccess, onCancel }: CreateFranchiseForm
           <div className='space-y-6'>
             {mapsError && (
               <div className='p-4 bg-destructive/10 border border-destructive rounded-md'>
-                <p className='text-sm text-destructive'>
+                <p className='text-base text-destructive'>
                   ⚠️ Google Maps não disponível. Configure VITE_GOOGLE_MAPS_API_KEY no .env
                 </p>
               </div>
@@ -575,7 +575,7 @@ export function CreateFranchiseForm({ onSuccess, onCancel }: CreateFranchiseForm
         {/* Progress Bar */}
         <div className='space-y-2 pt-4'>
           <Progress value={progress} className='h-2' />
-          <div className='flex justify-between text-xs text-muted-foreground'>
+          <div className='flex justify-between text-sm text-muted-foreground'>
             {STEPS.map((step) => (
               <div
                 key={step.id}
@@ -599,10 +599,10 @@ export function CreateFranchiseForm({ onSuccess, onCancel }: CreateFranchiseForm
         <form onSubmit={handleSubmit(onSubmit)} className='space-y-6'>
           {/* Step Badge */}
           <div className='flex items-center gap-2'>
-            <Badge variant='outline' className='text-sm'>
+            <Badge variant='outline' className='text-base'>
               Etapa {currentStep} de {STEPS.length}
             </Badge>
-            <span className='text-sm font-medium'>{STEPS[currentStep - 1].title}</span>
+            <span className='text-base font-medium'>{STEPS[currentStep - 1].title}</span>
           </div>
 
           {/* Step Content */}

@@ -76,7 +76,7 @@ const EcommerceHeader = ({ cartItemsCount, setIsCartOpen, scrollToSection }: Eco
     <header className="bg-white/95 backdrop-blur-sm border-b border-bronze/20 sticky top-0 z-50">
       {/* Top Banner */}
       <div 
-        className={`bg-gradient-to-r from-bronze to-gold text-white py-2 text-center text-sm transition-all duration-300 ease-in-out transform ${
+        className={`bg-gradient-to-r from-bronze to-gold text-white py-2 text-center text-base transition-all duration-300 ease-in-out transform ${
           isBannerVisible 
             ? 'translate-y-0 opacity-100 max-h-20' 
             : '-translate-y-full opacity-0 max-h-0'
@@ -95,7 +95,7 @@ const EcommerceHeader = ({ cartItemsCount, setIsCartOpen, scrollToSection }: Eco
           <div className="flex items-center space-x-3">
             <button onClick={handleHomeClick}>
               <h1 className="text-xl font-bold text-bronze">VIRAL KIDS</h1>
-              <p className="text-xs text-muted-foreground">Produtos Únicos</p>
+              <p className="text-sm text-muted-foreground">Produtos Únicos</p>
             </button>
           </div>
 
@@ -133,14 +133,14 @@ const EcommerceHeader = ({ cartItemsCount, setIsCartOpen, scrollToSection }: Eco
             
             <Button variant="ghost" size="sm" className="relative">
               <Heart className="h-5 w-5" />
-              <Badge className="absolute -top-2 -right-2 bg-red-500 text-white text-xs px-1.5 py-0.5 rounded-full">
+              <Badge className="absolute -top-2 -right-2 bg-red-500 text-white text-sm px-1.5 py-0.5 rounded-full">
                 3
               </Badge>
             </Button>
             
             <Button variant="ghost" size="sm" className="relative" onClick={() => setIsCartOpen(true)}>
               <ShoppingCart className="h-5 w-5" />
-              <Badge className="absolute -top-2 -right-2 bg-bronze text-white text-xs px-1.5 py-0.5 rounded-full">
+              <Badge className="absolute -top-2 -right-2 bg-bronze text-white text-sm px-1.5 py-0.5 rounded-full">
                 {cartItemsCount}
               </Badge>
             </Button>
@@ -157,7 +157,7 @@ const EcommerceHeader = ({ cartItemsCount, setIsCartOpen, scrollToSection }: Eco
           >
             <Button variant="ghost" size="sm" className="relative mr-2">
               <ShoppingCart className="h-5 w-5" />
-              <Badge className="absolute -top-2 -right-2 bg-bronze text-white text-xs px-1.5 py-0.5 rounded-full">
+              <Badge className="absolute -top-2 -right-2 bg-bronze text-white text-sm px-1.5 py-0.5 rounded-full">
                 2
               </Badge>
             </Button>

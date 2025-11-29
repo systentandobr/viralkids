@@ -203,7 +203,7 @@ export const BulkProductForm = ({
       <Card className="p-6">
         <div className="text-center text-muted-foreground">
           <p className="font-medium mb-2">Você precisa estar autenticado para cadastrar produtos.</p>
-          <p className="text-sm">
+          <p className="text-base">
             {!user ? "Faça login para continuar." : "Seu usuário não possui unitId. Entre em contato com o suporte."}
           </p>
         </div>
@@ -220,7 +220,7 @@ export const BulkProductForm = ({
           </div>
           <div>
             <h2 className="text-xl font-bold">Cadastro Massivo de Produtos</h2>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-base text-muted-foreground">
               Cadastre múltiplos produtos de uma vez
             </p>
           </div>
@@ -283,11 +283,11 @@ export const BulkProductForm = ({
                     </Button>
                   )}
                 </div>
-                <p className="text-sm font-medium truncate">
+                <p className="text-base font-medium truncate">
                   {product.name || "Sem nome"}
                 </p>
                 {product.errors && product.errors.length > 0 && (
-                  <p className="text-xs text-destructive mt-1">
+                  <p className="text-sm text-destructive mt-1">
                     {product.errors.length} erro(s)
                   </p>
                 )}
@@ -305,7 +305,7 @@ export const BulkProductForm = ({
                 {currentProduct.errors && currentProduct.errors.length > 0 && (
                   <div className="flex flex-col gap-1">
                     {currentProduct.errors.map((error, idx) => (
-                      <Badge key={idx} variant="destructive" className="text-xs">
+                      <Badge key={idx} variant="destructive" className="text-sm">
                         {error}
                       </Badge>
                     ))}
@@ -414,7 +414,7 @@ export const BulkProductForm = ({
                           categoryId: e.target.value,
                         })
                       }
-                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background"
+                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background"
                     >
                       {categories
                         .filter((c) => c.isActive)
@@ -436,7 +436,7 @@ export const BulkProductForm = ({
                           availability: e.target.value as any,
                         })
                       }
-                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background"
+                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background"
                     >
                       <option value="in_stock">Em Estoque</option>
                       <option value="out_of_stock">Fora de Estoque</option>
@@ -478,7 +478,7 @@ export const BulkProductForm = ({
             <div className="space-y-4">
               <div>
                 <h3 className="text-lg font-bold mb-2">Importar de Arquivo</h3>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-base text-muted-foreground">
                   Faça upload de um arquivo CSV ou Excel com os dados dos produtos
                 </p>
               </div>
@@ -526,8 +526,8 @@ export const BulkProductForm = ({
               </div>
 
               <div className="p-4 bg-muted/50 rounded-lg">
-                <p className="text-sm font-medium mb-2">Formato esperado:</p>
-                <ul className="text-sm text-muted-foreground space-y-1 list-disc list-inside">
+                <p className="text-base font-medium mb-2">Formato esperado:</p>
+                <ul className="text-base text-muted-foreground space-y-1 list-disc list-inside">
                   <li>Nome, Descrição, Preço, SKU, Categoria, Estoque</li>
                   <li>Primeira linha deve conter os cabeçalhos</li>
                   <li>Campos obrigatórios: Nome, Descrição, Preço, SKU, Categoria</li>
@@ -545,7 +545,7 @@ export const BulkProductForm = ({
 
       {/* Ações */}
       <div className="flex items-center justify-end gap-3 pt-4 border-t">
-        <div className="flex-1 text-sm text-muted-foreground">
+        <div className="flex-1 text-base text-muted-foreground">
           {products.filter((p) => p.isValid).length} de {products.length} produtos válidos
         </div>
         <Button

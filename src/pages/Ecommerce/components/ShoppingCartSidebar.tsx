@@ -119,7 +119,7 @@ export const ShoppingCartSidebar: React.FC<ShoppingCartSidebarProps> = ({
                   {/* Informações do Produto */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-start justify-between mb-1">
-                      <h4 className="font-medium text-gray-800 text-md line-clamp-2">
+                      <h4 className="font-medium text-gray-800 text-base line-clamp-2">
                         {item.product.name}
                       </h4>
                       <Button
@@ -132,13 +132,13 @@ export const ShoppingCartSidebar: React.FC<ShoppingCartSidebarProps> = ({
                       </Button>
                     </div>
                     
-                    <p className="text-xs text-gray-500 mb-2">
+                    <p className="text-sm text-gray-500 mb-2">
                       por {item.product.franchiseName}
                     </p>
 
                     {/* Opções Selecionadas */}
                     {(item.selectedColor || item.selectedSize) && (
-                      <div className="text-xs text-gray-600 mb-2">
+                      <div className="text-sm text-gray-600 mb-2">
                         {item.selectedColor && (
                           <span className="mr-2">Cor: {item.selectedColor}</span>
                         )}
@@ -166,7 +166,7 @@ export const ShoppingCartSidebar: React.FC<ShoppingCartSidebarProps> = ({
                           <Minus className="h-3 w-3" />
                         </Button>
                         
-                        <span className="w-8 text-center text-md font-medium">
+                        <span className="w-8 text-center text-base font-medium">
                           {item.quantity}
                         </span>
                         
@@ -183,7 +183,7 @@ export const ShoppingCartSidebar: React.FC<ShoppingCartSidebarProps> = ({
                     </div>
 
                     {/* Preço unitário */}
-                    <div className="text-xs text-gray-500 mt-1">
+                    <div className="text-sm text-gray-500 mt-1">
                       {formatPrice(item.product.price)} cada
                     </div>
                   </div>
@@ -198,25 +198,25 @@ export const ShoppingCartSidebar: React.FC<ShoppingCartSidebarProps> = ({
           <div className="border-t p-6 space-y-4">
             {/* Resumo do Pedido */}
             <div className="space-y-2">
-              <div className="flex justify-between text-sm">
+              <div className="flex justify-between text-base">
                 <span>Subtotal ({totalItems} itens)</span>
                 <span>{formatPrice(total)}</span>
               </div>
-              <div className="flex justify-between text-md text-gray-600">
+              <div className="flex justify-between text-base text-gray-600">
                 <span>Frete</span>
                 <span>Calculado no checkout</span>
               </div>
               {/* Promoções (preview) */}
               <div className="pt-2 space-y-2">
-                <div className="flex justify-between text-sm">
+                <div className="flex justify-between text-base">
                   <span>Descontos (preview)</span>
                   <span>{promoLoading ? '...' : formatPrice(preview?.discountTotal || 0)}</span>
                 </div>
                 {promoError && (
-                  <div className="text-xs text-red-600">{promoError}</div>
+                  <div className="text-sm text-red-600">{promoError}</div>
                 )}
                 {preview?.promotions?.length ? (
-                  <ul className="text-xs text-gray-600 space-y-1">
+                  <ul className="text-sm text-gray-600 space-y-1">
                     {preview.promotions.map((p) => (
                       <li key={p.id} className="flex justify-between">
                         <span>{p.name}</span>
@@ -252,7 +252,7 @@ export const ShoppingCartSidebar: React.FC<ShoppingCartSidebarProps> = ({
 
             {/* Informações de Segurança */}
             <div className="text-center">
-              <p className="text-xs text-gray-500">
+              <p className="text-sm text-gray-500">
                 🔒 Compra 100% segura e protegida
               </p>
             </div>

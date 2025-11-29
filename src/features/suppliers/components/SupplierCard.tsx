@@ -59,7 +59,7 @@ export const SupplierCard: React.FC<SupplierCardProps> = ({
           <div className="flex items-start justify-between">
             <div className="flex-1">
               <div className="flex items-center space-x-2 mb-2">
-                <h3 className="font-semibold text-sm">{supplier.name}</h3>
+                <h3 className="font-semibold text-base">{supplier.name}</h3>
                 {supplier.verified && (
                   <Shield className="h-4 w-4 text-blue-600" />
                 )}
@@ -68,15 +68,15 @@ export const SupplierCard: React.FC<SupplierCardProps> = ({
                 )}
               </div>
               
-              <div className="flex items-center space-x-1 text-xs text-gray-600 mb-2">
+              <div className="flex items-center space-x-1 text-sm text-gray-600 mb-2">
                 <MapPin className="h-3 w-3" />
                 <span>{formatLocation()}</span>
               </div>
               
               <div className="flex items-center space-x-1 mb-2">
                 <Star className="h-3 w-3 text-yellow-500 fill-current" />
-                <span className="text-xs">{formatRating(supplier.rating.overall)}</span>
-                <span className="text-xs text-gray-500">
+                <span className="text-sm">{formatRating(supplier.rating.overall)}</span>
+                <span className="text-sm text-gray-500">
                   ({supplier.rating.totalReviews})
                 </span>
               </div>
@@ -113,13 +113,13 @@ export const SupplierCard: React.FC<SupplierCardProps> = ({
             
             <div className="flex items-center space-x-1 text-gray-600 mb-2">
               <MapPin className="h-4 w-4" />
-              <span className="text-sm">{formatLocation()}</span>
+              <span className="text-base">{formatLocation()}</span>
             </div>
             
             <div className="flex items-center space-x-1">
               <Star className="h-4 w-4 text-yellow-500 fill-current" />
               <span className="font-medium">{formatRating(supplier.rating.overall)}</span>
-              <span className="text-md text-gray-500">
+              <span className="text-base text-gray-500">
                 ({supplier.rating.totalReviews} avaliações)
               </span>
             </div>
@@ -130,7 +130,7 @@ export const SupplierCard: React.FC<SupplierCardProps> = ({
       <CardContent className="space-y-4">
         {/* Descrição */}
         {supplier.description && (
-          <p className="text-md text-gray-600 line-clamp-2">
+          <p className="text-base text-gray-600 line-clamp-2">
             {supplier.description}
           </p>
         )}
@@ -153,7 +153,7 @@ export const SupplierCard: React.FC<SupplierCardProps> = ({
         </div>
 
         {/* Políticas */}
-        <div className="text-md space-y-1">
+        <div className="text-base space-y-1">
           <div className="flex justify-between">
             <span className="text-gray-600">Pedido mínimo:</span>
             <span className="font-medium">{supplier.policies.minimumOrder} peças</span>
@@ -174,15 +174,15 @@ export const SupplierCard: React.FC<SupplierCardProps> = ({
         {/* Produtos */}
         {supplier.products.length > 0 && (
           <div>
-            <h4 className="text-md font-medium mb-2">Categorias:</h4>
+            <h4 className="text-base font-medium mb-2">Categorias:</h4>
             <div className="flex flex-wrap gap-1">
               {supplier.products.slice(0, 3).map((product, index) => (
-                <Badge key={index} variant="secondary" className="text-xs">
+                <Badge key={index} variant="secondary" className="text-sm">
                   {product.name}
                 </Badge>
               ))}
               {supplier.products.length > 3 && (
-                <Badge variant="secondary" className="text-xs">
+                <Badge variant="secondary" className="text-sm">
                   +{supplier.products.length - 3} mais
                 </Badge>
               )}

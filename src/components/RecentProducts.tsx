@@ -40,10 +40,10 @@ export const RecentProducts: React.FC = () => {
             </div>
             
             <div className="space-y-1">
-              <h4 className="text-sm font-medium text-gray-900 truncate">
+              <h4 className="text-base font-medium text-gray-900 truncate">
                 {product.name}
               </h4>
-              <p className="text-sm text-gray-500">
+              <p className="text-base text-gray-500">
                 R$ {product.price.toFixed(2)}
               </p>
             </div>

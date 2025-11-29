@@ -115,7 +115,7 @@ const AssistantButton = () => {
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
                   <Bot className="h-5 w-5" />
-                  <CardTitle className="text-md font-medium">Assistente Viral Kids</CardTitle>
+                  <CardTitle className="text-base font-medium">Assistente Viral Kids</CardTitle>
                 </div>
                 <div className="flex items-center space-x-2">
                   {/* Botão de fullscreen (apenas no desktop) */}
@@ -139,7 +139,7 @@ const AssistantButton = () => {
                   </Button>
                 </div>
               </div>
-              <p className="text-xs opacity-90">Online agora • Resposta rápida</p>
+              <p className="text-sm opacity-90">Online agora • Resposta rápida</p>
             </CardHeader>
             
             <CardContent className="flex-1 flex flex-col p-0 min-h-0">
@@ -151,14 +151,14 @@ const AssistantButton = () => {
                     className={`flex ${msg.isBot ? 'justify-start' : 'justify-end'}`}
                   >
                     <div
-                      className={`max-w-[85%] p-3 rounded-lg text-sm ${
+                      className={`max-w-[85%] p-3 rounded-lg text-base ${
                         msg.isBot
                           ? 'bg-gray-100 text-gray-800'
                           : 'bg-gradient-to-r from-bronze to-gold text-white'
                       }`}
                     >
                       <p className="whitespace-pre-line">{msg.text}</p>
-                      <p className={`text-xs mt-1 ${msg.isBot ? 'text-gray-500' : 'text-white/70'}`}>
+                      <p className={`text-sm mt-1 ${msg.isBot ? 'text-gray-500' : 'text-white/70'}`}>
                         {msg.time}
                       </p>
                     </div>
@@ -168,14 +168,14 @@ const AssistantButton = () => {
 
               {/* Quick Questions */}
               <div className="p-3 border-t border-gray-100 flex-shrink-0">
-                <p className="text-xs text-muted-foreground mb-2">Respostas rápidas:</p>
+                <p className="text-sm text-muted-foreground mb-2">Respostas rápidas:</p>
                 <div className="grid grid-cols-2 gap-2">
                   {quickQuestions.map((question, index) => (
                     <Button
                       key={index}
                       variant="outline"
                       size="sm"
-                      className={`text-xs justify-start px-2 ${
+                      className={`text-sm justify-start px-2 ${
                         isFullscreen ? 'h-10' : 'h-8'
                       }`}
                       onClick={() => setMessage(question)}
@@ -194,7 +194,7 @@ const AssistantButton = () => {
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
                     onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
-                    className={`flex-1 text-sm ${isFullscreen ? 'h-12' : ''}`}
+                    className={`flex-1 text-base ${isFullscreen ? 'h-12' : ''}`}
                   />
                   <Button
                     size={isFullscreen ? "default" : "sm"}
@@ -209,7 +209,7 @@ const AssistantButton = () => {
                   variant="outline"
                   size={isFullscreen ? "default" : "sm"}
                   onClick={openWhatsApp}
-                  className="w-full text-xs border-green-500 text-green-600 hover:bg-green-50"
+                  className="w-full text-sm border-green-500 text-green-600 hover:bg-green-50"
                 >
                   <MessageCircle className="h-4 w-4 mr-2" />
                   Continuar no WhatsApp

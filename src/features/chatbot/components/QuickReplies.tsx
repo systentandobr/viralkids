@@ -33,7 +33,7 @@ export const QuickReplies: React.FC<QuickRepliesProps> = ({
           <button
             key={reply.id}
             onClick={() => onSelect(reply.text)}
-            className="inline-flex items-center px-3 py-2 bg-gradient-to-r from-pink-100 to-purple-100 hover:from-pink-200 hover:to-purple-200 text-pink-700 text-md rounded-lg border border-pink-200 hover:border-pink-300 transition-all duration-200 transform hover:scale-105"
+            className="inline-flex items-center px-3 py-2 bg-gradient-to-r from-pink-100 to-purple-100 hover:from-pink-200 hover:to-purple-200 text-pink-700 text-base rounded-lg border border-pink-200 hover:border-pink-300 transition-all duration-200 transform hover:scale-105"
           >
             {reply.text}
           </button>

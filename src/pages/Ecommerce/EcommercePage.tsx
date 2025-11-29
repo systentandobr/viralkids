@@ -235,10 +235,10 @@ const EcommercePage: React.FC = () => {
                     </Button>
                     
                     <div className="flex flex-col">
-                      <span className="text-md font-medium text-gray-800">
+                      <span className="text-base font-medium text-gray-800">
                         {displayedProducts.length} produto(s)
                       </span>
-                      <span className="text-xs text-gray-500">
+                      <span className="text-sm text-gray-500">
                         {searchQuery && `Buscando por: "${searchQuery}"`}
                         {selectedCategory !== 'all' && ` • Categoria selecionada`}
                         {selectedBrand !== 'all' && ` • Marca selecionada`}
@@ -276,7 +276,7 @@ const EcommercePage: React.FC = () => {
                       <ShoppingCart className="h-4 w-4 mr-2" />
                       <span className="hidden sm:inline">Carrinho</span>
                       {getCartItemsCount() > 0 && (
-                        <span className="absolute -top-2 -right-2 bg-accent text-white rounded-full text-xs w-5 h-5 flex items-center justify-center">
+                        <span className="absolute -top-2 -right-2 bg-accent text-white rounded-full text-sm w-5 h-5 flex items-center justify-center">
                           {getCartItemsCount()}
                         </span>
                       )}

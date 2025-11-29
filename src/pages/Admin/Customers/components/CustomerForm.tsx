@@ -135,7 +135,7 @@ export const CustomerForm = ({
               className={errors.name ? "border-red-500" : ""}
             />
             {errors.name && (
-              <p className="text-sm text-red-500">{errors.name.message}</p>
+              <p className="text-base text-red-500">{errors.name.message}</p>
             )}
           </div>
 
@@ -149,7 +149,7 @@ export const CustomerForm = ({
               className={errors.email ? "border-red-500" : ""}
             />
             {errors.email && (
-              <p className="text-sm text-red-500">{errors.email.message}</p>
+              <p className="text-base text-red-500">{errors.email.message}</p>
             )}
           </div>
 
@@ -162,7 +162,7 @@ export const CustomerForm = ({
               className={errors.phone ? "border-red-500" : ""}
             />
             {errors.phone && (
-              <p className="text-sm text-red-500">{errors.phone.message}</p>
+              <p className="text-base text-red-500">{errors.phone.message}</p>
             )}
           </div>
 

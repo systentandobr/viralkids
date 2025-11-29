@@ -49,13 +49,13 @@ export class ErrorBoundary extends Component<Props, State> {
                 <div className="bg-white p-4 rounded border border-gray-200">
                   <div className="mb-4">
                     <h4 className="font-semibold text-red-700 mb-2">Mensagem do Erro:</h4>
-                    <pre className="text-sm text-red-600 whitespace-pre-wrap bg-red-50 p-3 rounded">
+                    <pre className="text-base text-red-600 whitespace-pre-wrap bg-red-50 p-3 rounded">
                       {this.state.error.message}
                     </pre>
                   </div>
                   <div>
                     <h4 className="font-semibold text-red-700 mb-2">Stack Trace:</h4>
-                    <pre className="text-sm text-red-600 whitespace-pre-wrap bg-red-50 p-3 rounded max-h-96 overflow-y-auto">
+                    <pre className="text-base text-red-600 whitespace-pre-wrap bg-red-50 p-3 rounded max-h-96 overflow-y-auto">
                       {this.state.error.stack}
                     </pre>
                   </div>

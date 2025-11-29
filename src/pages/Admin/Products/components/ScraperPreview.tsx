@@ -114,7 +114,7 @@ export const ScraperPreview = ({
           </div>
           <div>
             <h2 className="text-xl font-bold">Preview dos Dados Extraídos</h2>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-base text-muted-foreground">
               Revise e edite os dados antes de confirmar o cadastro
             </p>
           </div>
@@ -175,7 +175,7 @@ export const ScraperPreview = ({
                 rows={6}
               />
             ) : (
-              <div className="p-2 bg-muted rounded-md text-sm">
+              <div className="p-2 bg-muted rounded-md text-base">
                 {formData.description || "Sem descrição"}
               </div>
             )}
@@ -192,7 +192,7 @@ export const ScraperPreview = ({
                 rows={2}
               />
             ) : (
-              <div className="p-2 bg-muted rounded-md text-sm">
+              <div className="p-2 bg-muted rounded-md text-base">
                 {formData.shortDescription || "Sem descrição curta"}
               </div>
             )}
@@ -312,8 +312,8 @@ export const ScraperPreview = ({
             <div className="grid md:grid-cols-2 gap-4">
               {Object.entries(formData.specifications).map(([key, value]) => (
                 <div key={key} className="flex justify-between border-b pb-2">
-                  <span className="text-sm font-medium text-muted-foreground">{key}:</span>
-                  <span className="text-sm">{value}</span>
+                  <span className="text-base font-medium text-muted-foreground">{key}:</span>
+                  <span className="text-base">{value}</span>
                 </div>
               ))}
             </div>
@@ -339,10 +339,10 @@ export const ScraperPreview = ({
         <div className="p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-lg flex items-start gap-2">
           <AlertCircle className="h-5 w-5 text-yellow-600 dark:text-yellow-400 mt-0.5" />
           <div className="flex-1">
-            <p className="text-sm font-medium text-yellow-600 dark:text-yellow-400">
+            <p className="text-base font-medium text-yellow-600 dark:text-yellow-400">
               Atenção: Verifique os seguintes campos obrigatórios:
             </p>
-            <ul className="text-sm text-yellow-600/80 dark:text-yellow-400/80 mt-1 list-disc list-inside">
+            <ul className="text-base text-yellow-600/80 dark:text-yellow-400/80 mt-1 list-disc list-inside">
               {!formData.name && <li>Nome do produto</li>}
               {formData.price <= 0 && <li>Preço válido</li>}
               {images.length === 0 && <li>Pelo menos uma imagem</li>}

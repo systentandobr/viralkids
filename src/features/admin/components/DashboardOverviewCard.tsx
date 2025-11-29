@@ -99,7 +99,7 @@ export const DashboardOverviewCard: React.FC<DashboardOverviewCardProps> = ({ ov
           <h2 className="text-2xl font-bold">Dashboard Geral</h2>
           <p className="text-muted-foreground">Visão geral das métricas principais</p>
         </div>
-        <div className="flex items-center space-x-2 text-md text-muted-foreground">
+        <div className="flex items-center space-x-2 text-base text-muted-foreground">
           <Calendar className="h-4 w-4" />
           <span>Últimos 30 dias</span>
         </div>
@@ -110,7 +110,7 @@ export const DashboardOverviewCard: React.FC<DashboardOverviewCardProps> = ({ ov
         {metrics.map((metric, index) => (
           <Card key={index} className="relative overflow-hidden">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-md font-medium text-muted-foreground">
+              <CardTitle className="text-base font-medium text-muted-foreground">
                 {metric.title}
               </CardTitle>
               {metric.icon}
@@ -119,13 +119,13 @@ export const DashboardOverviewCard: React.FC<DashboardOverviewCardProps> = ({ ov
               <div className="space-y-2">
                 <div className="text-2xl font-bold">{metric.value}</div>
                 <div className="flex items-center space-x-2">
-                  <span className="text-md text-muted-foreground">
+                  <span className="text-base text-muted-foreground">
                     {metric.subtitle}
                   </span>
                   {metric.trend !== undefined && (
                     <div className={`flex items-center space-x-1 ${getGrowthColor(metric.trend)}`}>
                       {getGrowthIcon(metric.trend)}
-                      <span className="text-xs font-medium">
+                      <span className="text-sm font-medium">
                         {formatPercentage(Math.abs(metric.trend))}
                       </span>
                     </div>
@@ -154,7 +154,7 @@ export const DashboardOverviewCard: React.FC<DashboardOverviewCardProps> = ({ ov
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <div className="flex justify-between text-sm">
+              <div className="flex justify-between text-base">
                 <span>Novos Leads</span>
                 <span>847 / 1000</span>
               </div>
@@ -162,7 +162,7 @@ export const DashboardOverviewCard: React.FC<DashboardOverviewCardProps> = ({ ov
             </div>
             
             <div className="space-y-2">
-              <div className="flex justify-between text-sm">
+              <div className="flex justify-between text-base">
                 <span>Conversões</span>
                 <span>23 / 30</span>
               </div>
@@ -170,7 +170,7 @@ export const DashboardOverviewCard: React.FC<DashboardOverviewCardProps> = ({ ov
             </div>
             
             <div className="space-y-2">
-              <div className="flex justify-between text-sm">
+              <div className="flex justify-between text-base">
                 <span>Receita</span>
                 <span>{formatCurrency(387500)} / {formatCurrency(450000)}</span>
               </div>
@@ -191,7 +191,7 @@ export const DashboardOverviewCard: React.FC<DashboardOverviewCardProps> = ({ ov
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center justify-between">
-              <span className="text-sm">Leads gerados</span>
+              <span className="text-base">Leads gerados</span>
               <div className="flex items-center space-x-2">
                 <Badge variant="outline" className="text-green-600 border-green-200">
                   +18.5%
@@ -200,7 +200,7 @@ export const DashboardOverviewCard: React.FC<DashboardOverviewCardProps> = ({ ov
             </div>
             
             <div className="flex items-center justify-between">
-              <span className="text-sm">Taxa de conversão</span>
+              <span className="text-base">Taxa de conversão</span>
               <div className="flex items-center space-x-2">
                 <Badge variant="outline" className="text-green-600 border-green-200">
                   +2.3%
@@ -209,7 +209,7 @@ export const DashboardOverviewCard: React.FC<DashboardOverviewCardProps> = ({ ov
             </div>
             
             <div className="flex items-center justify-between">
-              <span className="text-sm">Ticket médio</span>
+              <span className="text-base">Ticket médio</span>
               <div className="flex items-center space-x-2">
                 <Badge variant="outline" className="text-blue-600 border-blue-200">
                   +7.8%
@@ -218,7 +218,7 @@ export const DashboardOverviewCard: React.FC<DashboardOverviewCardProps> = ({ ov
             </div>
             
             <div className="flex items-center justify-between">
-              <span className="text-sm">Satisfação</span>
+              <span className="text-base">Satisfação</span>
               <div className="flex items-center space-x-2">
                 <Badge variant="outline" className="text-green-600 border-green-200">
                   +0.2pts
@@ -241,22 +241,22 @@ export const DashboardOverviewCard: React.FC<DashboardOverviewCardProps> = ({ ov
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <Button variant="outline" className="h-auto p-4 flex flex-col space-y-2">
               <Users className="h-6 w-6" />
-              <span className="text-sm">Ver Leads</span>
+              <span className="text-base">Ver Leads</span>
             </Button>
             
             <Button variant="outline" className="h-auto p-4 flex flex-col space-y-2">
               <Building className="h-6 w-6" />
-              <span className="text-sm">Franquias</span>
+              <span className="text-base">Franquias</span>
             </Button>
             
             <Button variant="outline" className="h-auto p-4 flex flex-col space-y-2">
               <DollarSign className="h-6 w-6" />
-              <span className="text-sm">Relatórios</span>
+              <span className="text-base">Relatórios</span>
             </Button>
             
             <Button variant="outline" className="h-auto p-4 flex flex-col space-y-2">
               <Star className="h-6 w-6" />
-              <span className="text-sm">Fornecedores</span>
+              <span className="text-base">Fornecedores</span>
             </Button>
           </div>
         </CardContent>

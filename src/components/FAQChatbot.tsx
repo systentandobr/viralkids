@@ -174,7 +174,7 @@ export const FAQChatbot: React.FC = () => {
               <div className="text-center py-8 text-gray-500">
                 <HelpCircle className="h-12 w-12 mx-auto mb-2 text-gray-300" />
                 <p>Nenhuma pergunta encontrada</p>
-                <p className="text-sm">Tente outros termos de busca</p>
+                <p className="text-base">Tente outros termos de busca</p>
               </div>
             ) : (
               filteredFAQs.map(faq => (
@@ -183,7 +183,7 @@ export const FAQChatbot: React.FC = () => {
                     onClick={() => toggleExpanded(faq.id)}
                     className="w-full p-4 text-left flex items-center justify-between hover:bg-gray-50"
                   >
-                    <span className="font-medium text-sm">{faq.question}</span>
+                    <span className="font-medium text-base">{faq.question}</span>
                     {expandedItems.includes(faq.id) ? (
                       <ChevronUp className="h-4 w-4 text-gray-500" />
                     ) : (
@@ -193,14 +193,14 @@ export const FAQChatbot: React.FC = () => {
                   
                   {expandedItems.includes(faq.id) && (
                     <div className="px-4 pb-4">
-                      <p className="text-sm text-gray-600 leading-relaxed">
+                      <p className="text-base text-gray-600 leading-relaxed">
                         {faq.answer}
                       </p>
                       <div className="flex gap-1 mt-2">
                         {faq.tags.map(tag => (
                           <span
                             key={tag}
-                            className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded"
+                            className="text-sm bg-blue-100 text-blue-800 px-2 py-1 rounded"
                           >
                             {tag}
                           </span>
@@ -215,7 +215,7 @@ export const FAQChatbot: React.FC = () => {
 
           {/* Contato adicional */}
           <div className="pt-4 border-t">
-            <p className="text-sm text-gray-600 text-center">
+            <p className="text-base text-gray-600 text-center">
               Não encontrou o que procurava?
             </p>
             <Button className="w-full mt-2" variant="outline">

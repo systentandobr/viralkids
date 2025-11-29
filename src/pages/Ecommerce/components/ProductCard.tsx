@@ -89,12 +89,12 @@ export const ProductCard: React.FC<ProductCardProps> = ({
               "w-32 h-32 object-cover rounded-lg"
             )}
             {product.discount && (
-              <div className="absolute top-2 left-2 bg-red-500 text-white px-2 py-1 rounded-full text-xs font-medium">
+              <div className="absolute top-2 left-2 bg-red-500 text-white px-2 py-1 rounded-full text-sm font-medium">
                 -{product.discount}%
               </div>
             )}
             {product.isNew && (
-              <div className="absolute top-2 right-2 bg-green-500 text-white px-2 py-1 rounded-full text-xs font-medium">
+              <div className="absolute top-2 right-2 bg-green-500 text-white px-2 py-1 rounded-full text-sm font-medium">
                 Novo
               </div>
             )}
@@ -116,19 +116,19 @@ export const ProductCard: React.FC<ProductCardProps> = ({
               </Button>
             </div>
 
-            <p className="text-gray-600 text-sm mb-3 line-clamp-2">
+            <p className="text-gray-600 text-base mb-3 line-clamp-2">
               {product.description}
             </p>
 
             <div className="flex items-center gap-4 mb-3">
               <div className="flex items-center gap-1">
                 {renderStars(product.rating)}
-                <span className="text-xs text-gray-500 ml-1">
+                <span className="text-sm text-gray-500 ml-1">
                   ({product.reviewCount})
                 </span>
               </div>
               
-              <div className="flex items-center gap-1 text-xs text-gray-500">
+              <div className="flex items-center gap-1 text-sm text-gray-500">
                 <MapPin className="h-3 w-3" />
                 {product.franchiseLocation}
               </div>
@@ -140,7 +140,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
                 {formatPrice(product.price)}
               </span>
               {product.originalPrice && (
-                <span className="text-sm text-gray-500 line-through">
+                <span className="text-base text-gray-500 line-through">
                   {formatPrice(product.originalPrice)}
                 </span>
               )}
@@ -149,11 +149,11 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             {/* Status do Estoque */}
             <div className="mb-4">
               {product.inStock ? (
-                <span className="text-xs text-green-600 font-medium">
+                <span className="text-sm text-green-600 font-medium">
                   ✓ Em estoque ({product.stockQuantity} disponíveis)
                 </span>
               ) : (
-                <span className="text-xs text-red-500 font-medium">
+                <span className="text-sm text-red-500 font-medium">
                   ✗ Indisponível
                 </span>
               )}
@@ -197,17 +197,17 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         {/* Badges */}
         <div className="absolute top-3 left-3 flex flex-col gap-2">
           {product.discount && (
-            <div className="bg-red-500 text-white px-2 py-1 rounded-full text-xs font-medium">
+            <div className="bg-red-500 text-white px-2 py-1 rounded-full text-sm font-medium">
               -{product.discount}%
             </div>
           )}
           {product.isNew && (
-            <div className="bg-green-500 text-white px-2 py-1 rounded-full text-xs font-medium">
+            <div className="bg-green-500 text-white px-2 py-1 rounded-full text-sm font-medium">
               Novo
             </div>
           )}
           {product.isFeatured && (
-            <div className="bg-purple-500 text-white px-2 py-1 rounded-full text-xs font-medium flex items-center">
+            <div className="bg-purple-500 text-white px-2 py-1 rounded-full text-sm font-medium flex items-center">
               <Badge className="h-3 w-3 mr-1" />
               Destaque
             </div>
@@ -257,7 +257,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           <h3 className="font-semibold text-gray-800 line-clamp-2 mb-1 hover:text-primary transition-colors">
             {product.name}
           </h3>
-          <p className="text-xs text-gray-500 mb-2">
+          <p className="text-sm text-gray-500 mb-2">
             por {product.franchiseName}
           </p>
         </div>
@@ -265,7 +265,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         {/* Avaliação */}
         <div className="flex items-center gap-1 mb-3">
           {renderStars(product.rating)}
-          <span className="text-xs text-gray-500 ml-1">
+          <span className="text-sm text-gray-500 ml-1">
             ({product.reviewCount})
           </span>
         </div>
@@ -276,7 +276,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             {formatPrice(product.price)}
           </span>
           {product.originalPrice && (
-            <span className="text-sm text-gray-500 line-through">
+            <span className="text-base text-gray-500 line-through">
               {formatPrice(product.originalPrice)}
             </span>
           )}
@@ -285,7 +285,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         {/* Cores disponíveis */}
         {product.colors && product.colors.length > 0 && (
           <div className="flex items-center gap-1 mb-3">
-            <span className="text-xs text-gray-500 mr-2">Cores:</span>
+            <span className="text-sm text-gray-500 mr-2">Cores:</span>
             {product.colors.slice(0, 4).map((color, index) => (
               <div
                 key={index}
@@ -295,7 +295,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
               />
             ))}
             {product.colors.length > 4 && (
-              <span className="text-xs text-gray-500">
+              <span className="text-sm text-gray-500">
                 +{product.colors.length - 4}
               </span>
             )}
@@ -305,11 +305,11 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         {/* Status do Estoque */}
         <div className="mb-4">
           {product.inStock ? (
-            <span className="text-xs text-green-600 font-medium">
+            <span className="text-sm text-green-600 font-medium">
               ✓ Em estoque ({product.stockQuantity} disponíveis)
             </span>
           ) : (
-            <span className="text-xs text-red-500 font-medium">
+            <span className="text-sm text-red-500 font-medium">
               ✗ Indisponível
             </span>
           )}

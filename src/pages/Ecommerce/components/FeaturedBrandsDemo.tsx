@@ -23,19 +23,19 @@ export const FeaturedBrandsDemo: React.FC = () => {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div className="text-center">
             <div className="text-2xl font-bold text-blue-600">{stats?.totalBrands || 0}</div>
-            <div className="text-sm text-gray-600">Total de Marcas</div>
+            <div className="text-base text-gray-600">Total de Marcas</div>
           </div>
           <div className="text-center">
             <div className="text-2xl font-bold text-yellow-600">{stats?.goldPartners || 0}</div>
-            <div className="text-sm text-gray-600">Parceiros Gold</div>
+            <div className="text-base text-gray-600">Parceiros Gold</div>
           </div>
           <div className="text-center">
             <div className="text-2xl font-bold text-gray-600">{stats?.silverPartners || 0}</div>
-            <div className="text-sm text-gray-600">Parceiros Silver</div>
+            <div className="text-base text-gray-600">Parceiros Silver</div>
           </div>
           <div className="text-center">
             <div className="text-2xl font-bold text-orange-600">{stats?.bronzePartners || 0}</div>
-            <div className="text-sm text-gray-600">Parceiros Bronze</div>
+            <div className="text-base text-gray-600">Parceiros Bronze</div>
           </div>
         </div>
       </div>
@@ -54,8 +54,8 @@ export const FeaturedBrandsDemo: React.FC = () => {
                 </div>
                 <div className="flex-1">
                   <h4 className="font-medium text-gray-900">{brand.name}</h4>
-                  <p className="text-sm text-gray-600">{brand.description}</p>
-                  <p className="text-xs text-gray-500">📍 {brand.location}</p>
+                  <p className="text-base text-gray-600">{brand.description}</p>
+                  <p className="text-sm text-gray-500">📍 {brand.location}</p>
                 </div>
               </div>
               {brand.instagram && (
@@ -63,7 +63,7 @@ export const FeaturedBrandsDemo: React.FC = () => {
                   href={brand.instagram} 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="text-xs text-blue-600 hover:underline mt-2 inline-block"
+                  className="text-sm text-blue-600 hover:underline mt-2 inline-block"
                 >
                   📸 Instagram
                 </a>
@@ -80,22 +80,22 @@ export const FeaturedBrandsDemo: React.FC = () => {
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">
                   Marca
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">
                   Categoria
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">
                   Gênero
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">
                   Produtos
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">
                   Nível
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">
                   Localização
                 </th>
               </tr>
@@ -109,22 +109,22 @@ export const FeaturedBrandsDemo: React.FC = () => {
                         <img src={brand.logo} alt={brand.name} className="w-6 h-6 object-contain" />
                       </div>
                       <div>
-                        <div className="text-sm font-medium text-gray-900">{brand.name}</div>
-                        <div className="text-sm text-gray-500">{brand.description}</div>
+                        <div className="text-base font-medium text-gray-900">{brand.name}</div>
+                        <div className="text-base text-gray-500">{brand.description}</div>
                       </div>
                     </div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 capitalize">
+                  <td className="px-6 py-4 whitespace-nowrap text-base text-gray-900 capitalize">
                     {brand.category}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  <td className="px-6 py-4 whitespace-nowrap text-base text-gray-900">
                     {brand.gender}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  <td className="px-6 py-4 whitespace-nowrap text-base text-gray-900">
                     {brand.productCount}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                    <span className={`inline-flex px-2 py-1 text-sm font-semibold rounded-full ${
                       brand.partnershipLevel === 'gold' ? 'bg-yellow-100 text-yellow-800' :
                       brand.partnershipLevel === 'silver' ? 'bg-gray-100 text-gray-800' :
                       'bg-orange-100 text-orange-800'
@@ -133,7 +133,7 @@ export const FeaturedBrandsDemo: React.FC = () => {
                        brand.partnershipLevel === 'silver' ? '🥈 Silver' : '🥉 Bronze'}
                     </span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  <td className="px-6 py-4 whitespace-nowrap text-base text-gray-900">
                     {brand.location}
                   </td>
                 </tr>

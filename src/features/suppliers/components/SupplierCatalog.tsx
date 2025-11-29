@@ -128,13 +128,13 @@ export const SupplierCatalog: React.FC<SupplierCatalogProps> = ({
             <Card>
               <CardContent className="p-4 text-center">
                 <div className="text-2xl font-bold text-primary">{metrics.totalSuppliers}</div>
-                <div className="text-md text-muted-foreground">Fornecedores</div>
+                <div className="text-base text-muted-foreground">Fornecedores</div>
               </CardContent>
             </Card>
             <Card>
               <CardContent className="p-4 text-center">
                 <div className="text-2xl font-bold text-blue-600">{metrics.verifiedSuppliers}</div>
-                <div className="text-md text-muted-foreground">Verificados</div>
+                <div className="text-base text-muted-foreground">Verificados</div>
               </CardContent>
             </Card>
             <Card>
@@ -142,13 +142,13 @@ export const SupplierCatalog: React.FC<SupplierCatalogProps> = ({
                 <div className="text-2xl font-bold text-yellow-600">
                   {metrics.averageRating.toFixed(1)}
                 </div>
-                <div className="text-md text-muted-foreground">Avaliação Média</div>
+                <div className="text-base text-muted-foreground">Avaliação Média</div>
               </CardContent>
             </Card>
             <Card>
               <CardContent className="p-4 text-center">
                 <div className="text-2xl font-bold text-green-600">{metrics.topStates.length}</div>
-                <div className="text-md text-muted-foreground">Estados</div>
+                <div className="text-base text-muted-foreground">Estados</div>
               </CardContent>
             </Card>
           </div>
@@ -241,7 +241,7 @@ export const SupplierCatalog: React.FC<SupplierCatalogProps> = ({
           {/* Filtros Ativos */}
           {Object.keys(currentFilter).length > 0 && (
             <div className="flex flex-wrap gap-2">
-              <span className="text-md text-muted-foreground">Filtros ativos:</span>
+              <span className="text-base text-muted-foreground">Filtros ativos:</span>
               {currentFilter.states?.map(state => (
                 <Badge key={state} variant="outline">
                   <MapPin className="h-3 w-3 mr-1" />
@@ -264,7 +264,7 @@ export const SupplierCatalog: React.FC<SupplierCatalogProps> = ({
                 variant="ghost"
                 size="sm"
                 onClick={clearFilters}
-                className="h-6 px-2 text-xs"
+                className="h-6 px-2 text-sm"
               >
                 Limpar tudo
               </Button>
@@ -276,7 +276,7 @@ export const SupplierCatalog: React.FC<SupplierCatalogProps> = ({
       {/* Lista de Fornecedores */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <p className="text-md text-muted-foreground">
+          <p className="text-base text-muted-foreground">
             {displaySuppliers.length} fornecedor(es) encontrado(s)
             {searchTerm && ` para "${searchTerm}"`}
           </p>

@@ -96,7 +96,7 @@ const CheckoutPage: React.FC = () => {
                   <li key={`${item.product.id}-${item.selectedColor || 'nc'}-${item.selectedSize || 'ns'}-${idx}`} className="py-2 flex items-center justify-between">
                     <div>
                       <p className="font-medium">{item.product.name}</p>
-                      <p className="text-sm text-muted-foreground">Qtd: {item.quantity}</p>
+                      <p className="text-base text-muted-foreground">Qtd: {item.quantity}</p>
                     </div>
                     <div className="font-semibold">R$ {(item.product.price * item.quantity).toFixed(2)}</div>
                   </li>
@@ -123,7 +123,7 @@ const CheckoutPage: React.FC = () => {
                     onChange={(e) => setRedeemAmount(Math.max(0, Math.min(Number(e.target.value || 0), balance?.balance || 0)))}
                     placeholder="Resgatar"
                   />
-                  <span className="text-sm text-muted-foreground">Prévia total: R$ {(cashbackPreview?.totalAfterRedeem ?? subtotal).toFixed(2)}</span>
+                  <span className="text-base text-muted-foreground">Prévia total: R$ {(cashbackPreview?.totalAfterRedeem ?? subtotal).toFixed(2)}</span>
                 </div>
               </div>
               {/* Promo preview */}
@@ -132,9 +132,9 @@ const CheckoutPage: React.FC = () => {
                   <span className="text-muted-foreground">Descontos (preview)</span>
                   <span className="font-semibold">{promoLoading ? '...' : `R$ ${(preview?.discountTotal || 0).toFixed(2)}`}</span>
                 </div>
-                {promoError && <p className="text-destructive text-sm">{promoError}</p>}
+                {promoError && <p className="text-destructive text-base">{promoError}</p>}
                 {preview?.promotions?.length ? (
-                  <ul className="mt-2 space-y-1 text-sm text-muted-foreground">
+                  <ul className="mt-2 space-y-1 text-base text-muted-foreground">
                     {preview.promotions.map((p) => (
                       <li key={p.id} className="flex items-center justify-between">
                         <span>{p.name}</span>
@@ -158,7 +158,7 @@ const CheckoutPage: React.FC = () => {
                 )}
                 {reservedUntil && <Countdown until={reservedUntil} />}
               </div>
-              {error && <p className="text-destructive text-sm">{error}</p>}
+              {error && <p className="text-destructive text-base">{error}</p>}
             </>
           )}
         </CardContent>
@@ -172,7 +172,7 @@ const CheckoutPage: React.FC = () => {
           <CardContent className="space-y-3">
             <div className="flex items-center gap-2">
               <Button disabled={deliveryLoading} onClick={() => quote({ postalCode: '59000-000' })}>Cotar entrega</Button>
-              {deliveryError && <span className="text-destructive text-sm">{deliveryError}</span>}
+              {deliveryError && <span className="text-destructive text-base">{deliveryError}</span>}
             </div>
             {options.length > 0 && (
               <div className="space-y-2">
@@ -180,7 +180,7 @@ const CheckoutPage: React.FC = () => {
                   <div key={opt.id} className={`p-3 border rounded flex items-center justify-between ${selected?.id === opt.id ? 'border-primary' : ''}`}>
                     <div>
                       <p className="font-medium">{opt.provider} - {opt.method}</p>
-                      <p className="text-sm text-muted-foreground">R$ {opt.price.toFixed(2)} • {opt.etaDays} dia(s)</p>
+                      <p className="text-base text-muted-foreground">R$ {opt.price.toFixed(2)} • {opt.etaDays} dia(s)</p>
                     </div>
                     <Button variant={selected?.id === opt.id ? 'secondary' : 'outline'} onClick={() => setSelected(opt)}>
                       {selected?.id === opt.id ? 'Selecionado' : 'Selecionar'}

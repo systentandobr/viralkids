@@ -100,7 +100,7 @@ export const AdminDashboard: React.FC = () => {
             <div className="flex items-center space-x-4">
               <div className="flex items-center space-x-2">
                 <div className="w-8 h-8 bg-gradient-to-r from-pink-500 to-purple-600 rounded-lg flex items-center justify-center">
-                  <span className="text-white font-bold text-sm">VK</span>
+                  <span className="text-white font-bold text-base">VK</span>
                 </div>
                 <h1 className="text-xl font-bold">Viral Kids Admin</h1>
               </div>
@@ -125,8 +125,8 @@ export const AdminDashboard: React.FC = () => {
               <div className="flex items-center space-x-2">
                 <UserCircle className="h-6 w-6 text-gray-600" />
                 <div className="flex flex-col">
-                  <span className="text-md font-medium">{user?.name}</span>
-                  <span className="text-xs text-gray-500">{user?.role}</span>
+                  <span className="text-base font-medium">{user?.name}</span>
+                  <span className="text-sm text-gray-500">{user?.role}</span>
                 </div>
               </div>
               
@@ -147,7 +147,7 @@ export const AdminDashboard: React.FC = () => {
         <aside className="w-64 bg-background border-r border-gray-200 min-h-screen">
           <nav className="p-4 space-y-2">
             <Button
-              variant={activeTab === 'overview' ? 'default' : 'ghost'}
+              variant={activeTab === 'overview' ? 'accent' : 'ghost'}
               className="w-full justify-start"
               onClick={() => setActiveTab('overview')}
             >
@@ -156,7 +156,7 @@ export const AdminDashboard: React.FC = () => {
             </Button>
             
             <Button
-              variant={activeTab === 'leads' ? 'default' : 'ghost'}
+              variant={activeTab === 'leads' ? 'accent' : 'ghost'}
               className="w-full justify-start"
               onClick={() => setActiveTab('leads')}
             >
@@ -170,7 +170,7 @@ export const AdminDashboard: React.FC = () => {
             </Button>
             
             <Button
-              variant={activeTab === 'franchises' ? 'default' : 'ghost'}
+              variant={activeTab === 'franchises' ? 'accent' : 'ghost'}
               className="w-full justify-start"
               onClick={() => setActiveTab('franchises')}
             >
@@ -184,7 +184,7 @@ export const AdminDashboard: React.FC = () => {
             </Button>
             
             <Button
-              variant={activeTab === 'suppliers' ? 'default' : 'ghost'}
+              variant={activeTab === 'suppliers' ? 'accent' : 'ghost'}
               className="w-full justify-start"
               onClick={() => setActiveTab('suppliers')}
             >
@@ -193,7 +193,7 @@ export const AdminDashboard: React.FC = () => {
             </Button>
             
             <Button
-              variant={activeTab === 'customers' ? 'default' : 'ghost'}
+              variant={activeTab === 'customers' ? 'accent' : 'ghost'}
               className="w-full justify-start"
               onClick={() => {
                 setActiveTab('customers');
@@ -205,7 +205,7 @@ export const AdminDashboard: React.FC = () => {
             </Button>
             
             <Button
-              variant={activeTab === 'orders' ? 'default' : 'ghost'}
+              variant={activeTab === 'orders' ? 'accent' : 'ghost'}
               className="w-full justify-start"
               onClick={() => {
                 setActiveTab('orders');
@@ -217,7 +217,7 @@ export const AdminDashboard: React.FC = () => {
             </Button>
             
             <Button
-              variant={activeTab === 'products' ? 'default' : 'ghost'}
+              variant={activeTab === 'products' ? 'accent' : 'ghost'}
               className="w-full justify-start"
               onClick={() => {
                 setActiveTab('products');
@@ -229,7 +229,7 @@ export const AdminDashboard: React.FC = () => {
             </Button>
             
             <Button
-              variant={activeTab === 'leads' ? 'default' : 'ghost'}
+              variant={activeTab === 'leads' ? 'accent' : 'ghost'}
               className="w-full justify-start"
               onClick={() => {
                 setActiveTab('leads');
@@ -241,7 +241,7 @@ export const AdminDashboard: React.FC = () => {
             </Button>
             
             <Button
-              variant={activeTab === 'analytics' ? 'default' : 'ghost'}
+              variant={activeTab === 'analytics' ? 'accent' : 'ghost'}
               className="w-full justify-start"
               onClick={() => setActiveTab('analytics')}
             >
@@ -300,13 +300,13 @@ export const AdminDashboard: React.FC = () => {
                             <div className="text-2xl font-bold text-blue-600">
                               {dashboard.performance.websiteTraffic.totalVisits.toLocaleString()}
                             </div>
-                            <div className="text-md text-muted-foreground">Visitas do Site</div>
+                            <div className="text-base text-muted-foreground">Visitas do Site</div>
                           </div>
                           <div className="text-center">
                             <div className="text-2xl font-bold text-green-600">
                               {dashboard.performance.chatbotMetrics.totalConversations.toLocaleString()}
                             </div>
-                            <div className="text-md text-muted-foreground">Conversas Chatbot</div>
+                            <div className="text-base text-muted-foreground">Conversas Chatbot</div>
                           </div>
                         </div>
                         
@@ -315,13 +315,13 @@ export const AdminDashboard: React.FC = () => {
                             <div className="text-2xl font-bold text-purple-600">
                               {dashboard.performance.emailMetrics.openRate.toFixed(1)}%
                             </div>
-                            <div className="text-md text-muted-foreground">Taxa Abertura Email</div>
+                            <div className="text-base text-muted-foreground">Taxa Abertura Email</div>
                           </div>
                           <div className="text-center">
                             <div className="text-2xl font-bold text-orange-600">
                               {dashboard.performance.socialMedia.instagram.followers.toLocaleString()}
                             </div>
-                            <div className="text-md text-muted-foreground">Seguidores Instagram</div>
+                            <div className="text-base text-muted-foreground">Seguidores Instagram</div>
                           </div>
                         </div>
                       </div>
@@ -343,11 +343,11 @@ export const AdminDashboard: React.FC = () => {
                           <div key={activity.id} className="flex items-start space-x-3">
                             <div className="text-lg">{activity.icon}</div>
                             <div className="flex-1">
-                              <p className="text-md font-medium">{activity.title}</p>
-                              <p className="text-xs text-muted-foreground">
+                              <p className="text-base font-medium">{activity.title}</p>
+                              <p className="text-sm text-muted-foreground">
                                 {activity.description}
                               </p>
-                              <p className="text-xs text-muted-foreground">
+                              <p className="text-sm text-muted-foreground">
                                 {activity.timestamp.toLocaleString()}
                               </p>
                             </div>

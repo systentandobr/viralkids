@@ -213,12 +213,12 @@ export const RelatedProducts: React.FC<RelatedProductsProps> = ({
                 {/* Badges */}
                 <div className="absolute top-2 left-2 flex flex-col gap-1">
                   {product.discount && (
-                    <div className="bg-red-500 text-white px-2 py-1 rounded-full text-xs font-medium">
+                    <div className="bg-red-500 text-white px-2 py-1 rounded-full text-sm font-medium">
                       -{product.discount}%
                     </div>
                   )}
                   {product.isNew && (
-                    <div className="bg-green-500 text-white px-2 py-1 rounded-full text-xs font-medium">
+                    <div className="bg-green-500 text-white px-2 py-1 rounded-full text-sm font-medium">
                       Novo
                     </div>
                   )}
@@ -242,36 +242,36 @@ export const RelatedProducts: React.FC<RelatedProductsProps> = ({
 
               {/* Informações do Produto */}
               <div className="p-3 space-y-2">
-                <h3 className="font-medium text-gray-900 text-sm line-clamp-2 group-hover:text-primary transition-colors">
+                <h3 className="font-medium text-gray-900 text-base line-clamp-2 group-hover:text-primary transition-colors">
                   {product.name}
                 </h3>
                 
-                <p className="text-xs text-gray-500">
+                <p className="text-sm text-gray-500">
                   por {product.franchiseName}
                 </p>
 
                 {/* Avaliação */}
                 <div className="flex items-center gap-1">
                   {renderStars(product.rating)}
-                  <span className="text-xs text-gray-500 ml-1">
+                  <span className="text-sm text-gray-500 ml-1">
                     ({product.reviewCount})
                   </span>
                 </div>
 
                 {/* Preço */}
                 <div className="flex items-center gap-2">
-                  <span className="font-bold text-primary text-sm">
+                  <span className="font-bold text-primary text-base">
                     {formatPrice(product.price)}
                   </span>
                   {product.originalPrice && (
-                    <span className="text-xs text-gray-500 line-through">
+                    <span className="text-sm text-gray-500 line-through">
                       {formatPrice(product.originalPrice)}
                     </span>
                   )}
                 </div>
 
                 {/* Status do Estoque */}
-                <div className="text-xs">
+                <div className="text-sm">
                   {product.inStock ? (
                     <span className="text-green-600">✓ Em estoque</span>
                   ) : (
@@ -282,7 +282,7 @@ export const RelatedProducts: React.FC<RelatedProductsProps> = ({
                 {/* Botão de Adicionar */}
                 <Button
                   size="sm"
-                  className="w-full text-xs"
+                  className="w-full text-sm"
                   onClick={(e) => {
                     e.stopPropagation();
                     if (onAddToCart) {

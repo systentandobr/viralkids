@@ -106,8 +106,8 @@ export function GoogleMapsAutocomplete({
         onChange={(e) => setValue(e.target.value)}
         className={error ? "border-destructive" : ""}
       />
-      {error && <p className="text-sm text-destructive">{error}</p>}
-      <p className="text-xs text-muted-foreground">
+      {error && <p className="text-base text-destructive">{error}</p>}
+      <p className="text-sm text-muted-foreground">
         Comece a digitar e selecione um endereço da lista
       </p>
     </div>

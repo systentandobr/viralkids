@@ -92,7 +92,7 @@ export const BrandSelector: React.FC<BrandSelectorProps> = ({
                   )}
 
                   {/* Badge de nível de parceria */}
-                  <div className={`absolute -top-2 -left-2 px-2 py-1 rounded-full text-xs font-medium ${
+                  <div className={`absolute -top-2 -left-2 px-2 py-1 rounded-full text-sm font-medium ${
                     brand.partnershipLevel === 'gold' ? 'bg-yellow-500 text-white' :
                     brand.partnershipLevel === 'silver' ? 'bg-gray-400 text-white' :
                     'bg-orange-600 text-white'
@@ -103,17 +103,17 @@ export const BrandSelector: React.FC<BrandSelectorProps> = ({
                 </div>
 
                 {/* Nome da marca */}
-                <p className="text-sm font-medium text-gray-900 text-center mt-2 max-w-40 truncate">
+                <p className="text-base font-medium text-gray-900 text-center mt-2 max-w-40 truncate">
                   {brand.name}
                 </p>
 
                 {/* Descrição */}
-                <p className="text-xs text-gray-500 text-center mt-1 max-w-40 truncate">
+                <p className="text-sm text-gray-500 text-center mt-1 max-w-40 truncate">
                   {brand.description}
                 </p>
 
                 {/* Localização */}
-                <p className="text-xs text-gray-400 text-center mt-1 max-w-40 truncate">
+                <p className="text-sm text-gray-400 text-center mt-1 max-w-40 truncate">
                   📍 {brand.location}
                 </p>
               </div>

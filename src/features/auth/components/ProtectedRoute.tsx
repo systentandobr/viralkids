@@ -84,10 +84,10 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
               <p className="text-muted-foreground">
                 Você não tem permissão para acessar esta página.
               </p>
-              <p className="text-md text-gray-500 mt-2">
+              <p className="text-base text-gray-500 mt-2">
                 Seu perfil: <span className="font-medium">{user.role}</span>
               </p>
-              <p className="text-md text-gray-500">
+              <p className="text-base text-gray-500">
                 Perfis permitidos: <span className="font-medium">{allowedRoles.join(', ')}</span>
               </p>
             </div>
@@ -146,7 +146,7 @@ export const PermissionGuard: React.FC<PermissionGuardProps> = ({
         <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
           <div className="flex items-center space-x-2">
             <AlertTriangle className="h-5 w-5 text-yellow-600" />
-            <p className="text-md text-yellow-800">
+            <p className="text-base text-yellow-800">
               Você não tem permissão para ver este conteúdo.
             </p>
           </div>

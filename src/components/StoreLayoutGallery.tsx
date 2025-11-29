@@ -140,7 +140,7 @@ const StoreLayoutGallery = () => {
                     />
                     )}
                     {layouts[currentIndex].isGif && (
-                      <div className="absolute top-4 right-4 bg-accent text-accent-foreground px-3 py-1 rounded-full text-sm font-medium">
+                      <div className="absolute top-4 right-4 bg-accent text-accent-foreground px-3 py-1 rounded-full text-base font-medium">
                         GIF Animado
                       </div>
                     )}
@@ -167,7 +167,7 @@ const StoreLayoutGallery = () => {
                             [currentIndex]: true
                           })}
                         />
-                        <div className="absolute top-4 right-4 bg-accent text-accent-foreground px-3 py-1 rounded-full text-sm font-medium">
+                        <div className="absolute top-4 right-4 bg-accent text-accent-foreground px-3 py-1 rounded-full text-base font-medium">
                           Video
                         </div>
                       </>
@@ -192,14 +192,14 @@ const StoreLayoutGallery = () => {
                     </p>
                     
                     <div className="space-y-3">
-                      <h4 className="font-semibold text-sm uppercase tracking-wide text-primary">
+                      <h4 className="font-semibold text-base uppercase tracking-wide text-primary">
                         Características
                       </h4>
                       <ul className="grid grid-cols-2 gap-3">
                         {layouts[currentIndex].features.map((feature, idx) => (
                           <li
                             key={idx}
-                            className="flex items-center gap-2 text-sm"
+                            className="flex items-center gap-2 text-base"
                           >
                             <div className="w-2 h-2 rounded-full bg-gradient-to-r from-primary to-accent" />
                             <span>{feature}</span>

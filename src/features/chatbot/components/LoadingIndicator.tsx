@@ -18,7 +18,7 @@ export const LoadingIndicator: React.FC<LoadingIndicatorProps> = ({
         {/* Indicador de digitação */}
         <div className="bg-white rounded-2xl px-4 py-3 shadow-sm border border-gray-100">
           <div className="flex items-center space-x-2">
-            <span className="text-gray-600 text-sm">{message}</span>
+            <span className="text-gray-600 text-base">{message}</span>
             <div className="flex space-x-1">
               <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
               <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
@@ -45,7 +45,7 @@ export const ProcessingIndicator: React.FC = () => {
   return (
     <div className="flex items-center justify-center space-x-2 text-gray-500">
       <div className="w-4 h-4 border-2 border-gray-300 border-t-pink-500 rounded-full animate-spin" />
-      <span className="text-sm">Processando...</span>
+      <span className="text-base">Processando...</span>
     </div>
   );
 };

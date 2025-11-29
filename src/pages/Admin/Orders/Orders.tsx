@@ -15,6 +15,7 @@ import {
   Plus, 
   Search, 
   Eye, 
+  Edit,
   Filter,
   Download,
   Package,
@@ -23,11 +24,20 @@ import {
   XCircle
 } from "lucide-react";
 import { useState } from "react";
-import { useOrders, useOrderStats } from "@/services/queries/orders";
+import { useOrders, useOrderStats, useDeleteOrder } from "@/services/queries/orders";
+import { CreateOrderForm } from "@/pages/Admin/components/orders/CreateOrderForm";
+import { EditOrderForm } from "@/pages/Admin/components/orders/EditOrderForm";
+import {
+  Dialog,
+  DialogContent,
+} from "@/components/ui/dialog";
 
 const Orders = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string | undefined>(undefined);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [editingOrderId, setEditingOrderId] = useState<string | null>(null);
+  const deleteOrder = useDeleteOrder();
 
   // Buscar pedidos da API
   const { data: ordersData, isLoading, error } = useOrders({
@@ -80,7 +90,10 @@ const Orders = () => {
             </p>
           </div>
         </div>
-        <Button className="bg-gradient-to-r from-orange-500 to-red-500 hover:opacity-90 transition-opacity shadow-neon">
+        <Button 
+          className="bg-gradient-to-r from-orange-500 to-red-500 hover:opacity-90 transition-opacity shadow-neon"
+          onClick={() => setIsCreateModalOpen(true)}
+        >
           <Plus className="h-4 w-4 mr-2" />
           Novo Pedido
         </Button>
@@ -94,7 +107,7 @@ const Orders = () => {
               <ShoppingCart className="h-5 w-5 text-white" />
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Total Pedidos</p>
+              <p className="text-base text-muted-foreground">Total Pedidos</p>
               <h2 className="text-2xl font-bold text-neon-cyan">
                 {stats?.total || orders.length}
               </h2>
@@ -108,7 +121,7 @@ const Orders = () => {
               <Clock className="h-5 w-5 text-white" />
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Processando</p>
+              <p className="text-base text-muted-foreground">Processando</p>
               <h2 className="text-2xl font-bold text-yellow-600 dark:text-yellow-400">
                 {stats?.processing || orders.filter(o => o.status === "processando").length}
               </h2>
@@ -122,7 +135,7 @@ const Orders = () => {
               <CheckCircle2 className="h-5 w-5 text-white" />
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Entregues</p>
+              <p className="text-base text-muted-foreground">Entregues</p>
               <h2 className="text-2xl font-bold text-neon-green">
                 {stats?.delivered || orders.filter(o => o.status === "entregue").length}
               </h2>
@@ -136,7 +149,7 @@ const Orders = () => {
               <XCircle className="h-5 w-5 text-white" />
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Cancelados</p>
+              <p className="text-base text-muted-foreground">Cancelados</p>
               <h2 className="text-2xl font-bold text-neon-red">
                 {stats?.cancelled || orders.filter(o => o.status === "cancelado").length}
               </h2>
@@ -187,7 +200,7 @@ const Orders = () => {
           <TableBody>
             {filteredOrders.map((order) => (
               <TableRow key={order.id} className="border-border/50 hover:bg-muted/30 transition-colors">
-                <TableCell className="font-mono text-sm font-semibold">
+                <TableCell className="font-mono text-base font-semibold">
                   {order.orderNumber}
                 </TableCell>
                 <TableCell className="font-medium">{order.customerName}</TableCell>
@@ -223,19 +236,56 @@ const Orders = () => {
                   </Badge>
                 </TableCell>
                 <TableCell className="text-right">
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    className="h-8 w-8 p-0 hover:bg-orange-500/10 hover:text-orange-500"
-                  >
-                    <Eye className="h-4 w-4" />
-                  </Button>
+                  <div className="flex justify-end gap-2">
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="h-8 w-8 p-0 hover:bg-orange-500/10 hover:text-orange-500"
+                      onClick={() => setEditingOrderId(order.id)}
+                    >
+                      <Edit className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="h-8 w-8 p-0 hover:bg-orange-500/10 hover:text-orange-500"
+                    >
+                      <Eye className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </TableCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
       </Card>
+
+      {/* Modal de criação */}
+      <Dialog open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
+        <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto">
+          <CreateOrderForm
+            onSuccess={() => {
+              setIsCreateModalOpen(false);
+            }}
+            onCancel={() => setIsCreateModalOpen(false)}
+          />
+        </DialogContent>
+      </Dialog>
+
+      {/* Modal de edição */}
+      {editingOrderId && (
+        <Dialog open={!!editingOrderId} onOpenChange={(open) => !open && setEditingOrderId(null)}>
+          <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+            <EditOrderForm
+              orderId={editingOrderId}
+              onSuccess={() => {
+                setEditingOrderId(null);
+              }}
+              onCancel={() => setEditingOrderId(null)}
+            />
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   );
 };

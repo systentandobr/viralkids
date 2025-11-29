@@ -81,7 +81,7 @@ export const RelatedProducts: React.FC<RelatedProductsProps> = ({
         <h3 className="text-xl font-semibold text-gray-900">
           Produtos Relacionados
         </h3>
-        <div className="text-sm text-gray-500">
+        <div className="text-base text-gray-500">
           Baseado no seu histórico
         </div>
       </div>
@@ -113,12 +113,12 @@ export const RelatedProducts: React.FC<RelatedProductsProps> = ({
                     }`}
                   />
                 ))}
-                <span className="text-xs text-gray-500 ml-1">
+                <span className="text-sm text-gray-500 ml-1">
                   ({product.reviewCount || 0})
                 </span>
               </div>
               
-              <h4 className="font-medium text-gray-900 text-sm mb-2 line-clamp-2">
+              <h4 className="font-medium text-gray-900 text-base mb-2 line-clamp-2">
                 {product.name}
               </h4>
               
@@ -127,7 +127,7 @@ export const RelatedProducts: React.FC<RelatedProductsProps> = ({
                   R$ {product.price.toFixed(2)}
                 </span>
                 {product.originalPrice && product.originalPrice > product.price && (
-                  <span className="text-sm text-gray-500 line-through">
+                  <span className="text-base text-gray-500 line-through">
                     R$ {product.originalPrice.toFixed(2)}
                   </span>
                 )}

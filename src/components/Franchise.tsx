@@ -158,7 +158,7 @@ const Franchise = () => {
                   <h3 className="text-lg font-semibold text-foreground mb-2">
                     {benefit.title}
                   </h3>
-                  <p className="text-md text-muted-foreground">
+                  <p className="text-base text-muted-foreground">
                     {benefit.description}
                   </p>
                 </CardContent>
@@ -180,7 +180,7 @@ const Franchise = () => {
                   <h3 className="text-lg font-semibold text-foreground mb-2">
                     {benefit.title}
                   </h3>
-                  <p className="text-md text-muted-foreground">
+                  <p className="text-base text-muted-foreground">
                     {benefit.description}
                   </p>
                 </CardContent>
@@ -220,13 +220,13 @@ const Franchise = () => {
                 <CardHeader className="text-center pb-4">
                   <CardTitle className="text-xl text-foreground">{pkg.name}</CardTitle>
                   <div className="text-3xl font-bold text-bronze mb-2">{pkg.price}</div>
-                  <p className="text-md text-muted-foreground">{pkg.description}</p>
+                  <p className="text-base text-muted-foreground">{pkg.description}</p>
                 </CardHeader>
 
                 <CardContent className="space-y-4">
                   <div className="space-y-3">
                     {pkg.features.map((feature, featureIndex) => (
-                      <div key={featureIndex} className="flex items-center text-sm">
+                      <div key={featureIndex} className="flex items-center text-base">
                         <div className="w-2 h-2 rounded-full bg-bronze mr-3 flex-shrink-0"></div>
                         <span className="text-muted-foreground">{feature}</span>
                       </div>

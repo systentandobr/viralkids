@@ -43,7 +43,7 @@ const NavigationExamples: React.FC = () => {
         >
           Ver Produto ID: 123
         </button>
-        <p className="text-sm text-gray-600">
+        <p className="text-base text-gray-600">
           URL resultante: #/product/detail/123
         </p>
       </div>
@@ -56,7 +56,7 @@ const NavigationExamples: React.FC = () => {
         >
           Ver Produto ID: 456 (Rota Alternativa)
         </button>
-        <p className="text-sm text-gray-600">
+        <p className="text-base text-gray-600">
           URL resultante: #/produto/456
         </p>
       </div>
@@ -69,7 +69,7 @@ const NavigationExamples: React.FC = () => {
         >
           Ver Produto ID: 789 com Query Params
         </button>
-        <p className="text-sm text-gray-600">
+        <p className="text-base text-gray-600">
           URL resultante: #/product/detail/789?source=search&category=clothing
         </p>
       </div>
@@ -82,14 +82,14 @@ const NavigationExamples: React.FC = () => {
         >
           Ver Produto ID: 101 da Categoria: clothing
         </button>
-        <p className="text-sm text-gray-600">
+        <p className="text-base text-gray-600">
           URL resultante: #/product/detail/101?category=clothing&view=grid
         </p>
       </div>
 
       <div className="mt-8 p-4 bg-gray-100 rounded-lg">
         <h3 className="text-lg font-semibold mb-2">Como usar o parâmetro ID na página de destino:</h3>
-        <pre className="text-sm bg-white p-3 rounded border overflow-x-auto">
+        <pre className="text-base bg-white p-3 rounded border overflow-x-auto">
 {`// No componente ProductDetailPage
 import { useParams } from '@/router';
 

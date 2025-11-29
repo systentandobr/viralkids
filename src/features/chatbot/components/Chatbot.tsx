@@ -103,7 +103,7 @@ export const Chatbot: React.FC<ChatbotProps> = ({
               </div>
               <div>
                 <h3 className="font-semibold text-lg">Viral Kids</h3>
-                <p className="text-md opacity-90">Assistente Virtual</p>
+                <p className="text-base opacity-90">Assistente Virtual</p>
               </div>
             </div>
             <div className="flex items-center space-x-2">
@@ -143,7 +143,7 @@ export const Chatbot: React.FC<ChatbotProps> = ({
                 <span className="text-4xl">👋</span>
               </div>
               <p className="text-lg font-medium mb-2">Olá! Bem-vindo à Viral Kids!</p>
-              <p className="text-sm">
+              <p className="text-base">
                 Sou seu assistente virtual. Como posso te ajudar hoje?
               </p>
             </div>
@@ -160,7 +160,7 @@ export const Chatbot: React.FC<ChatbotProps> = ({
           {isLoading && <LoadingIndicator />}
 
           {error && (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-red-600 text-sm">
+            <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-red-600 text-base">
               {error}
             </div>
           )}

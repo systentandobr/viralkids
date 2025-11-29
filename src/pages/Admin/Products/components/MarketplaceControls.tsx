@@ -70,7 +70,7 @@ export const MarketplaceControls = ({
         </div>
         <div>
           <h3 className="text-lg font-bold">Controle de Exibição no Marketplace</h3>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-base text-muted-foreground">
             Configure como este produto será exibido no marketplace
           </p>
         </div>
@@ -89,7 +89,7 @@ export const MarketplaceControls = ({
               <Label htmlFor="isActive" className="text-base font-medium cursor-pointer">
                 Produto Ativo no Marketplace
               </Label>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-base text-muted-foreground">
                 {settings.isActive
                   ? "Produto visível e disponível para compra"
                   : "Produto oculto do marketplace"}
@@ -114,7 +114,7 @@ export const MarketplaceControls = ({
               <Label htmlFor="isFeatured" className="text-base font-medium cursor-pointer">
                 Produto em Destaque
               </Label>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-base text-muted-foreground">
                 {settings.isFeatured
                   ? "Exibido em posições de destaque"
                   : "Exibição normal"}
@@ -160,7 +160,7 @@ export const MarketplaceControls = ({
           >
             <ArrowUp className="h-4 w-4" />
           </Button>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-base text-muted-foreground">
             Produtos com ordem menor aparecem primeiro
           </p>
         </div>
@@ -173,7 +173,7 @@ export const MarketplaceControls = ({
           <div className="flex items-center justify-between p-3 border rounded-lg">
             <div className="flex items-center gap-2">
               <Home className="h-4 w-4 text-muted-foreground" />
-              <span className="text-sm">Página Inicial</span>
+              <span className="text-base">Página Inicial</span>
             </div>
             <Switch
               checked={settings.showInHomepage ?? true}
@@ -184,7 +184,7 @@ export const MarketplaceControls = ({
           <div className="flex items-center justify-between p-3 border rounded-lg">
             <div className="flex items-center gap-2">
               <Grid3x3 className="h-4 w-4 text-muted-foreground" />
-              <span className="text-sm">Página de Categoria</span>
+              <span className="text-base">Página de Categoria</span>
             </div>
             <Switch
               checked={settings.showInCategoryPage ?? true}
@@ -199,7 +199,7 @@ export const MarketplaceControls = ({
       {categories.length > 0 && (
         <div className="space-y-3">
           <Label>Visibilidade por Categoria</Label>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-base text-muted-foreground">
             Selecione em quais categorias o produto será exibido ou oculto
           </p>
           <div className="grid md:grid-cols-2 gap-2 max-h-48 overflow-y-auto p-2 border rounded-lg">
@@ -227,15 +227,15 @@ export const MarketplaceControls = ({
             })}
           </div>
           <div className="flex gap-2 flex-wrap">
-            <Badge variant="outline" className="text-xs">
+            <Badge variant="outline" className="text-sm">
               <Eye className="h-3 w-3 mr-1" />
               Visível
             </Badge>
-            <Badge variant="outline" className="text-xs">
+            <Badge variant="outline" className="text-sm">
               <EyeOff className="h-3 w-3 mr-1" />
               Oculto
             </Badge>
-            <Badge variant="outline" className="text-xs">
+            <Badge variant="outline" className="text-sm">
               <Grid3x3 className="h-3 w-3 mr-1" />
               Padrão
             </Badge>
@@ -245,8 +245,8 @@ export const MarketplaceControls = ({
 
       {/* Resumo */}
       <div className="p-4 bg-muted/50 rounded-lg space-y-2">
-        <p className="text-sm font-medium">Resumo das Configurações:</p>
-        <ul className="text-sm text-muted-foreground space-y-1">
+        <p className="text-base font-medium">Resumo das Configurações:</p>
+        <ul className="text-base text-muted-foreground space-y-1">
           <li>
             • Status:{" "}
             <span className={settings.isActive ? "text-neon-green" : "text-muted-foreground"}>

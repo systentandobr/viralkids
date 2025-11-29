@@ -32,13 +32,13 @@ export const AnalyticsDashboard: React.FC = () => {
   }) => (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium">{title}</CardTitle>
+        <CardTitle className="text-base font-medium">{title}</CardTitle>
         <div className={`text-${color}-600`}>{icon}</div>
       </CardHeader>
       <CardContent>
         <div className="text-2xl font-bold">{value}</div>
         {trend && (
-          <p className="text-xs text-muted-foreground flex items-center gap-1">
+          <p className="text-sm text-muted-foreground flex items-center gap-1">
             <TrendingUp className="h-3 w-3" />
             {trend}
           </p>
@@ -102,12 +102,12 @@ export const AnalyticsDashboard: React.FC = () => {
             {report.topProducts.map((product, index) => (
               <div key={product.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 bg-primary text-white rounded-full flex items-center justify-center text-sm font-bold">
+                  <div className="w-8 h-8 bg-primary text-white rounded-full flex items-center justify-center text-base font-bold">
                     {index + 1}
                   </div>
                   <div>
                     <p className="font-medium">{product.name}</p>
-                    <p className="text-sm text-gray-500">
+                    <p className="text-base text-gray-500">
                       Visualizado {product.viewCount} vezes
                     </p>
                   </div>
@@ -134,12 +134,12 @@ export const AnalyticsDashboard: React.FC = () => {
             {report.topPages.map((page, index) => (
               <div key={page.path} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 bg-green-500 text-white rounded-full flex items-center justify-center text-sm font-bold">
+                  <div className="w-8 h-8 bg-green-500 text-white rounded-full flex items-center justify-center text-base font-bold">
                     {index + 1}
                   </div>
                   <div>
                     <p className="font-medium">{page.title}</p>
-                    <p className="text-sm text-gray-500">{page.path}</p>
+                    <p className="text-base text-gray-500">{page.path}</p>
                   </div>
                 </div>
                 <Badge variant="secondary">
@@ -164,12 +164,12 @@ export const AnalyticsDashboard: React.FC = () => {
             {report.recommendations.slice(0, 5).map((product, index) => (
               <div key={product.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 bg-orange-500 text-white rounded-full flex items-center justify-center text-sm font-bold">
+                  <div className="w-8 h-8 bg-orange-500 text-white rounded-full flex items-center justify-center text-base font-bold">
                     {index + 1}
                   </div>
                   <div>
                     <p className="font-medium">{product.name}</p>
-                    <p className="text-sm text-gray-500">
+                    <p className="text-base text-gray-500">
                       Score: {product.recommendationScore}/100
                     </p>
                   </div>
@@ -203,7 +203,7 @@ export const AnalyticsDashboard: React.FC = () => {
                     <Search className="h-4 w-4 text-gray-500" />
                     <div>
                       <p className="font-medium">"{search.term}"</p>
-                      <p className="text-sm text-gray-500">
+                      <p className="text-base text-gray-500">
                         Buscado {search.count} vezes
                       </p>
                     </div>

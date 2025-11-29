@@ -22,14 +22,20 @@ import {
   Star
 } from "lucide-react";
 import { useState, useMemo } from "react";
-import { useCustomers, useCustomerStats } from "@/services/queries/customers";
-import { CustomerForm } from "./components/CustomerForm";
+import { useCustomers, useCustomerStats, useDeleteCustomer } from "@/services/queries/customers";
+import { CreateCustomerForm } from "@/pages/Admin/components/customers/CreateCustomerForm";
+import { EditCustomerForm } from "@/pages/Admin/components/customers/EditCustomerForm";
+import {
+  Dialog,
+  DialogContent,
+} from "@/components/ui/dialog";
 
 const Customers = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string | undefined>(undefined);
-  const [isFormOpen, setIsFormOpen] = useState(false);
-  const [createAsLead, setCreateAsLead] = useState(false);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [editingCustomerId, setEditingCustomerId] = useState<string | null>(null);
+  const deleteCustomer = useDeleteCustomer();
 
   // Buscar clientes da API
   const { data: customersData, isLoading, error } = useCustomers({
@@ -85,21 +91,7 @@ const Customers = () => {
         </div>
         <div className="flex gap-2">
           <Button
-            variant="outline"
-            onClick={() => {
-              setCreateAsLead(true);
-              setIsFormOpen(true);
-            }}
-            className="border-purple-500/50 hover:border-purple-500"
-          >
-            <Plus className="h-4 w-4 mr-2" />
-            Novo Lead
-          </Button>
-          <Button
-            onClick={() => {
-              setCreateAsLead(false);
-              setIsFormOpen(true);
-            }}
+            onClick={() => setIsCreateModalOpen(true)}
             className="bg-gradient-to-r from-purple-500 to-pink-500 hover:opacity-90 transition-opacity shadow-neon"
           >
             <Plus className="h-4 w-4 mr-2" />
@@ -116,7 +108,7 @@ const Customers = () => {
               <Users className="h-5 w-5 text-white" />
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Total Clientes</p>
+              <p className="text-base text-muted-foreground">Total Clientes</p>
               <h2 className="text-2xl font-bold text-purple-600 dark:text-purple-400">
                 {stats?.total || customers.length}
               </h2>
@@ -130,7 +122,7 @@ const Customers = () => {
               <UserPlus className="h-5 w-5 text-white" />
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Novos (mês)</p>
+              <p className="text-base text-muted-foreground">Novos (mês)</p>
               <h2 className="text-2xl font-bold text-neon-green">
                 {stats?.new || customers.filter(c => c.status === "novo").length}
               </h2>
@@ -144,7 +136,7 @@ const Customers = () => {
               <Star className="h-5 w-5 text-white" />
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Clientes VIP</p>
+              <p className="text-base text-muted-foreground">Clientes VIP</p>
               <h2 className="text-2xl font-bold text-amber-600 dark:text-amber-400">
                 {stats?.vip || customers.filter(c => c.status === "vip").length}
               </h2>
@@ -158,7 +150,7 @@ const Customers = () => {
               <Users className="h-5 w-5 text-white" />
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Ticket Médio</p>
+              <p className="text-base text-muted-foreground">Ticket Médio</p>
               <h2 className="text-2xl font-bold text-neon-cyan">
                 R$ {stats?.averageTicket 
                   ? stats.averageTicket.toFixed(0)
@@ -213,14 +205,14 @@ const Customers = () => {
           <TableBody>
             {filteredCustomers.map((customer) => (
               <TableRow key={customer.id} className="border-border/50 hover:bg-muted/30 transition-colors">
-                <TableCell className="font-mono text-sm text-muted-foreground">
+                <TableCell className="font-mono text-base text-muted-foreground">
                   {customer.id}
                 </TableCell>
                 <TableCell className="font-medium">{customer.name}</TableCell>
                 <TableCell className="text-muted-foreground">
                   <div className="flex flex-col gap-1">
-                    <span className="text-sm">{customer.email}</span>
-                    <span className="text-xs">{customer.phone}</span>
+                    <span className="text-base">{customer.email}</span>
+                    <span className="text-sm">{customer.phone}</span>
                   </div>
                 </TableCell>
                 <TableCell className="text-center font-semibold">
@@ -254,6 +246,7 @@ const Customers = () => {
                       size="sm"
                       variant="ghost"
                       className="h-8 w-8 p-0 hover:bg-purple-500/10 hover:text-purple-500"
+                      onClick={() => setEditingCustomerId(customer.id)}
                     >
                       <Edit className="h-4 w-4" />
                     </Button>
@@ -261,6 +254,15 @@ const Customers = () => {
                       size="sm"
                       variant="ghost"
                       className="h-8 w-8 p-0 hover:bg-neon-red/10 hover:text-neon-red"
+                      onClick={async () => {
+                        if (confirm(`Tem certeza que deseja excluir ${customer.name}?`)) {
+                          try {
+                            await deleteCustomer.mutateAsync(customer.id);
+                          } catch (error) {
+                            console.error('Erro ao excluir cliente:', error);
+                          }
+                        }
+                      }}
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
@@ -272,15 +274,32 @@ const Customers = () => {
         </Table>
       </Card>
 
-      {/* Formulário de Cadastro */}
-      <CustomerForm
-        open={isFormOpen}
-        onOpenChange={setIsFormOpen}
-        createAsLead={createAsLead}
-        onSuccess={() => {
-          // Recarregar dados após criar
-        }}
-      />
+      {/* Modal de criação */}
+      <Dialog open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
+        <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto">
+          <CreateCustomerForm
+            onSuccess={() => {
+              setIsCreateModalOpen(false);
+            }}
+            onCancel={() => setIsCreateModalOpen(false)}
+          />
+        </DialogContent>
+      </Dialog>
+
+      {/* Modal de edição */}
+      {editingCustomerId && (
+        <Dialog open={!!editingCustomerId} onOpenChange={(open) => !open && setEditingCustomerId(null)}>
+          <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto">
+            <EditCustomerForm
+              customerId={editingCustomerId}
+              onSuccess={() => {
+                setEditingCustomerId(null);
+              }}
+              onCancel={() => setEditingCustomerId(null)}
+            />
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
     </>
   );

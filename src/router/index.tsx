@@ -129,10 +129,10 @@ export const Router: React.FC<RouterProps> = ({ routes, fallback }) => {
           <p className="text-gray-600">
             Você não tem permissão para acessar esta página.
           </p>
-          <p className="text-sm text-gray-500">
+          <p className="text-base text-gray-500">
             Role atual: <span className="font-medium">{user.role}</span>
           </p>
-          <p className="text-sm text-gray-500">
+          <p className="text-base text-gray-500">
             Roles permitidos: {matchedRoute.allowedRoles.join(', ')}
           </p>
           <button

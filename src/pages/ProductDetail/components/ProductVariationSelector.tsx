@@ -100,7 +100,7 @@ export const ProductVariationSelector: React.FC<ProductVariationSelectorProps> =
         {/* Badge de estoque baixo */}
         {variation.available && variation.stock <= 3 && variation.stock > 0 && (
           <div className="absolute -top-1 -right-1">
-            <Badge variant="destructive" className="text-xs px-1 py-0">
+            <Badge variant="destructive" className="text-sm px-1 py-0">
               {variation.stock}
             </Badge>
           </div>
@@ -124,7 +124,7 @@ export const ProductVariationSelector: React.FC<ProductVariationSelectorProps> =
       >
         {variation.displayValue}
         {variation.price && (
-          <span className="ml-2 text-sm text-muted-foreground">
+          <span className="ml-2 text-base text-muted-foreground">
             +R$ {variation.price.toFixed(2)}
           </span>
         )}
@@ -145,13 +145,13 @@ export const ProductVariationSelector: React.FC<ProductVariationSelectorProps> =
               {getVariationTypeLabel(type)}
             </h3>
             {selectedVariation && (
-              <span className="text-sm text-gray-600">
+              <span className="text-base text-gray-600">
                 - {selectedVariation.displayValue}
               </span>
             )}
           </div>
           
-          <div className="text-xs text-gray-500">
+          <div className="text-sm text-gray-500">
             {availableCount} de {variationList.length} disponíveis
           </div>
         </div>
@@ -177,7 +177,7 @@ export const ProductVariationSelector: React.FC<ProductVariationSelectorProps> =
           <div className="space-y-2">
             {/* Estoque */}
             {selectedVariation.stock <= 10 && selectedVariation.stock > 0 && (
-              <div className="flex items-center gap-2 text-sm">
+              <div className="flex items-center gap-2 text-base">
                 <AlertCircle className="h-4 w-4 text-orange-500" />
                 <span className="text-orange-600">
                   Apenas {selectedVariation.stock} unidade(s) em estoque
@@ -187,7 +187,7 @@ export const ProductVariationSelector: React.FC<ProductVariationSelectorProps> =
 
             {/* Preço adicional */}
             {selectedVariation.price && selectedVariation.price > 0 && (
-              <div className="text-sm text-gray-600">
+              <div className="text-base text-gray-600">
                 Valor adicional: +R$ {selectedVariation.price.toFixed(2)}
               </div>
             )}
@@ -196,7 +196,7 @@ export const ProductVariationSelector: React.FC<ProductVariationSelectorProps> =
 
         {/* Aviso de seleção obrigatória */}
         {!selectedValue && (
-          <div className="text-sm text-gray-500 italic">
+          <div className="text-base text-gray-500 italic">
             Selecione uma opção para continuar
           </div>
         )}
@@ -224,7 +224,7 @@ export const ProductVariationSelector: React.FC<ProductVariationSelectorProps> =
       {Object.keys(selectedVariations).length > 0 && (
         <div className="bg-gray-50 rounded-lg p-4">
           <h4 className="font-medium text-gray-900 mb-2">Seleção atual:</h4>
-          <div className="space-y-1 text-sm text-gray-600">
+          <div className="space-y-1 text-base text-gray-600">
             {Object.entries(selectedVariations).map(([type, value]) => {
               const variation = variations.find(v => v.type === type && v.value === value);
               return (

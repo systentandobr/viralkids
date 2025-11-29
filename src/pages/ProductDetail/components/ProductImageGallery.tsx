@@ -86,7 +86,7 @@ const ZoomModal: React.FC<ZoomImageProps> = ({ src, alt, isOpen, onClose }) => {
       </div>
 
       {/* Instruções */}
-      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 text-white text-sm bg-black/50 px-4 py-2 rounded-lg">
+      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 text-white text-base bg-black/50 px-4 py-2 rounded-lg">
         Use a roda do mouse para zoom • Arraste para mover • ESC para fechar
       </div>
 
@@ -249,10 +249,10 @@ export const ProductImageGallery: React.FC<ProductImageGalleryProps> = ({
               onClick={() => handleImageClick(images[8])}
             >
               <div className="text-center">
-                <div className="text-sm font-medium text-gray-600">
+                <div className="text-base font-medium text-gray-600">
                   +{images.length - 8}
                 </div>
-                <div className="text-xs text-gray-500">mais</div>
+                <div className="text-sm text-gray-500">mais</div>
               </div>
             </button>
           )}

@@ -78,7 +78,7 @@ export function MapView({
       />
       {draggable && (
         <div className='p-4 bg-card border-t'>
-          <p className='text-sm text-muted-foreground'>
+          <p className='text-base text-muted-foreground'>
             📍 Arraste o marcador para ajustar a localização precisa
           </p>
         </div>

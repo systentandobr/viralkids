@@ -208,10 +208,10 @@ export const FranchiseUsersManager = ({
           </div>
           <div>
             <h3 className="text-lg font-bold">Usuários da Franquia</h3>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-base text-muted-foreground">
               Gerencie os usuários alocados para {franchise.name}
             </p>
-            <p className="text-xs text-muted-foreground mt-1">
+            <p className="text-sm text-muted-foreground mt-1">
               UnitId: <span className="font-mono">{franchise.unitId}</span>
             </p>
           </div>
@@ -258,8 +258,8 @@ export const FranchiseUsersManager = ({
                       >
                         <div className="flex items-center justify-between">
                           <div>
-                            <p className="text-sm font-medium">{user.name || user.username || 'Sem nome'}</p>
-                            <p className="text-xs text-muted-foreground">{user.email || 'Sem email'}</p>
+                            <p className="text-base font-medium">{user.name || user.username || 'Sem nome'}</p>
+                            <p className="text-sm text-muted-foreground">{user.email || 'Sem email'}</p>
                           </div>
                           {selectedUserId === user.id && (
                             <CheckCircle2 className="h-4 w-4 text-neon-green" />
@@ -270,7 +270,7 @@ export const FranchiseUsersManager = ({
                   </div>
                 )}
                 {availableUsers.length === 0 && !isSearching && (
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-sm text-muted-foreground">
                     Digite pelo menos 3 caracteres para buscar usuários
                   </p>
                 )}
@@ -336,7 +336,7 @@ export const FranchiseUsersManager = ({
         <div className="text-center py-12 text-muted-foreground">
           <Users className="h-12 w-12 mx-auto mb-4 opacity-50" />
           <p>Nenhum usuário encontrado</p>
-          <p className="text-sm mt-1">
+          <p className="text-base mt-1">
             {users.length === 0
               ? "Aloque usuários para esta franquia"
               : "Nenhum usuário corresponde à busca"}
@@ -363,7 +363,7 @@ export const FranchiseUsersManager = ({
                   <Badge variant="outline">{user.role || 'N/A'}</Badge>
                 </TableCell>
                 <TableCell>{getStatusBadge(user.status || 'inactive')}</TableCell>
-                <TableCell className="text-muted-foreground text-sm">
+                <TableCell className="text-muted-foreground text-base">
                   {user.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'N/A'}
                 </TableCell>
                 <TableCell className="text-right">

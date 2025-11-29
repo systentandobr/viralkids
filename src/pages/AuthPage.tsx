@@ -143,7 +143,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({
                       <stat.icon className="h-6 w-6 text-purple-600" />
                     </div>
                     <div className="text-2xl font-bold text-gray-900">{stat.value}</div>
-                    <div className="text-md text-gray-600">{stat.label}</div>
+                    <div className="text-base text-gray-600">{stat.label}</div>
                   </div>
                 ))}
               </div>
@@ -159,7 +159,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({
                 <Card key={index} className="bg-white/70 backdrop-blur border-0 shadow-lg">
                   <CardContent className="p-4">
                     <div className="flex items-start space-x-3">
-                      <div className="w-10 h-10 bg-gradient-to-r from-pink-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold text-sm">
+                      <div className="w-10 h-10 bg-gradient-to-r from-pink-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold text-base">
                         {testimonial.name[0]}
                       </div>
                       <div className="flex-1">
@@ -171,8 +171,8 @@ export const AuthPage: React.FC<AuthPageProps> = ({
                             ))}
                           </div>
                         </div>
-                        <p className="text-md text-gray-600 mb-1">{testimonial.role}</p>
-                        <p className="text-md text-gray-800 italic">"{testimonial.text}"</p>
+                        <p className="text-base text-gray-600 mb-1">{testimonial.role}</p>
+                        <p className="text-base text-gray-800 italic">"{testimonial.text}"</p>
                       </div>
                     </div>
                   </CardContent>
@@ -185,7 +185,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({
               <h3 className="text-lg font-semibold text-gray-900 mb-4">
                 Por que escolher a Viral Kids?
               </h3>
-              <ul className="space-y-3 text-md text-gray-700">
+              <ul className="space-y-3 text-base text-gray-700">
                 <li className="flex items-center space-x-2">
                   <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                   <span>Produtos exclusivos com impressão 3D personalizada</span>

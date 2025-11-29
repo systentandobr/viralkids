@@ -129,17 +129,12 @@ const FranchisesManagement = () => {
 
   
   // Handler para sucesso na criação
-  const handleCreateSuccess = (franchise: FranchiseResponse) => {
-    console.log('Franquia criada com sucesso:', franchise);
-    
+  const handleCreateSuccess = () => {
     // Fechar modal
     setIsCreateModalOpen(false);
     
     // Recarregar lista
     setRefreshTrigger((prev) => prev + 1);
-    
-    // Opcional: Mostrar notificação de sucesso
-    // toast.success('Franquia criada com sucesso!');
   };
 
   // Handler para cancelar criação
@@ -259,7 +254,7 @@ const FranchisesManagement = () => {
           </Button>
           <Button
              className="bg-gradient-to-r from-purple-500 to-pink-500 hover:opacity-90 transition-opacity shadow-neon"
-             onClick={() => { setIsCreateModalOpen(true); alert('Modal aberto'); }}
+             onClick={() => { setIsCreateModalOpen(true); }}
              >
             <Plus className="h-4 w-4 mr-2" />
             Nova Franquia
@@ -275,7 +270,7 @@ const FranchisesManagement = () => {
               <Building className="h-5 w-5 text-white" />
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Total Franquias</p>
+              <p className="text-base text-muted-foreground">Total Franquias</p>
               <h2 className="text-2xl font-bold text-purple-600 dark:text-purple-400">
                 {aggregatedMetrics.totalFranchises}
               </h2>
@@ -289,7 +284,7 @@ const FranchisesManagement = () => {
               <Activity className="h-5 w-5 text-white" />
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Franquias Ativas</p>
+              <p className="text-base text-muted-foreground">Franquias Ativas</p>
               <h2 className="text-2xl font-bold text-neon-green">
                 {aggregatedMetrics.activeFranchises}
               </h2>
@@ -303,7 +298,7 @@ const FranchisesManagement = () => {
               <DollarSign className="h-5 w-5 text-white" />
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Vendas Totais</p>
+              <p className="text-base text-muted-foreground">Vendas Totais</p>
               <h2 className="text-2xl font-bold text-neon-cyan">
                 R$ {(aggregatedMetrics.totalSales / 1000).toFixed(0)}k
               </h2>
@@ -317,7 +312,7 @@ const FranchisesManagement = () => {
               <TrendingUp className="h-5 w-5 text-white" />
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Crescimento Médio</p>
+              <p className="text-base text-muted-foreground">Crescimento Médio</p>
               <h2 className="text-2xl font-bold text-orange-600 dark:text-orange-400">
                 {aggregatedMetrics.averageGrowthRate.toFixed(1)}%
               </h2>
@@ -400,23 +395,23 @@ const FranchisesManagement = () => {
               <TableBody>
                 {filteredFranchises.map((franchise) => (
                   <TableRow key={franchise.id} className="border-border/50 hover:bg-muted/30 transition-colors">
-                    <TableCell className="font-mono text-sm text-muted-foreground">
+                    <TableCell className="font-mono text-base text-muted-foreground">
                       {franchise.id}
                     </TableCell>
                     <TableCell className="font-medium">{franchise.name}</TableCell>
                     <TableCell className="text-muted-foreground">
                       <div className="flex flex-col gap-1">
-                        <span className="text-sm">{franchise.owner.name}</span>
-                        <span className="text-xs">{franchise.owner.email}</span>
+                        <span className="text-base">{franchise.owner.name}</span>
+                        <span className="text-sm">{franchise.owner.email}</span>
                       </div>
                     </TableCell>
                     <TableCell className="text-muted-foreground">
                       <div className="flex flex-col gap-1">
-                        <span className="text-sm flex items-center gap-1">
+                        <span className="text-base flex items-center gap-1">
                           <MapPin className="h-3 w-3" />
                           {franchise.location.city}, {franchise.location.state}
                         </span>
-                        <span className="text-xs">{franchise.location.type === 'physical' ? 'Física' : 'Digital'}</span>
+                        <span className="text-sm">{franchise.location.type === 'physical' ? 'Física' : 'Digital'}</span>
                       </div>
                     </TableCell>
                     <TableCell className="text-center">

@@ -36,7 +36,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message, timestamp
             </div>
             
             {/* Timestamp */}
-            <div className={`text-xs mt-2 opacity-70 ${
+            <div className={`text-sm mt-2 opacity-70 ${
               isBot ? 'text-gray-500' : 'text-white/70'
             }`}>
               {timestamp}
@@ -86,7 +86,7 @@ const formatLine = (line: string): React.ReactNode => {
     const parts = line.split('`');
     return parts.map((part, index) => 
       index % 2 === 1 ? (
-        <code key={index} className="bg-gray-100 px-1 py-0.5 rounded text-sm">
+        <code key={index} className="bg-gray-100 px-1 py-0.5 rounded text-base">
           {part}
         </code>
       ) : part

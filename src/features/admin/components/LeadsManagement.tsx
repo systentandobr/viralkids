@@ -227,7 +227,7 @@ export const LeadsManagement: React.FC<LeadsManagementProps> = ({
                   <TableCell>
                     <div className="space-y-1">
                       <div className="font-medium">{lead.name}</div>
-                      <div className="text-md text-muted-foreground">
+                      <div className="text-base text-muted-foreground">
                         {lead.experience === 'none' && '🆕 Iniciante'}
                         {lead.experience === 'some' && '📈 Alguma exp.'}
                         {lead.experience === 'experienced' && '⭐ Experiente'}
@@ -237,11 +237,11 @@ export const LeadsManagement: React.FC<LeadsManagementProps> = ({
                   
                   <TableCell>
                     <div className="space-y-1">
-                      <div className="flex items-center space-x-1 text-sm">
+                      <div className="flex items-center space-x-1 text-base">
                         <Mail className="h-3 w-3" />
                         <span>{lead.email}</span>
                       </div>
-                      <div className="flex items-center space-x-1 text-sm">
+                      <div className="flex items-center space-x-1 text-base">
                         <Phone className="h-3 w-3" />
                         <span>{lead.phone}</span>
                       </div>
@@ -251,7 +251,7 @@ export const LeadsManagement: React.FC<LeadsManagementProps> = ({
                   <TableCell>
                     <div className="flex items-center space-x-1">
                       <MapPin className="h-3 w-3" />
-                      <span className="text-sm">{lead.city}</span>
+                      <span className="text-base">{lead.city}</span>
                     </div>
                   </TableCell>
                   
@@ -283,7 +283,7 @@ export const LeadsManagement: React.FC<LeadsManagementProps> = ({
                   </TableCell>
                   
                   <TableCell>
-                    <div className="flex items-center space-x-1 text-md text-muted-foreground">
+                    <div className="flex items-center space-x-1 text-base text-muted-foreground">
                       <Calendar className="h-3 w-3" />
                       <span>{formatDate(lead.createdAt)}</span>
                     </div>
@@ -425,11 +425,11 @@ export const LeadsManagement: React.FC<LeadsManagementProps> = ({
                         <div key={note.id} className="border-l-4 border-blue-500 pl-4 py-2">
                           <div className="flex items-center justify-between mb-1">
                             <span className="font-medium">{note.authorName}</span>
-                            <span className="text-md text-muted-foreground">
+                            <span className="text-base text-muted-foreground">
                               {formatDate(note.createdAt)}
                             </span>
                           </div>
-                          <p className="text-sm">{note.content}</p>
+                          <p className="text-base">{note.content}</p>
                           <Badge variant="outline" className="mt-1">
                             {note.type}
                           </Badge>

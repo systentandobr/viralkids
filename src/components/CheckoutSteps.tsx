@@ -129,7 +129,7 @@ export const CheckoutSteps: React.FC<CheckoutStepsProps> = ({
               <p className="text-gray-600">Revise os itens antes de continuar</p>
             </div>
             <div className="bg-gray-50 p-4 rounded-lg">
-              <p className="text-sm text-gray-600">Carrinho será carregado aqui</p>
+              <p className="text-base text-gray-600">Carrinho será carregado aqui</p>
             </div>
           </div>
         );
@@ -139,7 +139,7 @@ export const CheckoutSteps: React.FC<CheckoutStepsProps> = ({
           <div className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium mb-2">Nome Completo</label>
+                <label className="block text-base font-medium mb-2">Nome Completo</label>
                 <Input
                   value={formData.name}
                   onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
@@ -147,7 +147,7 @@ export const CheckoutSteps: React.FC<CheckoutStepsProps> = ({
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-2">E-mail</label>
+                <label className="block text-base font-medium mb-2">E-mail</label>
                 <Input
                   type="email"
                   value={formData.email}
@@ -156,7 +156,7 @@ export const CheckoutSteps: React.FC<CheckoutStepsProps> = ({
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-2">Telefone</label>
+                <label className="block text-base font-medium mb-2">Telefone</label>
                 <Input
                   value={formData.phone}
                   onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
@@ -172,7 +172,7 @@ export const CheckoutSteps: React.FC<CheckoutStepsProps> = ({
           <div className="space-y-4">
             <div className="grid grid-cols-1 gap-4">
               <div>
-                <label className="block text-sm font-medium mb-2">Endereço</label>
+                <label className="block text-base font-medium mb-2">Endereço</label>
                 <Input
                   value={formData.address}
                   onChange={(e) => setFormData(prev => ({ ...prev, address: e.target.value }))}
@@ -181,7 +181,7 @@ export const CheckoutSteps: React.FC<CheckoutStepsProps> = ({
               </div>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-sm font-medium mb-2">Cidade</label>
+                  <label className="block text-base font-medium mb-2">Cidade</label>
                   <Input
                     value={formData.city}
                     onChange={(e) => setFormData(prev => ({ ...prev, city: e.target.value }))}
@@ -189,7 +189,7 @@ export const CheckoutSteps: React.FC<CheckoutStepsProps> = ({
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-2">Estado</label>
+                  <label className="block text-base font-medium mb-2">Estado</label>
                   <Input
                     value={formData.state}
                     onChange={(e) => setFormData(prev => ({ ...prev, state: e.target.value }))}
@@ -197,7 +197,7 @@ export const CheckoutSteps: React.FC<CheckoutStepsProps> = ({
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-2">CEP</label>
+                  <label className="block text-base font-medium mb-2">CEP</label>
                   <Input
                     value={formData.zipCode}
                     onChange={(e) => setFormData(prev => ({ ...prev, zipCode: e.target.value }))}
@@ -290,7 +290,7 @@ export const CheckoutSteps: React.FC<CheckoutStepsProps> = ({
                     step.icon
                   )}
                 </div>
-                <div className="text-xs mt-2 text-center">
+                <div className="text-sm mt-2 text-center">
                   <div className="font-medium">{step.title}</div>
                   <div className="text-gray-500">{step.description}</div>
                 </div>

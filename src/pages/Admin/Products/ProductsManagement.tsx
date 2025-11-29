@@ -35,6 +35,11 @@ import { CategoryManager } from "./components/CategoryManager";
 import { AffiliateProductForm } from "./components/AffiliateProductForm";
 import { ProcessingStatusTab } from "./components/ProcessingStatusTab";
 import { BulkProductForm } from "./components/BulkProductForm";
+import { CreateProductForm } from "@/pages/Admin/components/products/CreateProductForm";
+import {
+  Dialog,
+  DialogContent,
+} from "@/components/ui/dialog";
 import {
   ProductCategory,
   CreateCategoryData,
@@ -63,6 +68,7 @@ const ProductsManagement = () => {
   const { user } = useAuthContext();
   const [searchTerm, setSearchTerm] = useState("");
   const [activeTab, setActiveTab] = useState("products");
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const queryClient = useQueryClient();
   
   // Query para categorias
@@ -281,7 +287,10 @@ const ProductsManagement = () => {
             onCategoryDelete={handleCategoryDelete}
             isLoading={isLoadingCategories}
           />
-          <Button className="bg-gradient-to-r from-neon-cyan to-neon-blue hover:opacity-90 transition-opacity shadow-neon">
+          <Button 
+            className="bg-gradient-to-r from-neon-cyan to-neon-blue hover:opacity-90 transition-opacity shadow-neon"
+            onClick={() => setIsCreateModalOpen(true)}
+          >
             <Plus className="h-4 w-4 mr-2" />
             Novo Produto
           </Button>
@@ -296,7 +305,7 @@ const ProductsManagement = () => {
               <Package className="h-5 w-5 text-white" />
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Total Produtos</p>
+              <p className="text-base text-muted-foreground">Total Produtos</p>
               <h2 className="text-2xl font-bold text-neon-cyan">{products.length}</h2>
             </div>
           </div>
@@ -308,7 +317,7 @@ const ProductsManagement = () => {
               <TrendingUp className="h-5 w-5 text-white" />
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Em Estoque</p>
+              <p className="text-base text-muted-foreground">Em Estoque</p>
               <h2 className="text-2xl font-bold text-neon-green">
                 {products.filter(p => p.status === "ativo").length}
               </h2>
@@ -322,7 +331,7 @@ const ProductsManagement = () => {
               <Package className="h-5 w-5 text-white" />
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Estoque Baixo</p>
+              <p className="text-base text-muted-foreground">Estoque Baixo</p>
               <h2 className="text-2xl font-bold text-yellow-600 dark:text-yellow-400">
                 {products.filter(p => p.status === "baixo").length}
               </h2>
@@ -336,7 +345,7 @@ const ProductsManagement = () => {
               <Package className="h-5 w-5 text-white" />
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Esgotados</p>
+              <p className="text-base text-muted-foreground">Esgotados</p>
               <h2 className="text-2xl font-bold text-neon-red">
                 {products.filter(p => p.status === "esgotado").length}
               </h2>
@@ -416,7 +425,7 @@ const ProductsManagement = () => {
                 ) : (
                   filteredProducts.map((product) => (
                     <TableRow key={product.id} className="border-border/50 hover:bg-muted/30 transition-colors">
-                      <TableCell className="font-mono text-sm text-muted-foreground">
+                      <TableCell className="font-mono text-base text-muted-foreground">
                         {product.id}
                       </TableCell>
                       <TableCell className="font-medium">{product.name}</TableCell>
@@ -501,6 +510,19 @@ const ProductsManagement = () => {
           />
         </TabsContent>
       </Tabs>
+
+      {/* Modal de criação de produto */}
+      <Dialog open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
+        <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto">
+          <CreateProductForm
+            onSuccess={() => {
+              setIsCreateModalOpen(false);
+              queryClient.invalidateQueries({ queryKey: ['products'] });
+            }}
+            onCancel={() => setIsCreateModalOpen(false)}
+          />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

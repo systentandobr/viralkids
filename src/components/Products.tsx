@@ -156,7 +156,7 @@ const Products = () => {
                       <div className={`p-3 rounded-lg ${category.color} text-white shadow-bronze`}>
                         <Icon className="h-6 w-6" />
                       </div>
-                      <Badge variant="secondary" className="text-xs">
+                      <Badge variant="secondary" className="text-sm">
                         {category.badge}
                       </Badge>
                     </div>
@@ -166,7 +166,7 @@ const Products = () => {
                       <h3 className="text-lg font-semibold text-foreground mb-2">
                         {category.title}
                       </h3>
-                      <p className="text-md text-muted-foreground mb-4">
+                      <p className="text-base text-muted-foreground mb-4">
                         {category.description}
                       </p>
                     </div>
@@ -174,7 +174,7 @@ const Products = () => {
                     {/* Items List */}
                     <div className="space-y-2">
                       {category.items.map((item, itemIndex) => (
-                        <div key={itemIndex} className="flex items-center text-md text-muted-foreground">
+                        <div key={itemIndex} className="flex items-center text-base text-muted-foreground">
                           <div className="w-1.5 h-1.5 rounded-full bg-bronze mr-2"></div>
                           {item}
                         </div>
@@ -185,7 +185,7 @@ const Products = () => {
                     <div className="pt-4 border-t border-bronze/20">
                       <div className="flex items-center justify-between mb-3">
                         <span className="text-lg font-bold text-bronze">{category.price}</span>
-                        <span className="text-xs text-muted-foreground">Em até 12x</span>
+                        <span className="text-sm text-muted-foreground">Em até 12x</span>
                       </div>
                       <Button 
                         variant="outline" 

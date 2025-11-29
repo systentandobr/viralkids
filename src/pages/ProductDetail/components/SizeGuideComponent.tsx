@@ -41,8 +41,8 @@ const ElectronicRuler: React.FC<{
     return (
       <div className="space-y-2">
         <div className="flex justify-between items-center">
-          <span className="text-sm font-medium text-gray-700">{label}</span>
-          <span className="text-sm text-gray-600">{value} {unit}</span>
+          <span className="text-base font-medium text-gray-700">{label}</span>
+          <span className="text-base text-gray-600">{value} {unit}</span>
         </div>
         
         {/* Régua visual */}
@@ -59,10 +59,10 @@ const ElectronicRuler: React.FC<{
           </div>
           
           {/* Indicador de escala */}
-          <div className="absolute -bottom-1 left-0 text-xs text-gray-500">
+          <div className="absolute -bottom-1 left-0 text-sm text-gray-500">
             0
           </div>
-          <div className="absolute -bottom-1 text-xs text-gray-500" style={{ left: `${Math.min(pixels, 300)}px` }}>
+          <div className="absolute -bottom-1 text-sm text-gray-500" style={{ left: `${Math.min(pixels, 300)}px` }}>
             {value} {unit}
           </div>
         </div>
@@ -76,9 +76,9 @@ const ElectronicRuler: React.FC<{
         <CardTitle className="flex items-center gap-2 text-lg">
           <Ruler className="h-5 w-5 text-primary" />
           Régua Eletrônica
-          <Badge variant="secondary" className="text-xs">BETA</Badge>
+          <Badge variant="secondary" className="text-sm">BETA</Badge>
         </CardTitle>
-        <p className="text-sm text-gray-600">
+        <p className="text-base text-gray-600">
           Visualize as medidas reais do produto na sua tela
         </p>
       </CardHeader>
@@ -89,12 +89,12 @@ const ElectronicRuler: React.FC<{
           <div className="bg-blue-50 rounded-lg p-4 space-y-3">
             <div className="flex items-center gap-2">
               <Info className="h-4 w-4 text-blue-600" />
-              <span className="text-sm font-medium text-blue-900">
+              <span className="text-base font-medium text-blue-900">
                 Calibração necessária
               </span>
             </div>
             
-            <p className="text-sm text-blue-800">
+            <p className="text-base text-blue-800">
               Para medidas precisas, calibre a régua usando um objeto de referência:
             </p>
             
@@ -123,7 +123,7 @@ const ElectronicRuler: React.FC<{
               </Button>
             </div>
             
-            <div className="text-xs text-blue-700">
+            <div className="text-sm text-blue-700">
               Coloque seu {referenceObjects[measurementMode].name.toLowerCase()} na tela e ajuste:
             </div>
             
@@ -135,14 +135,14 @@ const ElectronicRuler: React.FC<{
           /* Medidas do produto */
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-green-700">
+              <span className="text-base font-medium text-green-700">
                 ✓ Régua calibrada
               </span>
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => setCalibration(1)}
-                className="text-xs"
+                className="text-sm"
               >
                 Recalibrar
               </Button>
@@ -168,7 +168,7 @@ const ElectronicRuler: React.FC<{
         
         {/* Dicas */}
         <div className="bg-gray-50 rounded-lg p-3">
-          <div className="text-xs text-gray-600 space-y-1">
+          <div className="text-sm text-gray-600 space-y-1">
             <div>💡 <strong>Dica:</strong> Meça suas roupas favoritas para comparar</div>
             <div>📱 Mantenha a tela perpendicular para medidas precisas</div>
             <div>📏 As medidas são aproximadas - consulte a tabela completa</div>
@@ -221,7 +221,7 @@ export const SizeGuideComponent: React.FC<SizeGuideProps> = ({
       {/* Tabs */}
       <div className="flex border-b">
         <button
-          className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
+          className={`px-4 py-2 text-base font-medium border-b-2 transition-colors ${
             activeTab === 'table'
               ? 'border-primary text-primary'
               : 'border-transparent text-gray-500 hover:text-gray-700'
@@ -231,7 +231,7 @@ export const SizeGuideComponent: React.FC<SizeGuideProps> = ({
           Tabela de Medidas
         </button>
         <button
-          className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
+          className={`px-4 py-2 text-base font-medium border-b-2 transition-colors ${
             activeTab === 'ruler'
               ? 'border-primary text-primary'
               : 'border-transparent text-gray-500 hover:text-gray-700'
@@ -241,7 +241,7 @@ export const SizeGuideComponent: React.FC<SizeGuideProps> = ({
           Régua Eletrônica
         </button>
         <button
-          className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
+          className={`px-4 py-2 text-base font-medium border-b-2 transition-colors ${
             activeTab === 'tips'
               ? 'border-primary text-primary'
               : 'border-transparent text-gray-500 hover:text-gray-700'
@@ -257,7 +257,7 @@ export const SizeGuideComponent: React.FC<SizeGuideProps> = ({
         <Card>
           <CardContent className="p-0">
             <div className="overflow-x-auto">
-              <table className="w-full text-sm">
+              <table className="w-full text-base">
                 <thead className="bg-gray-50">
                   <tr>
                     <th className="px-4 py-3 text-left font-medium text-gray-900">Tamanho</th>
@@ -285,7 +285,7 @@ export const SizeGuideComponent: React.FC<SizeGuideProps> = ({
                         <div className="flex items-center gap-2">
                           {size.size}
                           {selectedSize === size.size && (
-                            <Badge variant="default" className="text-xs">Selecionado</Badge>
+                            <Badge variant="default" className="text-sm">Selecionado</Badge>
                           )}
                         </div>
                       </td>
@@ -319,10 +319,10 @@ export const SizeGuideComponent: React.FC<SizeGuideProps> = ({
             <div className="space-y-3">
               {sizeGuide.instructions.map((instruction, index) => (
                 <div key={index} className="flex gap-3">
-                  <div className="flex-shrink-0 w-6 h-6 bg-primary/10 rounded-full flex items-center justify-center text-sm font-medium text-primary">
+                  <div className="flex-shrink-0 w-6 h-6 bg-primary/10 rounded-full flex items-center justify-center text-base font-medium text-primary">
                     {index + 1}
                   </div>
-                  <p className="text-sm text-gray-700">{instruction}</p>
+                  <p className="text-base text-gray-700">{instruction}</p>
                 </div>
               ))}
             </div>

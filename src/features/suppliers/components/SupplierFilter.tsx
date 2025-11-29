@@ -135,7 +135,7 @@ export const SupplierFilter: React.FC<SupplierFilterProps> = ({
 
       {/* Estados */}
       <div className="space-y-3">
-        <Label className="text-md font-medium">Estados</Label>
+        <Label className="text-base font-medium">Estados</Label>
         <div className="grid grid-cols-2 gap-2">
           {STATES.map(state => (
             <div key={state.value} className="flex items-center space-x-2">
@@ -148,7 +148,7 @@ export const SupplierFilter: React.FC<SupplierFilterProps> = ({
               />
               <Label 
                 htmlFor={`state-${state.value}`}
-                className="text-md cursor-pointer"
+                className="text-base cursor-pointer"
               >
                 {state.label}
               </Label>
@@ -160,7 +160,7 @@ export const SupplierFilter: React.FC<SupplierFilterProps> = ({
       {/* Cidades */}
       {availableCities.length > 0 && (
         <div className="space-y-3">
-          <Label className="text-md font-medium">Cidades</Label>
+          <Label className="text-base font-medium">Cidades</Label>
           <div className="grid grid-cols-2 gap-2 max-h-32 overflow-y-auto">
             {availableCities.map(city => (
               <div key={city} className="flex items-center space-x-2">
@@ -173,7 +173,7 @@ export const SupplierFilter: React.FC<SupplierFilterProps> = ({
                 />
                 <Label 
                   htmlFor={`city-${city}`}
-                  className="text-md cursor-pointer"
+                  className="text-base cursor-pointer"
                 >
                   {city}
                 </Label>
@@ -185,7 +185,7 @@ export const SupplierFilter: React.FC<SupplierFilterProps> = ({
 
       {/* Avaliação Mínima */}
       <div className="space-y-3">
-        <Label className="text-md font-medium">
+        <Label className="text-base font-medium">
           Avaliação Mínima: {currentFilter.rating?.toFixed(1) || '0.0'} ⭐
         </Label>
         <Slider
@@ -200,7 +200,7 @@ export const SupplierFilter: React.FC<SupplierFilterProps> = ({
 
       {/* Categorias */}
       <div className="space-y-3">
-        <Label className="text-md font-medium">Categorias</Label>
+        <Label className="text-base font-medium">Categorias</Label>
         <div className="grid grid-cols-1 gap-2">
           {CATEGORIES.map(category => (
             <div key={category} className="flex items-center space-x-2">
@@ -213,7 +213,7 @@ export const SupplierFilter: React.FC<SupplierFilterProps> = ({
               />
               <Label 
                 htmlFor={`category-${category}`}
-                className="text-md cursor-pointer"
+                className="text-base cursor-pointer"
               >
                 {category}
               </Label>
@@ -224,7 +224,7 @@ export const SupplierFilter: React.FC<SupplierFilterProps> = ({
 
       {/* Formas de Pagamento */}
       <div className="space-y-3">
-        <Label className="text-md font-medium">Formas de Pagamento</Label>
+        <Label className="text-base font-medium">Formas de Pagamento</Label>
         <div className="grid grid-cols-2 gap-2">
           {PAYMENT_METHODS.map(method => (
             <div key={method.value} className="flex items-center space-x-2">
@@ -237,7 +237,7 @@ export const SupplierFilter: React.FC<SupplierFilterProps> = ({
               />
               <Label 
                 htmlFor={`payment-${method.value}`}
-                className="text-md cursor-pointer"
+                className="text-base cursor-pointer"
               >
                 {method.label}
               </Label>
@@ -248,7 +248,7 @@ export const SupplierFilter: React.FC<SupplierFilterProps> = ({
 
       {/* Opções Especiais */}
       <div className="space-y-3">
-        <Label className="text-md font-medium">Opções Especiais</Label>
+        <Label className="text-base font-medium">Opções Especiais</Label>
         <div className="space-y-2">
           <div className="flex items-center space-x-2">
             <Checkbox
@@ -258,7 +258,7 @@ export const SupplierFilter: React.FC<SupplierFilterProps> = ({
                 onFilterChange({ verified: checked ? true : undefined })
               }
             />
-            <Label htmlFor="verified" className="text-md cursor-pointer">
+            <Label htmlFor="verified" className="text-base cursor-pointer">
               Apenas Verificados
             </Label>
           </div>
@@ -271,7 +271,7 @@ export const SupplierFilter: React.FC<SupplierFilterProps> = ({
                 onFilterChange({ featured: checked ? true : undefined })
               }
             />
-            <Label htmlFor="featured" className="text-md cursor-pointer">
+            <Label htmlFor="featured" className="text-base cursor-pointer">
               Apenas em Destaque
             </Label>
           </div>
@@ -284,7 +284,7 @@ export const SupplierFilter: React.FC<SupplierFilterProps> = ({
                 onFilterChange({ requiresCNPJ: checked ? false : undefined })
               }
             />
-            <Label htmlFor="no-cnpj" className="text-md cursor-pointer">
+            <Label htmlFor="no-cnpj" className="text-base cursor-pointer">
               Não Requer CNPJ
             </Label>
           </div>
@@ -294,34 +294,34 @@ export const SupplierFilter: React.FC<SupplierFilterProps> = ({
       {/* Resumo dos Filtros Ativos */}
       {Object.keys(currentFilter).length > 0 && (
         <div className="border-t pt-4">
-          <Label className="text-md font-medium mb-2 block">Filtros Ativos:</Label>
+          <Label className="text-base font-medium mb-2 block">Filtros Ativos:</Label>
           <div className="flex flex-wrap gap-1">
             {currentFilter.states?.map(state => (
-              <Badge key={state} variant="secondary" className="text-xs">
+              <Badge key={state} variant="secondary" className="text-sm">
                 {STATES.find(s => s.value === state)?.label}
               </Badge>
             ))}
             {currentFilter.cities?.map(city => (
-              <Badge key={city} variant="secondary" className="text-xs">
+              <Badge key={city} variant="secondary" className="text-sm">
                 {city}
               </Badge>
             ))}
             {currentFilter.categories?.map(category => (
-              <Badge key={category} variant="secondary" className="text-xs">
+              <Badge key={category} variant="secondary" className="text-sm">
                 {category}
               </Badge>
             ))}
             {currentFilter.verified && (
-              <Badge variant="secondary" className="text-xs">Verificados</Badge>
+              <Badge variant="secondary" className="text-sm">Verificados</Badge>
             )}
             {currentFilter.featured && (
-              <Badge variant="secondary" className="text-xs">Destaque</Badge>
+              <Badge variant="secondary" className="text-sm">Destaque</Badge>
             )}
             {currentFilter.requiresCNPJ === false && (
-              <Badge variant="secondary" className="text-xs">Sem CNPJ</Badge>
+              <Badge variant="secondary" className="text-sm">Sem CNPJ</Badge>
             )}
             {currentFilter.rating && (
-              <Badge variant="secondary" className="text-xs">
+              <Badge variant="secondary" className="text-sm">
                 ⭐ {currentFilter.rating.toFixed(1)}+
               </Badge>
             )}

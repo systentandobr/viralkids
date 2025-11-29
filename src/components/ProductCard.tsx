@@ -70,17 +70,17 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           {/* Badges */}
           <div className="absolute top-2 left-2 flex flex-col gap-1">
             {product.isNew && (
-              <Badge className="bg-green-500 text-white text-xs">
+              <Badge className="bg-green-500 text-white text-sm">
                 Novo
               </Badge>
             )}
             {product.isFeatured && (
-              <Badge variant="outline" className="text-xs">
+              <Badge variant="outline" className="text-sm">
                 Destaque
               </Badge>
             )}
             {product.discount && (
-              <Badge variant="destructive" className="text-xs">
+              <Badge variant="destructive" className="text-sm">
                 -{product.discount}%
               </Badge>
             )}
@@ -91,12 +91,12 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
       <CardContent className="p-4 pt-2">
         <div className="space-y-2">
           {/* Brand */}
-          <Badge variant="secondary" className="text-xs">
+          <Badge variant="secondary" className="text-sm">
             {product.brand}
           </Badge>
           
           {/* Title */}
-          <CardTitle className="text-sm font-medium line-clamp-2">
+          <CardTitle className="text-base font-medium line-clamp-2">
             {product.name}
           </CardTitle>
           
@@ -114,7 +114,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
                 />
               ))}
             </div>
-            <span className="text-xs text-gray-600">
+            <span className="text-sm text-gray-600">
               ({product.reviewCount})
             </span>
           </div>
@@ -125,7 +125,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
               {formatPrice(product.price)}
             </span>
             {product.originalPrice && (
-              <span className="text-sm text-gray-500 line-through">
+              <span className="text-base text-gray-500 line-through">
                 {formatPrice(product.originalPrice)}
               </span>
             )}

@@ -35,7 +35,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart, isInCar
           </Badge>
         </div>
         
-        <p className="text-muted-foreground text-sm line-clamp-2 mb-3">
+        <p className="text-muted-foreground text-base line-clamp-2 mb-3">
           {product.description}
         </p>
         
@@ -45,7 +45,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart, isInCar
               R$ {product.price.toFixed(2)}
             </span>
             {product.originalPrice && product.originalPrice > product.price && (
-              <span className="text-sm text-muted-foreground line-through">
+              <span className="text-base text-muted-foreground line-through">
                 R$ {product.originalPrice.toFixed(2)}
               </span>
             )}
@@ -174,7 +174,7 @@ export const ProductList: React.FC = () => {
       </div>
 
       {/* Informações de cache */}
-      <div className="text-center text-sm text-muted-foreground">
+      <div className="text-center text-base text-muted-foreground">
         <p>
           Dados carregados do servidor e sincronizados automaticamente
         </p>

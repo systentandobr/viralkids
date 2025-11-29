@@ -221,7 +221,7 @@ const ProductDetailPage: React.FC = () => {
         
         <main className="container mx-auto px-4 py-8">
           {/* Breadcrumb */}
-          <nav className="flex items-center space-x-2 text-sm text-gray-600 mb-6">
+          <nav className="flex items-center space-x-2 text-base text-gray-600 mb-6">
             <button onClick={() => navigate('/')} className="hover:text-primary">
               Início
             </button>
@@ -261,17 +261,17 @@ const ProductDetailPage: React.FC = () => {
               {/* Header do produto */}
               <div>
                 <div className="flex items-center gap-2 mb-2">
-                  <Badge variant="secondary" className="text-xs">
+                  <Badge variant="secondary" className="text-sm">
                     {product.brand}
                   </Badge>
                   {product.isNew && (
-                    <Badge className="text-xs bg-green-500">
+                    <Badge className="text-sm bg-green-500">
                       <Zap className="h-3 w-3 mr-1" />
                       Novo
                     </Badge>
                   )}
                   {product.isFeatured && (
-                    <Badge variant="outline" className="text-xs">
+                    <Badge variant="outline" className="text-sm">
                       <Award className="h-3 w-3 mr-1" />
                       Destaque
                     </Badge>
@@ -297,12 +297,12 @@ const ProductDetailPage: React.FC = () => {
                         />
                       ))}
                     </div>
-                    <span className="text-sm text-gray-600">
+                    <span className="text-base text-gray-600">
                       {product.rating} ({product.reviewCount} avaliações)
                     </span>
                   </div>
                   
-                  <div className="flex items-center gap-1 text-sm text-gray-600">
+                  <div className="flex items-center gap-1 text-base text-gray-600">
                     <MapPin className="h-4 w-4" />
                     {product.franchiseLocation}
                   </div>
@@ -320,14 +320,14 @@ const ProductDetailPage: React.FC = () => {
                       </span>
                     )}
                     {product.discount && (
-                      <Badge variant="destructive" className="text-sm">
+                      <Badge variant="destructive" className="text-base">
                         -{product.discount}%
                       </Badge>
                     )}
                   </div>
                   
                   {currentPrice !== product.price && (
-                    <div className="text-sm text-gray-600">
+                    <div className="text-base text-gray-600">
                       Preço base: {formatPrice(product.price)} + variações
                     </div>
                   )}
@@ -366,7 +366,7 @@ const ProductDetailPage: React.FC = () => {
                     </Button>
                   </div>
                   
-                  <div className="text-sm text-gray-600">
+                  <div className="text-base text-gray-600">
                     {availableStock} unidades disponíveis
                   </div>
                 </div>
@@ -376,17 +376,17 @@ const ProductDetailPage: React.FC = () => {
                   {!allRequiredSelected ? (
                     <div className="flex items-center gap-2 text-amber-600">
                       <AlertTriangle className="h-4 w-4" />
-                      <span className="text-sm">Selecione todas as opções para continuar</span>
+                      <span className="text-base">Selecione todas as opções para continuar</span>
                     </div>
                   ) : !isAvailable ? (
                     <div className="flex items-center gap-2 text-red-600">
                       <AlertTriangle className="h-4 w-4" />
-                      <span className="text-sm">Combinação indisponível</span>
+                      <span className="text-base">Combinação indisponível</span>
                     </div>
                   ) : (
                     <div className="flex items-center gap-2 text-green-600">
                       <CheckCircle className="h-4 w-4" />
-                      <span className="text-sm">Disponível para entrega</span>
+                      <span className="text-base">Disponível para entrega</span>
                     </div>
                   )}
                 </div>
@@ -429,28 +429,28 @@ const ProductDetailPage: React.FC = () => {
                         <div className="absolute top-full left-0 mt-2 bg-white border rounded-lg shadow-lg p-2 z-10 min-w-[200px]">
                           <button
                             onClick={() => handleShare('whatsapp')}
-                            className="flex items-center gap-2 w-full p-2 text-sm hover:bg-gray-50 rounded"
+                            className="flex items-center gap-2 w-full p-2 text-base hover:bg-gray-50 rounded"
                           >
                             <MessageCircle className="h-4 w-4 text-green-600" />
                             WhatsApp
                           </button>
                           <button
                             onClick={() => handleShare('facebook')}
-                            className="flex items-center gap-2 w-full p-2 text-sm hover:bg-gray-50 rounded"
+                            className="flex items-center gap-2 w-full p-2 text-base hover:bg-gray-50 rounded"
                           >
                             <Facebook className="h-4 w-4 text-blue-600" />
                             Facebook
                           </button>
                           <button
                             onClick={() => handleShare('twitter')}
-                            className="flex items-center gap-2 w-full p-2 text-sm hover:bg-gray-50 rounded"
+                            className="flex items-center gap-2 w-full p-2 text-base hover:bg-gray-50 rounded"
                           >
                             <Twitter className="h-4 w-4 text-blue-400" />
                             Twitter
                           </button>
                           <button
                             onClick={() => handleShare('copy')}
-                            className="flex items-center gap-2 w-full p-2 text-sm hover:bg-gray-50 rounded"
+                            className="flex items-center gap-2 w-full p-2 text-base hover:bg-gray-50 rounded"
                           >
                             <Copy className="h-4 w-4 text-gray-600" />
                             Copiar Link
@@ -468,10 +468,10 @@ const ProductDetailPage: React.FC = () => {
                   <div className="flex items-center gap-3">
                     <Truck className="h-5 w-5 text-green-600" />
                     <div>
-                      <div className="font-medium text-sm">
+                      <div className="font-medium text-base">
                         {product.shipping.freeShipping ? 'Frete Grátis' : 'Frete Calculado'}
                       </div>
-                      <div className="text-xs text-gray-600">
+                      <div className="text-sm text-gray-600">
                         {product.shipping.freeShipping && product.shipping.minOrderValue && 
                           `Em compras acima de ${formatPrice(product.shipping.minOrderValue)}`}
                       </div>
@@ -480,21 +480,21 @@ const ProductDetailPage: React.FC = () => {
                   
                   <div className="flex items-center gap-3">
                     <Clock className="h-5 w-5 text-blue-600" />
-                    <div className="text-sm">
+                    <div className="text-base">
                       Entrega em até {product.shipping.estimatedDays} dias úteis
                     </div>
                   </div>
                   
                   <div className="flex items-center gap-3">
                     <RotateCcw className="h-5 w-5 text-purple-600" />
-                    <div className="text-sm">
+                    <div className="text-base">
                       Troca grátis em {product.warranty}
                     </div>
                   </div>
                   
                   <div className="flex items-center gap-3">
                     <Shield className="h-5 w-5 text-gray-600" />
-                    <div className="text-sm">
+                    <div className="text-base">
                       Compra 100% segura e protegida
                     </div>
                   </div>
@@ -525,7 +525,7 @@ const ProductDetailPage: React.FC = () => {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
                     <div>
                       <h4 className="font-medium text-gray-900 mb-3">Materiais</h4>
-                      <ul className="space-y-1 text-sm text-gray-600">
+                      <ul className="space-y-1 text-base text-gray-600">
                         {product.materials.map((material, index) => (
                           <li key={index}>• {material}</li>
                         ))}
@@ -534,7 +534,7 @@ const ProductDetailPage: React.FC = () => {
                      
                     <div>
                       <h4 className="font-medium text-gray-900 mb-3">Cuidados</h4>
-                      <ul className="space-y-1 text-sm text-gray-600">
+                      <ul className="space-y-1 text-base text-gray-600">
                         {product.careInstructions.map((instruction, index) => (
                           <li key={index}>• {instruction}</li>
                         ))}

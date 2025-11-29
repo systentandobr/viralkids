@@ -249,7 +249,7 @@ export const AffiliateProductForm = ({
         </div>
         <div>
           <h2 className="text-xl font-bold">Cadastrar Produto Afiliado</h2>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-base text-muted-foreground">
             Adicione produtos de marketplaces para processamento automático
           </p>
         </div>
@@ -287,7 +287,7 @@ export const AffiliateProductForm = ({
             </SelectTrigger>
             <SelectContent>
               {categories.length === 0 ? (
-                <div className="px-2 py-1.5 text-sm text-muted-foreground">
+                <div className="px-2 py-1.5 text-base text-muted-foreground">
                   Nenhuma categoria disponível
                 </div>
               ) : (
@@ -305,7 +305,7 @@ export const AffiliateProductForm = ({
             </SelectContent>
           </Select>
           {selectedCategory && (
-            <p className="text-sm text-muted-foreground">
+            <p className="text-base text-muted-foreground">
               {selectedCategory.description || "Sem descrição"}
             </p>
           )}
@@ -335,7 +335,7 @@ export const AffiliateProductForm = ({
               </a>
             )}
           </div>
-          <p className="text-xs text-muted-foreground">
+          <p className="text-sm text-muted-foreground">
             Suporta: Shopee, Amazon, Magalu, Mercado Livre, Americanas, Casas Bahia
           </p>
         </div>
@@ -389,8 +389,8 @@ export const AffiliateProductForm = ({
 
         {/* Informações */}
         <div className="p-4 bg-muted/50 rounded-lg space-y-2">
-          <p className="text-sm font-medium">Como funciona:</p>
-          <ul className="text-sm text-muted-foreground space-y-1 list-disc list-inside">
+          <p className="text-base font-medium">Como funciona:</p>
+          <ul className="text-base text-muted-foreground space-y-1 list-disc list-inside">
             <li>O produto será adicionado à fila de processamento</li>
             <li>Um agente automatizado coletará informações do link</li>
             <li>Dados como imagens, preço e descrição serão extraídos</li>

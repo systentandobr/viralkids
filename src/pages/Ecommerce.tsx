@@ -167,7 +167,7 @@ const Ecommerce = () => {
         {/* Exclusive 3D Products Section */}
         <div className="mb-12">
           <div className="text-center mb-8">
-            <Badge className="bg-gradient-to-r from-bronze to-gold text-white mb-4 px-4 py-2 text-md font-medium">
+            <Badge className="bg-gradient-to-r from-bronze to-gold text-white mb-4 px-4 py-2 text-base font-medium">
               ⭐ Produtos Exclusivos
             </Badge>
             <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-2">
@@ -208,7 +208,7 @@ const Ecommerce = () => {
               </h2>
             </div>
             
-            <div className="hidden md:flex items-center gap-2 text-md text-muted-foreground">
+            <div className="hidden md:flex items-center gap-2 text-base text-muted-foreground">
               <span>8 produto(s) encontrado(s)</span>
               <div className="flex gap-1">
                 <div className="w-2 h-2 bg-bronze rounded-full"></div>

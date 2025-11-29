@@ -124,29 +124,29 @@ export const ProcessingStatusTab = ({
       {/* Métricas */}
       <div className="grid md:grid-cols-6 gap-4">
         <Card className="p-4">
-          <div className="text-sm text-muted-foreground">Total</div>
+          <div className="text-base text-muted-foreground">Total</div>
           <div className="text-2xl font-bold">{metrics.total}</div>
         </Card>
         <Card className="p-4 bg-yellow-500/10 border-yellow-500/20">
-          <div className="text-sm text-yellow-600 dark:text-yellow-400">Aguardando</div>
+          <div className="text-base text-yellow-600 dark:text-yellow-400">Aguardando</div>
           <div className="text-2xl font-bold text-yellow-600 dark:text-yellow-400">
             {metrics.pending}
           </div>
         </Card>
         <Card className="p-4 bg-neon-blue/10 border-neon-blue/20">
-          <div className="text-sm text-neon-blue">Processando</div>
+          <div className="text-base text-neon-blue">Processando</div>
           <div className="text-2xl font-bold text-neon-blue">{metrics.processing}</div>
         </Card>
         <Card className="p-4 bg-neon-green/10 border-neon-green/20">
-          <div className="text-sm text-neon-green">Concluídos</div>
+          <div className="text-base text-neon-green">Concluídos</div>
           <div className="text-2xl font-bold text-neon-green">{metrics.completed}</div>
         </Card>
         <Card className="p-4 bg-neon-red/10 border-neon-red/20">
-          <div className="text-sm text-neon-red">Falhas</div>
+          <div className="text-base text-neon-red">Falhas</div>
           <div className="text-2xl font-bold text-neon-red">{metrics.failed}</div>
         </Card>
         <Card className="p-4 bg-orange-500/10 border-orange-500/20">
-          <div className="text-sm text-orange-600 dark:text-orange-400">Tentando</div>
+          <div className="text-base text-orange-600 dark:text-orange-400">Tentando</div>
           <div className="text-2xl font-bold text-orange-600 dark:text-orange-400">
             {metrics.retrying}
           </div>
@@ -242,10 +242,10 @@ export const ProcessingStatusTab = ({
                       <Badge variant="outline">{product.retryCount}</Badge>
                     </TableCell>
                     <TableCell className="text-muted-foreground">
-                      <div className="text-sm">
+                      <div className="text-base">
                         <div>Criado: {new Date(product.createdAt).toLocaleDateString()}</div>
                         {product.processedAt && (
-                          <div className="text-xs">
+                          <div className="text-sm">
                             Processado: {new Date(product.processedAt).toLocaleDateString()}
                           </div>
                         )}

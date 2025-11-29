@@ -50,7 +50,7 @@ const FeaturedBanner = ({ scrollToSection }: FeaturedBannerProps) => {
           {/* Content */}
           <div className="space-y-6">
             <div className="space-y-4">
-              <Badge className="bg-gradient-to-r from-bronze to-gold text-white px-4 py-2 text-md font-medium">
+              <Badge className="bg-gradient-to-r from-bronze to-gold text-white px-4 py-2 text-base font-medium">
                 🎯 Impressão 3D Personalizada
               </Badge>
               
@@ -65,7 +65,7 @@ const FeaturedBanner = ({ scrollToSection }: FeaturedBannerProps) => {
             </div>
 
             {/* Trust Indicators */}
-            <div className="flex items-center space-x-2 text-md text-muted-foreground">
+            <div className="flex items-center space-x-2 text-base text-muted-foreground">
               <div className="flex space-x-1">
                 {[...Array(5)].map((_, i) => (
                   <Star key={i} className="h-4 w-4 fill-gold text-gold" />
@@ -102,15 +102,15 @@ const FeaturedBanner = ({ scrollToSection }: FeaturedBannerProps) => {
             <div className="grid grid-cols-3 gap-4 pt-6 border-t border-bronze/20">
               <div className="text-center">
                 <div className="text-xl font-bold text-bronze">100+</div>
-                <div className="text-xs text-muted-foreground">Produtos Únicos</div>
+                <div className="text-sm text-muted-foreground">Produtos Únicos</div>
               </div>
               <div className="text-center">
                 <div className="text-xl font-bold text-bronze">5+</div>
-                <div className="text-xs text-muted-foreground">Franquias</div>
+                <div className="text-sm text-muted-foreground">Franquias</div>
               </div>
               <div className="text-center">
                 <div className="text-xl font-bold text-bronze">100%</div>
-                <div className="text-xs text-muted-foreground">Personalizável</div>
+                <div className="text-sm text-muted-foreground">Personalizável</div>
               </div>
             </div>
           </div>
@@ -157,15 +157,15 @@ const FeaturedBanner = ({ scrollToSection }: FeaturedBannerProps) => {
             </div>
             
             {/* Floating Elements */}
-            <div className="absolute -top-4 -right-4 bg-gradient-hero text-white px-4 py-2 rounded-full text-md font-medium animate-pulse-glow">
+            <div className="absolute -top-4 -right-4 bg-gradient-hero text-white px-4 py-2 rounded-full text-base font-medium animate-pulse-glow">
               🎉 Novidades!
             </div>
             
-            <div className="absolute -bottom-4 -left-4 bg-white shadow-bronze px-4 py-2 rounded-full text-md font-medium">
+            <div className="absolute -bottom-4 -left-4 bg-white shadow-bronze px-4 py-2 rounded-full text-base font-medium">
               ✨ Entrega Rápida
             </div>
             
-            <div className="absolute top-1/2 -left-6 bg-gradient-to-r from-bronze to-gold text-white px-3 py-2 rounded-full text-xs font-medium transform -rotate-12">
+            <div className="absolute top-1/2 -left-6 bg-gradient-to-r from-bronze to-gold text-white px-3 py-2 rounded-full text-sm font-medium transform -rotate-12">
               Frete Grátis
             </div>
           </div>
