@@ -221,11 +221,13 @@ export function CreateCustomerForm({ onSuccess, onCancel }: CreateCustomerFormPr
             <div>
               <Label htmlFor='status'>Status</Label>
               <Select
-                value={watchedValues.status}
-                onValueChange={(value: any) => setValue('status', value)}
+                value={watchedValues.status || ''}
+                onValueChange={(value: any) => {
+                  setValue('status', value, { shouldValidate: true, shouldDirty: true });
+                }}
               >
                 <SelectTrigger id='status'>
-                  <SelectValue />
+                  <SelectValue placeholder='Selecione o status' />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value='novo'>Novo</SelectItem>

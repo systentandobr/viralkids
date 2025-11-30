@@ -46,7 +46,7 @@ export function CustomerSelector({
 
       <div>
         <Label htmlFor='customer-select'>Cliente *</Label>
-        <Select value={value || ''} onValueChange={onValueChange}>
+        <Select value={value || undefined} onValueChange={onValueChange}>
           <SelectTrigger id='customer-select'>
             <SelectValue placeholder='Selecione um cliente' />
           </SelectTrigger>

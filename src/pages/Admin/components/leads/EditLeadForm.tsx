@@ -247,7 +247,9 @@ export function EditLeadForm({ leadId, onSuccess, onCancel }: EditLeadFormProps)
               <Label htmlFor='source'>Origem do Lead</Label>
               <Select
                 value={watchedValues.source || ''}
-                onValueChange={(value) => setValue('source', value as LeadSource)}
+                onValueChange={(value) => {
+                  setValue('source', value as LeadSource, { shouldValidate: true, shouldDirty: true });
+                }}
               >
                 <SelectTrigger id='source'>
                   <SelectValue placeholder='Selecione a origem' />

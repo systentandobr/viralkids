@@ -111,6 +111,17 @@ export const FranchiseeDashboard: React.FC = () => {
     }
   };
 
+  // Helper para renderizar ícone da task (resolve problema de serialização do Zustand)
+  const renderTaskIcon = (task: any) => {
+    // Se o icon existe e é um componente válido, usa ele
+    if (task.icon && typeof task.icon === 'function') {
+      const IconComponent = task.icon;
+      return <IconComponent className="h-6 w-6" style={{ color: task.color }} />;
+    }
+    // Caso contrário, usa o ícone baseado na categoria
+    return getCategoryIcon(task.category);
+  };
+
   const getBadgeEmoji = (type: string) => {
     switch (type) {
       case 'bronze': return '🥉';
@@ -294,88 +305,60 @@ export const FranchiseeDashboard: React.FC = () => {
                 </div>
 
                 {/* Progress Cards */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <Card>
-                    <CardHeader className="pb-3">
-                      <CardTitle className="text-lg flex items-center space-x-2">
-                        <Trophy className="h-5 w-5 text-yellow-500" />
-                        <span>Nível Atual</span>
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="space-y-2">
-                        <div className="text-3xl font-bold text-yellow-600">
-                          Nível {level}
-                        </div>
-                        <div className="text-base text-muted-foreground">
-                          {nextLevelPoints > 0 ? (
-                            <>Faltam {nextLevelPoints} pontos para o próximo nível</>
-                          ) : (
-                            <>Você atingiu o nível máximo!</>
-                          )}
-                        </div>
-                        {nextLevelPoints > 0 && (
-                          <Progress 
-                            value={(totalPoints / (totalPoints + nextLevelPoints)) * 100} 
-                            className="h-2"
-                          />
-                        )}
-                      </div>
-                    </CardContent>
-                  </Card>
+                {/* Stats Cards */}
+              <div className="grid md:grid-cols-3 gap-6 mb-8">
+                {/* Nível Atual */}
+                <Card className="p-6 bg-gradient-to-br from-amber-500/10 to-orange-500/10 border-amber-500/20">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center">
+                      <Trophy className="h-6 w-6 text-white" />
+                    </div>
+                    <div>
+                      <p className="text-sm text-muted-foreground">Nível Atual</p>
+                      <h2 className="text-3xl font-bold text-amber-600 dark:text-amber-400">Nível 1</h2>
+                    </div>
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    Faltam <span className="font-semibold text-foreground">100 pontos</span> para o próximo nível
+                  </p>
+                  <Progress value={0} className="mt-3 h-2" />
+                </Card>
 
-                  <Card>
-                    <CardHeader className="pb-3">
-                      <CardTitle className="text-lg flex items-center space-x-2">
-                        <Target className="h-5 w-5 text-blue-500" />
-                        <span>Progresso Geral</span>
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="space-y-2">
-                        <div className="text-3xl font-bold text-blue-600">
-                          {progress.toFixed(1)}%
-                        </div>
-                        <div className="text-base text-muted-foreground">
-                          {completedTasks.length} de {completedTasks.length + tasks.length} tarefas concluídas
-                        </div>
-                        <Progress value={progress} className="h-2" />
-                      </div>
-                    </CardContent>
-                  </Card>
+                {/* Progresso Geral */}
+                <Card className="p-6 bg-gradient-to-br from-blue-500/10 to-cyan-500/10 border-blue-500/20">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center">
+                      <Target className="h-6 w-6 text-white" />
+                    </div>
+                    <div>
+                      <p className="text-sm text-muted-foreground">Progresso Geral</p>
+                      <h2 className="text-3xl font-bold text-blue-600 dark:text-blue-400">0.0%</h2>
+                    </div>
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    <span className="font-semibold text-foreground">0 de 5</span> tarefas concluídas
+                  </p>
+                  <Progress value={0} className="mt-3 h-2" />
+                </Card>
 
-                  <Card>
-                    <CardHeader className="pb-3">
-                      <CardTitle className="text-lg flex items-center space-x-2">
-                        <Award className="h-5 w-5 text-purple-500" />
-                        <span>Conquistas</span>
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="space-y-2">
-                        <div className="text-3xl font-bold text-purple-600">
-                          {badges.length}
-                        </div>
-                        <div className="text-base text-muted-foreground">
-                          Badges conquistadas
-                        </div>
-                        <div className="flex space-x-1">
-                          {badges.slice(0, 3).map((badge) => (
-                            <span key={badge.id} className="text-lg" title={badge.name}>
-                              {getBadgeEmoji(badge.type)}
-                            </span>
-                          ))}
-                          {badges.length > 3 && (
-                            <span className="text-base text-muted-foreground">
-                              +{badges.length - 3}
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </div>
+                {/* Conquistas */}
+                <Card className="p-6 bg-gradient-to-br from-purple-500/10 to-pink-500/10 border-purple-500/20">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
+                      <Award className="h-6 w-6 text-white" />
+                    </div>
+                    <div>
+                      <p className="text-sm text-muted-foreground">Conquistas</p>
+                      <h2 className="text-3xl font-bold text-purple-600 dark:text-purple-400">0</h2>
+                    </div>
+                  </div>
+                  <p className="text-sm text-muted-foreground">Badges conquistadas</p>
+                </Card>
               </div>
+                
+              </div>
+
+              
 
               {/* Recent Badges */}
               {badges.length > 0 && (
@@ -413,55 +396,72 @@ export const FranchiseeDashboard: React.FC = () => {
 
               {/* Next Tasks */}
               {availableTasks.length > 0 && (
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center space-x-2">
-                      <Clock className="h-5 w-5" />
-                      <span>Próximas Tarefas</span>
-                    </CardTitle>
-                    <CardDescription>
-                      Continue sua jornada completando estas tarefas
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
+                  <Card className="p-6">
+                    <div className="flex items-center gap-3 mb-6">
+                      <Clock className="h-6 w-6 text-primary" />
+                      <div>
+                        <h2 className="text-2xl font-bold">Próximas Tarefas</h2>
+                        <p className="text-sm text-muted-foreground">
+                          Continue sua jornada completando estas tarefas
+                        </p>
+                      </div>
+                    </div>
+
                     <div className="space-y-4">
-                      {availableTasks.slice(0, 3).map((task) => (
-                        <div key={task.id} className="flex items-center justify-between p-4 border rounded-lg">
-                          <div className="flex items-start space-x-3">
-                            <div className="text-blue-600">
-                              {getCategoryIcon(task.category)}
+                      {tasks.map((task) => (
+                        <Card
+                          key={task.id}
+                          className="p-5 hover:shadow-lg transition-all duration-300 border-l-4"
+                          style={{ borderLeftColor: task.color }}
+                        >
+                          <div className="flex items-start gap-4">
+                            <div
+                              className="w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0"
+                              style={{ backgroundColor: `${task.color}20` }}
+                            >
+                              {renderTaskIcon(task)}
                             </div>
-                            <div className="flex-1">
-                              <div className="font-medium">{task.title}</div>
-                              <div className="text-base text-muted-foreground mb-2">
+                            
+                            <div className="flex-1 min-w-0">
+                              <h3 className="font-semibold text-lg mb-1">{task.title}</h3>
+                              <p className="text-sm text-muted-foreground mb-3">
                                 {task.description}
-                              </div>
-                              <div className="flex items-center space-x-2">
-                                <Badge className={getDifficultyColor(task.difficulty)}>
-                                  {task.difficulty}
+                              </p>
+                              <div className="flex items-center gap-3">
+                                <Badge
+                                  variant="secondary"
+                                  className={
+                                    task.difficulty === "easy"
+                                      ? "bg-green-500/10 text-green-600 dark:text-green-400 border-green-500/20"
+                                      : task.difficulty === "medium"
+                                      ? "bg-yellow-500/10 text-yellow-600 dark:text-yellow-400 border-yellow-500/20"
+                                      : "bg-red-500/10 text-red-600 dark:text-red-400 border-red-500/20"
+                                  }
+                                >
+                                  {task.difficulty === "easy"
+                                    ? "Fácil"
+                                    : task.difficulty === "medium"
+                                    ? "Médio"
+                                    : "Difícil"}
                                 </Badge>
-                                <Badge variant="outline">
+                                <Badge
+                                  variant="secondary"
+                                  className="bg-primary/10 text-primary border-primary/20"
+                                >
                                   +{task.points} pontos
                                 </Badge>
                               </div>
                             </div>
+
+                            <Button size="lg" className="bg-gradient-to-r from-primary to-accent hover:opacity-90 transition-opacity flex-shrink-0">
+                              <TrendingUp className="h-4 w-4 mr-2" />
+                              Iniciar
+                            </Button>
                           </div>
-                          <Button onClick={() => handleCompleteTask(task.id)}>
-                            <Play className="h-4 w-4 mr-2" />
-                            Iniciar
-                          </Button>
-                        </div>
+                        </Card>
                       ))}
                     </div>
-                    {availableTasks.length > 3 && (
-                      <div className="text-center mt-4">
-                        <Button variant="outline" onClick={() => setActiveTab('tasks')}>
-                          Ver Todas as Tarefas ({availableTasks.length})
-                        </Button>
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
+                  </Card>
               )}
             </div>
           )}

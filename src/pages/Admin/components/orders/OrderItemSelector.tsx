@@ -108,7 +108,7 @@ export function OrderItemSelector({ items, onItemsChange }: OrderItemSelectorPro
             <div className='grid grid-cols-3 gap-4'>
               <div>
                 <Label htmlFor='product-select'>Produto *</Label>
-                <Select value={selectedProductId} onValueChange={setSelectedProductId}>
+                <Select value={selectedProductId || ''} onValueChange={setSelectedProductId}>
                   <SelectTrigger id='product-select'>
                     <SelectValue placeholder='Selecione um produto' />
                   </SelectTrigger>

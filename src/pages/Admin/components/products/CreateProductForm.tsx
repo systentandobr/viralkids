@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -83,6 +83,7 @@ export function CreateProductForm({ onSuccess, onCancel }: CreateProductFormProp
   const [featureInput, setFeatureInput] = useState('');
   const [specKey, setSpecKey] = useState('');
   const [specValue, setSpecValue] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState<string>(''); // Estado local para categoria
   const { toast } = useToast();
 
   // Buscar categorias
@@ -99,13 +100,15 @@ export function CreateProductForm({ onSuccess, onCancel }: CreateProductFormProp
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, ...formState },
     setValue,
     watch,
     trigger,
+    getValues,
   } = useForm<ProductFormData>({
     resolver: zodResolver(productSchema),
     defaultValues: {
+      category: '',
       availability: 'in_stock',
       images: [],
       tags: [],
@@ -118,6 +121,30 @@ export function CreateProductForm({ onSuccess, onCancel }: CreateProductFormProp
 
   const watchedValues = watch();
   const progress = (currentStep / STEPS.length) * 100;
+  
+  // Sincronizar estado local com o valor do formulário quando mudar externamente
+  useEffect(() => {
+    if (watchedValues.category && watchedValues.category !== selectedCategory) {
+      setSelectedCategory(watchedValues.category);
+    }
+  }, [watchedValues.category, selectedCategory]);
+
+  // Debug: Monitorar mudanças no campo category
+  useEffect(() => {
+    const formStateData = {
+      isValid: formState.isValid,
+      isDirty: formState.isDirty,
+      touchedFields: formState.touchedFields,
+    };
+    console.log('[CreateProductForm] Category value changed:', {
+      category: watchedValues.category,
+      categoryType: typeof watchedValues.category,
+      categoryLength: watchedValues.category?.length,
+      errors: errors.category,
+      formState: formStateData,
+      getValuesCategory: getValues('category'),
+    });
+  }, [watchedValues.category, errors.category, formState.isValid, formState.isDirty, formState.touchedFields, getValues]);
 
   // Validação por step
   const validateStep = async (step: number): Promise<boolean> => {
@@ -139,7 +166,26 @@ export function CreateProductForm({ onSuccess, onCancel }: CreateProductFormProp
         return true;
     }
 
+    console.log('[CreateProductForm] validateStep:', {
+      step,
+      fieldsToValidate,
+      currentValues: getValues(),
+      categoryValue: getValues('category'),
+      categoryError: errors.category,
+      allErrors: errors,
+    });
+
     const result = await trigger(fieldsToValidate);
+    
+    console.log('[CreateProductForm] Validation result:', {
+      step,
+      isValid: result,
+      errors: errors,
+      categoryError: errors.category,
+      categoryValue: getValues('category'),
+      categoryWatched: watchedValues.category,
+    });
+
     return result;
   };
 
@@ -239,7 +285,13 @@ export function CreateProductForm({ onSuccess, onCancel }: CreateProductFormProp
         availability: data.availability,
         stockQuantity: data.stockQuantity,
         weight: data.weight,
-        dimensions: data.dimensions,
+        dimensions: data.dimensions && data.dimensions.length && data.dimensions.width && data.dimensions.height
+          ? {
+              length: data.dimensions.length,
+              width: data.dimensions.width,
+              height: data.dimensions.height,
+            }
+          : undefined,
         isPersonalizable: data.isPersonalizable,
       };
 
@@ -315,19 +367,35 @@ export function CreateProductForm({ onSuccess, onCancel }: CreateProductFormProp
             <div className='grid grid-cols-2 gap-4'>
               <div>
                 <Label htmlFor='category'>Categoria *</Label>
+                {/* Campo hidden para registrar o campo no react-hook-form */}
+                <input
+                  type='text'
+                  id='category'
+                  {...register('category')}
+                  value={selectedCategory}
+                />
                 <Select
-                  value={watchedValues.category || ''}
-                  onValueChange={(value) => setValue('category', value)}
+                  value={watchedValues.category || selectedCategory || undefined}
+                  onValueChange={(value) => {
+                    setValue('category', selectedCategory, { shouldValidate: true, shouldDirty: true });
+                    trigger('category');
+                  }}
                 >
-                  <SelectTrigger id='category'>
+                  <SelectTrigger id='category' className={errors.category ? 'border-destructive' : ''}>
                     <SelectValue placeholder='Selecione uma categoria' />
                   </SelectTrigger>
                   <SelectContent>
-                    {categories.map((cat) => (
-                      <SelectItem key={cat.id} value={cat.id}>
-                        {cat.name}
-                      </SelectItem>
-                    ))}
+                    {categories.length === 0 ? (
+                      <div className='px-2 py-1.5 text-sm text-muted-foreground'>
+                        Nenhuma categoria disponível
+                      </div>
+                    ) : (
+                      categories.map((cat) => (
+                        <SelectItem key={cat.id} value={cat.id}>
+                          {cat.name}
+                        </SelectItem>
+                      ))
+                    )}
                   </SelectContent>
                 </Select>
                 {errors.category && (
@@ -410,11 +478,14 @@ export function CreateProductForm({ onSuccess, onCancel }: CreateProductFormProp
               <div>
                 <Label htmlFor='availability'>Disponibilidade *</Label>
                 <Select
-                  value={watchedValues.availability}
-                  onValueChange={(value: any) => setValue('availability', value)}
+                  value={watchedValues.availability || 'in_stock'}
+                  onValueChange={(value: any) => {
+                    setValue('availability', value, { shouldValidate: true, shouldDirty: true });
+                    trigger('availability');
+                  }}
                 >
-                  <SelectTrigger id='availability'>
-                    <SelectValue />
+                  <SelectTrigger id='availability' className={errors.availability ? 'border-destructive' : ''}>
+                    <SelectValue placeholder='Selecione a disponibilidade' />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value='in_stock'>Em Estoque</SelectItem>
@@ -422,6 +493,9 @@ export function CreateProductForm({ onSuccess, onCancel }: CreateProductFormProp
                     <SelectItem value='pre_order'>Pré-venda</SelectItem>
                   </SelectContent>
                 </Select>
+                {errors.availability && (
+                  <p className='text-base text-destructive mt-1'>{errors.availability.message}</p>
+                )}
               </div>
             </div>
           </div>

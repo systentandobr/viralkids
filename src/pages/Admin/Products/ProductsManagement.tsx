@@ -288,7 +288,7 @@ const ProductsManagement = () => {
             isLoading={isLoadingCategories}
           />
           <Button 
-            className="bg-gradient-to-r from-neon-cyan to-neon-blue hover:opacity-90 transition-opacity shadow-neon"
+            className="bg-gradient-to-r from-purple-500 to-pink-500 hover:opacity-90 transition-opacity shadow-neon"
             onClick={() => setIsCreateModalOpen(true)}
           >
             <Plus className="h-4 w-4 mr-2" />

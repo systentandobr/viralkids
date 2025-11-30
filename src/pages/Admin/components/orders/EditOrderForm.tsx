@@ -119,11 +119,13 @@ export function EditOrderForm({ orderId, onSuccess, onCancel }: EditOrderFormPro
             <div>
               <Label htmlFor='status'>Status do Pedido *</Label>
               <Select
-                value={watch('status')}
-                onValueChange={(value) => setValue('status', value as EditOrderFormData['status'])}
+                value={watch('status') || ''}
+                onValueChange={(value) => {
+                  setValue('status', value as EditOrderFormData['status'], { shouldValidate: true, shouldDirty: true });
+                }}
               >
                 <SelectTrigger id='status'>
-                  <SelectValue />
+                  <SelectValue placeholder='Selecione o status' />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value='processando'>Processando</SelectItem>

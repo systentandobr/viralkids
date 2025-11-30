@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import React from 'react';
+import { ChartLine, LucideIcon, UserRound, Users } from 'lucide-react';
 
 // Tipos
 export interface FranchiseeTask {
@@ -14,6 +15,8 @@ export interface FranchiseeTask {
   status: 'pending' | 'completed' | 'failed';
   dependencies?: string[];
   instructions: string;
+  color: string;
+  icon: LucideIcon;
   resources?: Array<{
     id: string;
     type: 'video' | 'document' | 'template' | 'link';
@@ -110,7 +113,9 @@ const DEFAULT_TASKS: FranchiseeTask[] = [
         url: '/guides/profile-setup.mp4',
         description: 'Vídeo explicativo sobre como preencher seu perfil'
       }
-    ]
+    ],
+    color: "hsl(110 100% 54%)",
+    icon: UserRound,
   },
   {
     id: 'create-instagram',
@@ -143,7 +148,9 @@ const DEFAULT_TASKS: FranchiseeTask[] = [
       type: 'link',
       required: true,
       instructions: 'Cole o link do seu perfil Instagram criado'
-    }
+    },
+    icon: UserRound,
+    color: "hsl(217 100% 50%)",
   },
   {
     id: 'follow-suppliers',
@@ -164,7 +171,9 @@ const DEFAULT_TASKS: FranchiseeTask[] = [
         url: '/suppliers/instagram-list.pdf',
         description: 'Lista completa dos fornecedores parceiros'
       }
-    ]
+    ],
+    icon: Users,
+    color: "hsl(110 100% 54%)"
   },
   {
     id: 'first-post',
@@ -197,7 +206,9 @@ const DEFAULT_TASKS: FranchiseeTask[] = [
       type: 'link',
       required: true,
       instructions: 'Cole o link do seu primeiro post'
-    }
+    },
+    icon: Users,
+    color: "hsl(25 95% 53%)"
   },
   {
     id: 'market-research',
@@ -224,7 +235,9 @@ const DEFAULT_TASKS: FranchiseeTask[] = [
       required: true,
       instructions: 'Faça upload da planilha preenchida',
       acceptedFormats: ['.xlsx', '.pdf']
-    }
+    },
+    icon: ChartLine,
+    color: "hsl(217 100% 50%)"
   }
 ];
 
@@ -271,6 +284,29 @@ export const useGameificationStore = create<GameificationStore>()(
               }
             }
           }));
+        } else {
+          // Restaurar ícones após carregar do localStorage (ícones não são serializáveis)
+          const existingData = gameificationData[franchiseeId];
+          if (existingData.tasks) {
+            const restoredTasks = existingData.tasks.map((task: any) => {
+              // Encontrar o ícone correspondente em DEFAULT_TASKS
+              const defaultTask = DEFAULT_TASKS.find(t => t.id === task.id);
+              return {
+                ...task,
+                icon: defaultTask?.icon || task.icon
+              };
+            });
+            
+            set(state => ({
+              gameificationData: {
+                ...state.gameificationData,
+                [franchiseeId]: {
+                  ...existingData,
+                  tasks: restoredTasks
+                }
+              }
+            }));
+          }
         }
       },
 
