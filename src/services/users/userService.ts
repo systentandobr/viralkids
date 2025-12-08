@@ -9,6 +9,21 @@ export interface User {
   role: string;
   status: 'active' | 'inactive' | 'pending' | 'suspended';
   unitId?: string;
+  roles?: Array<{
+    id?: string;
+    name: string;
+    description?: string;
+    permissions?: string[];
+    isSystem?: boolean;
+    isActive?: boolean;
+  } | string>;
+  permissions?: string[] | Array<{
+    id?: string;
+    name: string;
+    description?: string;
+    resource?: string;
+    action?: string;
+  }>;
   profile?: {
     firstName?: string;
     lastName?: string;
@@ -16,8 +31,8 @@ export interface User {
     avatar?: string;
     unitId?: string;
   };
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt?: Date | string;
+  updatedAt?: Date | string;
 }
 
 export interface AllUsersAvailableResponse {
@@ -86,17 +101,43 @@ export class UserService {
    * Buscar usuários por unitId (franquia)
    */
   static async listByUnitId(unitId: string): Promise<ApiResponse<User[]>> {
-    const response = await httpClient.get('/users/by-unit', {
+    const response = await httpClient.get<{ data: User[]; total: number; page?: number; limit?: number }>('/users/by-unit', {
       params: { unitId },
     });
+    
     if (!response.success) {
       throw new Error(response.error || 'Erro ao buscar usuários por unitId');
     }
-    return response.data;
+    
+    // O backend retorna { data: [...], total: 1, page: 1, limit: 50 }
+    // Precisamos extrair o array 'data' de dentro do objeto
+    if (response.data && typeof response.data === 'object') {
+      // Se response.data tem uma propriedade 'data' que é um array, usar ela
+      if ('data' in response.data && Array.isArray((response.data as any).data)) {
+        return {
+          success: true,
+          data: (response.data as any).data as User[],
+        };
+      }
+      // Se response.data já é um array, usar diretamente
+      if (Array.isArray(response.data)) {
+        return {
+          success: true,
+          data: response.data as User[],
+        };
+      }
+    }
+    
+    // Caso padrão: retornar array vazio se não conseguir extrair
+    return {
+      success: true,
+      data: [],
+    };
   }
 
   /**
    * Buscar usuários disponíveis (sem unitId ou com unitId diferente)
+   * O backend filtra automaticamente por domain e unitId do usuário autenticado
    */
   static async searchAllUsersAvailable(search: string): Promise<ApiResponse<User[]>> {
     const response = await httpClient.get<User[] | AllUsersAvailableResponse>('/users/available', {
@@ -160,6 +201,16 @@ export class UserService {
     data: { unitId: string | null; role?: string }
   ): Promise<ApiResponse<User>> {
     return httpClient.patch(`/users/${userId}/unit`, data);
+  }
+
+  /**
+   * Atualizar roles e permissões do usuário
+   */
+  static async updateRoles(
+    userId: string,
+    data: { roles?: string[]; permissions?: string[] }
+  ): Promise<ApiResponse<User>> {
+    return httpClient.patch(`/users/${userId}/roles`, data);
   }
 
   /**

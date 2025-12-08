@@ -71,7 +71,7 @@ const ProductsManagement = () => {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const queryClient = useQueryClient();
   
-  // Query para categorias
+  // Query para categorias - carrega automaticamente ao abrir a página
   const { data: categoriesData, isLoading: isLoadingCategories, error: categoriesError } = useQuery({
     queryKey: ['categories'],
     queryFn: async () => {
@@ -96,9 +96,14 @@ const ProductsManagement = () => {
         return [];
       }
     },
-    initialData: [],
+    // Configurações para carregar imediatamente ao abrir a página
+    enabled: true, // Sempre habilitada
+    staleTime: 5 * 60 * 1000, // Considera os dados válidos por 5 minutos
+    gcTime: 10 * 60 * 1000, // Mantém em cache por 10 minutos
     retry: 2,
-    refetchOnWindowFocus: false,
+    retryDelay: 1000, // Espera 1 segundo antes de tentar novamente
+    refetchOnWindowFocus: false, // Não recarrega ao focar na janela (já tem cache)
+    refetchOnMount: 'always', // Sempre recarrega quando o componente é montado
   });
 
   const categories: ProductCategory[] = categoriesData || [];

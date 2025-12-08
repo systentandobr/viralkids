@@ -169,15 +169,28 @@ export const useRoleRedirect = () => {
       return '#/login';
     }
 
+    console.log('getDefaultRoute', user.role);
+
     switch (user.role) {
+      case 'manager':
+      case 'gerente':
+      case 'sistema':
       case 'admin':
-        return '#/admin';
+        return '#/admin?tab=dashboard';
+      case 'partner':
+      case 'parceiro':
       case 'franchisee':
-        return '#/dashboard';
+        return '#/dashboard';    
+      case 'suporte':  
       case 'support':
+        return '#/admin?tab=users';
+      case 'vendedor':
+      case 'sales':
         return '#/admin?tab=leads';
+
+      case 'cliente':
       case 'lead':
-        return '#/';
+        return '#/last-visited';
       default:
         return '#/';
     }
@@ -185,6 +198,7 @@ export const useRoleRedirect = () => {
 
   const redirectToDefault = () => {
     const route = getDefaultRoute();
+    console.log('redirectToDefault', route);
     window.location.href = route;
   };
 

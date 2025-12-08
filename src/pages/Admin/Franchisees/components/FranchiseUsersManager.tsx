@@ -42,6 +42,10 @@ import {
 import { Franchise } from "@/services/franchise/franchiseService";
 import { UserService, User } from "@/services/users/userService";
 import { toast } from "sonner";
+import { useAuthContext } from "@/features/auth";
+import { useUsersByUnitId } from "@/features/users/hooks/useUsersByUnitId";
+import { CreateUserForm } from "./CreateUserForm";
+import { EditUserDialog } from "./EditUserDialog";
 
 // Usar o tipo User do serviço
 type FranchiseUser = User;
@@ -55,37 +59,24 @@ export const FranchiseUsersManager = ({
   franchise,
   onUserAllocated,
 }: FranchiseUsersManagerProps) => {
-  const [users, setUsers] = useState<FranchiseUser[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const { user: currentUser } = useAuthContext();
+  const { users, isLoading: isLoadingUsers, refetch: refetchUsers } = useUsersByUnitId({
+    unitId: franchise.unitId,
+    enabled: true,
+  });
+  
   const [searchTerm, setSearchTerm] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [selectedUserId, setSelectedUserId] = useState<string>("");
   const [selectedRole, setSelectedRole] = useState<string>("franchisee");
   const [availableUsers, setAvailableUsers] = useState<User[]>([]);
   const [isSearching, setIsSearching] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-  // Carregar usuários ao montar o componente
-  useEffect(() => {
-    loadUsers();
-  }, [franchise.unitId]);
-
-  // Buscar usuários da franquia
-  const loadUsers = async () => {
-    setIsLoading(true);
-    try {
-      const response = await UserService.listByUnitId(franchise.unitId);
-      const usersArray = Array.isArray(response.data) ? response.data : [];
-      setUsers(usersArray);
-    } catch (error: any) {
-      console.error("Erro ao carregar usuários:", error);
-      toast.error(error.message || "Erro ao carregar usuários");
-      setUsers([]);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  // Buscar usuários disponíveis (sem unitId ou com unitId diferente)
+  // Buscar usuários disponíveis (sem unitId ou com unitId diferente, filtrados por unitId do usuário logado)
   const searchAvailableUsers = async (search: string) => {
     if (!search || search.length < 3) {
       setAvailableUsers([]);
@@ -98,7 +89,17 @@ export const FranchiseUsersManager = ({
       
       // Garantir que response.data seja um array
       if (response.success && response.data) {
-        const usersArray = Array.isArray(response.data) ? response.data : [];
+        let usersArray = Array.isArray(response.data) ? response.data : [];
+        
+        // Filtrar usuários que não pertencem à mesma unitId do usuário logado
+        // ou que não têm unitId (disponíveis para alocação)
+        if (currentUser?.unitId) {
+          usersArray = usersArray.filter((user) => {
+            // Incluir usuários sem unitId ou com unitId diferente da do usuário logado
+            return !user.unitId || user.unitId !== currentUser.unitId;
+          });
+        }
+        
         setAvailableUsers(usersArray);
       } else {
         setAvailableUsers([]);
@@ -131,7 +132,7 @@ export const FranchiseUsersManager = ({
         setSelectedUserId("");
         setSelectedRole("franchisee");
         setAvailableUsers([]);
-        await loadUsers();
+        refetchUsers();
         onUserAllocated?.();
       } else {
         throw new Error(response.error || "Erro ao alocar usuário");
@@ -158,7 +159,7 @@ export const FranchiseUsersManager = ({
 
       if (response.success) {
         toast.success("Usuário removido da franquia");
-        await loadUsers();
+        refetchUsers();
         onUserAllocated?.();
       } else {
         throw new Error(response.error || "Erro ao remover usuário");
@@ -171,7 +172,7 @@ export const FranchiseUsersManager = ({
     }
   };
 
-  const filteredUsers = users.filter((user) => {
+  const filteredUsers = (users || []).filter((user) => {
     if (!user) return false;
     
     const name = user.name || '';
@@ -183,6 +184,12 @@ export const FranchiseUsersManager = ({
       email.toLowerCase().includes(searchLower)
     );
   });
+
+  const handleUserCreated = () => {
+    setIsCreateDialogOpen(false);
+    refetchUsers();
+    onUserAllocated?.();
+  };
 
   const getStatusBadge = (status: FranchiseUser['status']) => {
     const config = {
@@ -216,13 +223,37 @@ export const FranchiseUsersManager = ({
             </p>
           </div>
         </div>
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogTrigger asChild>
-            <Button className="bg-gradient-to-r from-purple-500 to-pink-500 hover:opacity-90">
-              <UserPlus className="h-4 w-4 mr-2" />
-              Alocar Usuário
-            </Button>
-          </DialogTrigger>
+        <div className="flex gap-2">
+          <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+            <DialogTrigger asChild>
+              <Button variant="outline" className="bg-gradient-to-r from-blue-500 to-cyan-500 hover:opacity-90 text-white">
+                <Plus className="h-4 w-4 mr-2" />
+                Cadastrar Usuário
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle>Cadastrar Novo Usuário</DialogTitle>
+                <DialogDescription>
+                  Preencha os dados para cadastrar um novo usuário na franquia {franchise.name}
+                </DialogDescription>
+              </DialogHeader>
+              <CreateUserForm
+                unitId={franchise.unitId}
+                unitName={franchise.name}
+                onSuccess={handleUserCreated}
+                onCancel={() => setIsCreateDialogOpen(false)}
+              />
+            </DialogContent>
+          </Dialog>
+          
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogTrigger asChild>
+              <Button className="bg-gradient-to-r from-purple-500 to-pink-500 hover:opacity-90">
+                <UserPlus className="h-4 w-4 mr-2" />
+                Alocar Usuário
+              </Button>
+            </DialogTrigger>
           <DialogContent>
             <DialogHeader>
               <DialogTitle>Alocar Usuário à Franquia</DialogTitle>
@@ -314,7 +345,8 @@ export const FranchiseUsersManager = ({
             </DialogFooter>
           </DialogContent>
         </Dialog>
-      </div>
+          </div>
+        </div>
 
       {/* Busca */}
       <div className="relative">
@@ -328,7 +360,7 @@ export const FranchiseUsersManager = ({
       </div>
 
       {/* Tabela de Usuários */}
-      {isLoading ? (
+      {isLoadingUsers || isLoading ? (
         <div className="flex items-center justify-center py-12">
           <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
         </div>
@@ -367,20 +399,44 @@ export const FranchiseUsersManager = ({
                   {user.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'N/A'}
                 </TableCell>
                 <TableCell className="text-right">
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    onClick={() => removeUser(user.id)}
-                    className="text-destructive hover:text-destructive hover:bg-destructive/10"
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
+                  <div className="flex items-center justify-end gap-2">
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => {
+                        setSelectedUser(user);
+                        setIsEditDialogOpen(true);
+                      }}
+                      className="text-primary hover:text-primary hover:bg-primary/10"
+                    >
+                      <Edit className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => removeUser(user.id)}
+                      className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </TableCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
       )}
+
+      {/* Dialog de Edição de Usuário */}
+      <EditUserDialog
+        user={selectedUser}
+        open={isEditDialogOpen}
+        onOpenChange={setIsEditDialogOpen}
+        onSuccess={() => {
+          refetchUsers();
+          onUserAllocated?.();
+        }}
+      />
     </Card>
   );
 };

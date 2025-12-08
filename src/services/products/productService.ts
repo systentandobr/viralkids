@@ -57,9 +57,46 @@ export class ProductService {
     return { success: true, data: { ...productResp.data, availabilityInfo: info } } as any;
   }
 
-  // Criar novo produto
+  // Criar novo produto (usa /catalog-products para associar ao catálogo)
   static async createProduct(data: CreateProductData): Promise<ApiResponse<Product>> {
-    return httpClient.post<Product>('/products', data);
+    if (!data.supplierId) {
+      throw new Error('supplierId é obrigatório para criar produto');
+    }
+    return httpClient.post<Product>('/catalog-products', data);
+  }
+
+  // Upload de imagem de produto (productId é obrigatório)
+  static async uploadProductImage(
+    file: File,
+    productId: string,
+    isThumbnail?: boolean,
+    onProgress?: (progress: number) => void,
+  ): Promise<ApiResponse<{ hashId: string; url: string; thumbnailUrl?: string; path: string }>> {
+    if (!productId) {
+      throw new Error('productId é obrigatório para fazer upload de imagem');
+    }
+
+    // Criar FormData manualmente para incluir productId
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('productId', productId);
+    if (isThumbnail) {
+      formData.append('isThumbnail', 'true');
+    }
+
+    // Usar httpClient.post com FormData
+    // O httpClient.post já trata o FormData corretamente
+    const response = await httpClient.post<{ hashId: string; url: string; thumbnailUrl?: string; path: string }>(
+      '/products/images/upload',
+      formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      },
+    );
+    
+    return response;
   }
 
   // Atualizar produto
@@ -131,8 +168,13 @@ export class ProductService {
     return httpClient.get<ProductStats>('/products/stats');
   }
 
-  // Upload de imagem de produto
-  static async uploadProductImage(file: File, onProgress?: (progress: number) => void): Promise<ApiResponse<{ url: string }>> {
+  // Associar imagem ao produto após criação
+  static async associateImageToProduct(hashId: string, productId: string): Promise<ApiResponse<void>> {
+    return httpClient.patch<void>(`/products/images/${hashId}/associate`, { productId });
+  }
+
+  // Método legado mantido para compatibilidade (deprecated - usar uploadProductImage)
+  static async uploadProductImageLegacy(file: File, onProgress?: (progress: number) => void): Promise<ApiResponse<{ url: string }>> {
     return httpClient.upload<{ url: string }>('/products/upload-image', file, onProgress);
   }
 

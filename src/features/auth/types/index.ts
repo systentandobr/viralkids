@@ -18,16 +18,22 @@ export interface User {
 
 export type UserRole = 
   | 'admin' 
+  | 'partner'
   | 'franchisee' 
-  | 'lead' 
+  | 'lead'
+  | 'sales'  
   | 'support'
-  | 'sistema'
+  | 'manager'
   | 'system'
-  | 'gerente'
+  | 'parceiro'
   | 'franquia'
   | 'franqueado'
-  | 'parceiro'
-  | 'vendedor';
+  | 'cliente'
+  | 'vendedor'
+  | 'sistema'
+  | 'suporte'
+  | 'gerente'
+  | 'sistema';
 
 export type UserStatus = 'active' | 'inactive' | 'pending' | 'suspended';
 

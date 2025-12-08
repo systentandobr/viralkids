@@ -25,7 +25,8 @@ import {
   UserCircle,
   LogOut,
   ShoppingCart,
-  Package
+  Package,
+  Share2
 } from 'lucide-react';
 import { useAuthContext } from '@/features/auth';
 import { useRouter } from '@/router';
@@ -33,6 +34,13 @@ import { useReplenishmentPlan } from '@/features/inventory/hooks/useReplenishmen
 import Customers from './Customers/Customers';
 import Orders from './Orders/Orders';
 import ProductsManagement from './Products/ProductsManagement';
+import { CreateReplenishmentForm } from './components/replenishment/CreateReplenishmentForm';
+import { FranchiseUsersManager } from './Franchisees/components/FranchiseUsersManager';
+import { ReferralsModule } from './Referrals';
+import { useUsersByUnitId } from '@/features/users/hooks/useUsersByUnitId';
+import { Franchise } from '@/services/franchise/franchiseService';
+import { AccessDenied } from '@/components/shared/AccessDenied';
+import { isFranchiseeRole, ROLE_CATEGORIES } from '@/features/auth/utils/roleUtils';
 
 export const FranchiseeDashboard: React.FC = () => {
   // Simulando ID do franqueado logado
@@ -54,6 +62,43 @@ export const FranchiseeDashboard: React.FC = () => {
 
   const { logout, user } = useAuthContext();
 
+  // Verificar se o usuário tem acesso ao painel de franqueado
+  const hasAccess = user && isFranchiseeRole(user.role);
+
+  // Se não tem acesso, mostrar mensagem amigável
+  if (!hasAccess && user) {
+    return (
+      <AccessDenied
+        title="Acesso ao Painel de Franqueado Negado"
+        description="Esta área é exclusiva para franqueados, gerentes e parceiros. Se você precisa de acesso, entre em contato com o administrador do sistema."
+        helpText="Se você é um administrador ou usuário do sistema, acesse o painel administrativo através do menu principal."
+        allowedRoles={ROLE_CATEGORIES.FRANCHISEE as string[]}
+        showUserRole={true}
+        showBackButton={true}
+        showHomeButton={true}
+        homeUrl="#/admin"
+        variant="fullscreen"
+        icon="shield"
+      />
+    );
+  }
+
+  // Se não está autenticado, mostrar mensagem de login necessário
+  if (!user) {
+    return (
+      <AccessDenied
+        title="Acesso Restrito"
+        description="Você precisa estar logado para acessar o painel de franqueado."
+        showUserRole={false}
+        showBackButton={true}
+        showHomeButton={true}
+        homeUrl="#/login"
+        variant="fullscreen"
+        icon="lock"
+      />
+    );
+  }
+
   const [maxSuppliers, setMaxSuppliers] = useState(12);
 
   const { navigate, currentPath } = useRouter();
@@ -61,6 +106,7 @@ export const FranchiseeDashboard: React.FC = () => {
   // Detectar a rota atual para destacar o menu correto
   const getActiveTab = (path: string) => {
     if (path === '/dashboard/tasks') return 'tasks';
+    if (path === '/dashboard/users') return 'users';
     if (path === '/dashboard/suppliers') return 'suppliers';
     if (path === '/dashboard/products') return 'products';
     if (path === '/dashboard/analytics') return 'analytics';
@@ -70,6 +116,7 @@ export const FranchiseeDashboard: React.FC = () => {
     if (path === '/dashboard/customers') return 'customers';
     if (path === '/dashboard/orders') return 'orders';
     if (path === '/dashboard/products-management') return 'products-management';
+    if (path === '/dashboard/referrals') return 'referrals';
     return '/dashboard/overview';
   };
 
@@ -86,6 +133,12 @@ export const FranchiseeDashboard: React.FC = () => {
 
   // Replenishment plan
   const { isLoading: replLoading, error: replError, plan, generate } = useReplenishmentPlan();
+
+  // Buscar usuários da unitId
+  const { users: franchiseUsers, isLoading: isLoadingUsers, refetch: refetchUsers } = useUsersByUnitId({
+    unitId: user?.unitId,
+    enabled: !!user?.unitId && activeTab === 'users',
+  });
 
   const handleCompleteTask = (taskId: string) => {
     completeTask(taskId);
@@ -216,7 +269,19 @@ export const FranchiseeDashboard: React.FC = () => {
                 </Badge>
               )}
             </Button>
-            
+
+
+            <Button
+              variant={activeTab === '/dashboard/users' ? 'default' : 'ghost'}
+              className="w-full justify-start"
+              onClick={() => {
+                setActiveTab('/dashboard/users');
+                navigate('#/dashboard/users');
+              }}
+            >
+              <Users className="h-4 w-4 mr-2" />
+              Usuários
+            </Button>
             <Button
               variant={activeTab === '/dashboard/suppliers' ? 'default' : 'ghost'}
               className="w-full justify-start"
@@ -287,6 +352,18 @@ export const FranchiseeDashboard: React.FC = () => {
             >
               <Package className="h-4 w-4 mr-2" />
               Produtos
+            </Button>
+            
+            <Button
+              variant={activeTab === 'referrals' ? 'default' : 'ghost'}
+              className="w-full justify-start"
+              onClick={() => {
+                setActiveTab('referrals');
+                navigate('#/dashboard/referrals');
+              }}
+            >
+              <Share2 className="h-4 w-4 mr-2" />
+              Indicações
             </Button>
           </nav>
         </aside>
@@ -573,7 +650,10 @@ export const FranchiseeDashboard: React.FC = () => {
                             </Badge>
                             {task.completedAt && (
                               <p className="text-sm text-muted-foreground mt-1">
-                                {task.completedAt.toLocaleDateString()}
+                                {task.completedAt instanceof Date 
+                                  ? task.completedAt.toLocaleDateString()
+                                  : new Date(task.completedAt).toLocaleDateString()
+                                }
                               </p>
                             )}
                           </div>
@@ -584,6 +664,52 @@ export const FranchiseeDashboard: React.FC = () => {
                 </TabsContent>
               </Tabs>
             </div>
+          )}
+
+          {activeTab === 'users' && (
+            <>
+              {user?.unitId ? (
+                <FranchiseUsersManager
+                  franchise={{
+                    id: user.unitId,
+                    unitId: user.unitId,
+                    name: user.name || 'Minha Franquia',
+                    owner: {
+                      id: user.id || '',
+                      name: user.name || '',
+                      email: user.email || '',
+                      phone: (user as any).phone,
+                    },
+                    location: {
+                      lat: 0,
+                      lng: 0,
+                      address: '',
+                      city: '',
+                      state: '',
+                      zipCode: '',
+                      type: 'physical',
+                    },
+                    status: 'active',
+                    type: 'standard',
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
+                  } as Franchise}
+                  onUserAllocated={() => {
+                    refetchUsers();
+                  }}
+                />
+              ) : (
+                <AccessDenied
+                  title="UnitId não configurado"
+                  description="Você precisa ter uma unidade (unitId) associada à sua conta para acessar o gerenciamento de usuários."
+                  helpText="Entre em contato com o administrador do sistema para associar uma unidade à sua conta."
+                  variant="inline"
+                  icon="alert"
+                  showBackButton={false}
+                  showHomeButton={false}
+                />
+              )}
+            </>
           )}
 
           {activeTab === 'suppliers' && (
@@ -671,7 +797,7 @@ export const FranchiseeDashboard: React.FC = () => {
                 <p className="text-muted-foreground">Sugestões automáticas de compra com base no estoque</p>
               </div>
               <div className="flex items-center gap-2">
-                <Button onClick={() => generate()} disabled={replLoading}>
+                <Button onClick={() => generate()} disabled={replLoading} variant="outline">
                   {replLoading ? 'Gerando...' : 'Gerar Plano'}
                 </Button>
               </div>
@@ -683,30 +809,73 @@ export const FranchiseeDashboard: React.FC = () => {
               </Card>
             )}
 
-            {plan && (
+            {plan && plan.suggestions.length > 0 && (
+              <div className="space-y-4">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Sugestões ({plan.suggestions.length})</CardTitle>
+                    <CardDescription>Gerado em {new Date(plan.generatedAt).toLocaleString()}</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-2">
+                      {plan.suggestions.map((s) => (
+                        <div key={`${s.productId}-${s.sku}`} className="p-3 border rounded flex items-center justify-between">
+                          <div>
+                            <div className="font-medium">SKU {s.sku}</div>
+                            <div className="text-base text-muted-foreground">Produto: {s.productId}</div>
+                          </div>
+                          <div className="flex items-center gap-3">
+                            <Badge variant="secondary">Sugerido: {s.suggestedQty}</Badge>
+                            <Badge variant="outline">Motivo: {s.reason}</Badge>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Criar Pedido de Reposição</CardTitle>
+                    <CardDescription>
+                      Use o assistente para revisar as sugestões e criar um pedido de reposição
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <CreateReplenishmentForm
+                      onSuccess={() => {
+                        // Recarregar plano após criar pedido
+                        generate();
+                      }}
+                    />
+                  </CardContent>
+                </Card>
+              </div>
+            )}
+
+            {plan && plan.suggestions.length === 0 && (
               <Card>
-                <CardHeader>
-                  <CardTitle>Sugestões ({plan.suggestions.length})</CardTitle>
-                  <CardDescription>Gerado em {new Date(plan.generatedAt).toLocaleString()}</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-2">
-                    {plan.suggestions.map((s) => (
-                      <div key={`${s.productId}-${s.sku}`} className="p-3 border rounded flex items-center justify-between">
-                        <div>
-                          <div className="font-medium">SKU {s.sku}</div>
-                          <div className="text-base text-muted-foreground">Produto: {s.productId}</div>
-                        </div>
-                        <div className="flex items-center gap-3">
-                          <Badge variant="secondary">Sugerido: {s.suggestedQty}</Badge>
-                          <Badge variant="outline">Motivo: {s.reason}</Badge>
-                        </div>
-                      </div>
-                    ))}
-                    {plan.suggestions.length === 0 && (
-                      <p className="text-base text-muted-foreground">Nenhuma sugestão no momento.</p>
-                    )}
-                  </div>
+                <CardContent className="p-8 text-center">
+                  <Package className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                  <h3 className="text-lg font-medium mb-2">Estoque adequado</h3>
+                  <p className="text-base text-muted-foreground">
+                    Não há necessidade de reposição no momento. Seu estoque está adequado.
+                  </p>
+                </CardContent>
+              </Card>
+            )}
+
+            {!plan && !replLoading && !replError && (
+              <Card>
+                <CardContent className="p-8 text-center">
+                  <Package className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                  <h3 className="text-lg font-medium mb-2">Gerar Plano de Reposição</h3>
+                  <p className="text-base text-muted-foreground mb-4">
+                    Clique no botão acima para gerar sugestões de reposição baseadas no seu estoque atual.
+                  </p>
+                  <Button onClick={() => generate()} disabled={replLoading}>
+                    {replLoading ? 'Gerando...' : 'Gerar Plano'}
+                  </Button>
                 </CardContent>
               </Card>
             )}
@@ -723,6 +892,10 @@ export const FranchiseeDashboard: React.FC = () => {
 
         {activeTab === 'products-management' && (
           <ProductsManagement />
+        )}
+
+        {activeTab === 'referrals' && (
+          <ReferralsModule />
         )}
         </main>
       </div>

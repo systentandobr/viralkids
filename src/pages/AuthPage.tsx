@@ -27,7 +27,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({
 
   // Redirecionar se já estiver autenticado
   useEffect(() => {
-    console.log('AuthPage useEffect - isAuthenticated:', isAuthenticated);
+    console.log('AuthPage useEffect - isAuthenticated2:', isAuthenticated);
     if (isAuthenticated && redirectAfterAuth) {
       redirectToDefault();
     }

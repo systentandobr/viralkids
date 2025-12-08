@@ -171,7 +171,43 @@ export const API_ENDPOINTS = {
     METRICS: (id: string) => `/franchises/${id}/metrics`,
     REGIONAL_TRENDS: '/franchises/regional-trends',
   },
-  
+
+  // Sistema de Indicação (Member Get Member)
+  REFERRAL_CAMPAIGNS: {
+    LIST: '/referral-campaigns',
+    ACTIVE: '/referral-campaigns/active',
+    DETAIL: (id: string) => `/referral-campaigns/${id}`,
+    BY_SLUG: (slug: string) => `/referral-campaigns/slug/${slug}`,
+    BY_FRANCHISE: (franchiseId: string) => `/referral-campaigns/franchise/${franchiseId}`,
+    CREATE: '/referral-campaigns',
+    UPDATE: (id: string) => `/referral-campaigns/${id}`,
+    DELETE: (id: string) => `/referral-campaigns/${id}`,
+    ACTIVATE: (id: string) => `/referral-campaigns/${id}/activate`,
+    PAUSE: (id: string) => `/referral-campaigns/${id}/pause`,
+    STATS: (id: string) => `/referral-campaigns/${id}/stats`,
+  },
+
+  REFERRALS: {
+    LIST: '/referrals',
+    MY: '/referrals/my',
+    DETAIL: (id: string) => `/referrals/${id}`,
+    BY_CODE: (code: string) => `/referrals/code/${code}`,
+    BY_USER: (userId: string) => `/referrals/user/${userId}`,
+    CREATE: '/referrals',
+    COMPLETE: (id: string) => `/referrals/${id}/complete`,
+    CANCEL: (id: string) => `/referrals/${id}/cancel`,
+    CAMPAIGN_STATS: (campaignId: string) => `/referrals/campaign/${campaignId}/stats`,
+  },
+
+  REWARDS: {
+    PROCESS: '/rewards/process',
+    MY: '/rewards/my',
+    BY_USER: (userId: string) => `/rewards/user/${userId}`,
+    PENDING: '/rewards/pending',
+    DETAIL: (id: string) => `/rewards/${id}`,
+    APPROVE: (id: string) => `/rewards/${id}/approve`,
+    CANCEL: (id: string) => `/rewards/${id}/cancel`,
+  },
 
 } as const;
 

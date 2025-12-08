@@ -1,5 +1,13 @@
 
 // Interfaces para produtos
+export interface ProductImageReference {
+  hashId: string;
+  url: string;
+  thumbnailUrl?: string;
+  isThumbnail: boolean;
+  order: number;
+}
+
 export interface Product {
     id: string;
     name: string;
@@ -7,7 +15,7 @@ export interface Product {
     shortDescription: string;
     price: number;
     originalPrice?: number;
-    images: string[];
+    images: ProductImageReference[]; // Array de referências de imagens com hashId
     category: string;
     subcategory?: string;
     tags: string[];
@@ -53,8 +61,9 @@ export interface Product {
     shortDescription: string;
     price: number;
     originalPrice?: number;
-    images: string[];
+    images: Array<{ hashId: string }>; // Array de hashIds das imagens já enviadas
     category: string;
+    supplierId?: string; // ID do fornecedor (obrigatório para catalog-products)
     subcategory?: string;
     tags: string[];
     features: string[];
@@ -84,7 +93,7 @@ export interface Product {
     shortDescription?: string;
     price?: number;
     originalPrice?: number;
-    images?: string[];
+    images?: Array<{ hashId: string }>;
     category?: string;
     subcategory?: string;
     tags?: string[];

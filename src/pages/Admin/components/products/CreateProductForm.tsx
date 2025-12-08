@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -22,9 +22,13 @@ import { WizardNavigation } from '@/components/shared/wizard/WizardNavigation';
 import { ProductService } from '@/services/products/productService';
 import { CreateProductData } from '@/services/products/types';
 import { Package, DollarSign, Image, Tag, CheckCircle2, X } from 'lucide-react';
+import { CategorySelector } from './CategorySelector';
 import { useQuery } from '@tanstack/react-query';
 import { CategoryService } from '@/services/products/categoryService';
 import { ProductCategory } from '@/services/products/types';
+import { useSuppliers } from '@/features/suppliers/hooks/useSuppliers';
+import { ImageUploadWithPaste } from '@/components/products/ImageUploadWithPaste';
+import { useAuthContext } from '@/features/auth';
 
 // Schema de validação
 const productSchema = z.object({
@@ -35,6 +39,7 @@ const productSchema = z.object({
   category: z.string().min(1, 'Categoria obrigatória'),
   subcategory: z.string().optional(),
   sku: z.string().min(1, 'SKU obrigatório'),
+  supplierId: z.string().min(1, 'Fornecedor obrigatório'),
 
   // Step 2: Preços e Estoque
   price: z.number().min(0.01, 'Preço deve ser maior que zero'),
@@ -42,8 +47,8 @@ const productSchema = z.object({
   stockQuantity: z.number().min(0, 'Estoque não pode ser negativo'),
   availability: z.enum(['in_stock', 'out_of_stock', 'pre_order']).default('in_stock'),
 
-  // Step 3: Imagens
-  images: z.array(z.string().url('URL inválida')).min(1, 'Adicione pelo menos uma imagem'),
+  // Step 3: Imagens (validação será feita no submit, não aqui para permitir adicionar sem upload)
+  images: z.array(z.object({ hashId: z.string() })).optional(),
 
   // Step 4: Características
   tags: z.array(z.string()).default([]),
@@ -78,15 +83,17 @@ interface CreateProductFormProps {
 export function CreateProductForm({ onSuccess, onCancel }: CreateProductFormProps) {
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [imageUrl, setImageUrl] = useState('');
+  const [uploadingImages, setUploadingImages] = useState<Set<string>>(new Set());
+  const [imageFiles, setImageFiles] = useState<Map<string, File>>(new Map()); // Armazenar arquivos em memória
   const [tagInput, setTagInput] = useState('');
   const [featureInput, setFeatureInput] = useState('');
   const [specKey, setSpecKey] = useState('');
   const [specValue, setSpecValue] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<string>(''); // Estado local para categoria
   const { toast } = useToast();
+  const { suppliers } = useSuppliers();
+  const { user } = useAuthContext();
 
-  // Buscar categorias
+  // Buscar categorias para exibição no resumo
   const { data: categoriesData } = useQuery({
     queryKey: ['categories'],
     queryFn: async () => {
@@ -109,6 +116,7 @@ export function CreateProductForm({ onSuccess, onCancel }: CreateProductFormProp
     resolver: zodResolver(productSchema),
     defaultValues: {
       category: '',
+      supplierId: '',
       availability: 'in_stock',
       images: [],
       tags: [],
@@ -121,30 +129,6 @@ export function CreateProductForm({ onSuccess, onCancel }: CreateProductFormProp
 
   const watchedValues = watch();
   const progress = (currentStep / STEPS.length) * 100;
-  
-  // Sincronizar estado local com o valor do formulário quando mudar externamente
-  useEffect(() => {
-    if (watchedValues.category && watchedValues.category !== selectedCategory) {
-      setSelectedCategory(watchedValues.category);
-    }
-  }, [watchedValues.category, selectedCategory]);
-
-  // Debug: Monitorar mudanças no campo category
-  useEffect(() => {
-    const formStateData = {
-      isValid: formState.isValid,
-      isDirty: formState.isDirty,
-      touchedFields: formState.touchedFields,
-    };
-    console.log('[CreateProductForm] Category value changed:', {
-      category: watchedValues.category,
-      categoryType: typeof watchedValues.category,
-      categoryLength: watchedValues.category?.length,
-      errors: errors.category,
-      formState: formStateData,
-      getValuesCategory: getValues('category'),
-    });
-  }, [watchedValues.category, errors.category, formState.isValid, formState.isDirty, formState.touchedFields, getValues]);
 
   // Validação por step
   const validateStep = async (step: number): Promise<boolean> => {
@@ -152,17 +136,29 @@ export function CreateProductForm({ onSuccess, onCancel }: CreateProductFormProp
 
     switch (step) {
       case 1:
-        fieldsToValidate = ['name', 'description', 'shortDescription', 'category', 'sku'];
+        fieldsToValidate = ['name', 'description', 'shortDescription', 'category', 'sku', 'supplierId'];
         break;
       case 2:
         fieldsToValidate = ['price', 'stockQuantity', 'availability'];
         break;
       case 3:
-        fieldsToValidate = ['images'];
-        break;
+        // Validar se há arquivos selecionados antes de avançar
+        if (!imageFiles || imageFiles.size === 0) {
+          return false;
+        }
+        return true;
       case 4:
         return true; // Opcional
       case 5:
+        // Validar se há imagens antes de submeter
+        if (!imageFiles || imageFiles.size === 0) {
+          toast({
+            title: 'Validação',
+            description: 'Por favor, adicione pelo menos uma imagem antes de criar o produto.',
+            variant: 'destructive',
+          });
+          return false;
+        }
         return true;
     }
 
@@ -208,17 +204,85 @@ export function CreateProductForm({ onSuccess, onCancel }: CreateProductFormProp
     }
   };
 
-  const handleAddImage = () => {
-    if (imageUrl.trim() && !watchedValues.images?.includes(imageUrl.trim())) {
-      const newImages = [...(watchedValues.images || []), imageUrl.trim()];
-      setValue('images', newImages);
-      setImageUrl('');
-    }
+  const handleFileSelect = async (file: File): Promise<void> => {
+    // Armazenar arquivo em memória (não fazer upload ainda)
+    const fileId = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    setImageFiles((prev) => new Map(prev).set(fileId, file));
+    
+    // Adicionar placeholder ao array de imagens (será substituído após upload)
+    const newImages = [...(watchedValues.images || []), { hashId: fileId, isPending: true }];
+    setValue('images', newImages);
+    
+    toast({
+      title: '✅ Imagem adicionada',
+      description: 'A imagem será enviada após criar o produto.',
+    });
   };
 
-  const handleRemoveImage = (urlToRemove: string) => {
-    const newImages = watchedValues.images?.filter((url) => url !== urlToRemove) || [];
+  const handleRemoveImage = (hashIdToRemove: string) => {
+    // Remover do array de imagens
+    const newImages = watchedValues.images?.filter((img) => {
+      if (typeof img === 'object') {
+        const imgHashId = (img as any).hashId;
+        return imgHashId !== hashIdToRemove;
+      }
+      return true;
+    }) || [];
     setValue('images', newImages);
+    
+    // Remover arquivo da memória se existir
+    setImageFiles((prev) => {
+      const next = new Map(prev);
+      next.delete(hashIdToRemove);
+      return next;
+    });
+  };
+
+  const uploadImagesAfterProductCreation = async (productId: string) => {
+    const uploadPromises: Promise<string>[] = [];
+    const uploadedHashes: string[] = [];
+
+    for (const [fileId, file] of imageFiles.entries()) {
+      const uploadPromise = ProductService.uploadProductImage(file, productId)
+        .then((response) => {
+          if (response.success && response.data) {
+            const hashId = response.data.hashId;
+            uploadedHashes.push(hashId);
+            return hashId;
+          } else {
+            throw new Error(response.error || 'Erro ao fazer upload da imagem');
+          }
+        })
+        .catch((error) => {
+          console.error(`Erro ao fazer upload da imagem ${fileId}:`, error);
+          throw error;
+        });
+
+      uploadPromises.push(uploadPromise);
+    }
+
+    const results = await Promise.all(uploadPromises);
+    
+    // Atualizar o array de imagens substituindo os fileIds pelos hashIds reais
+    const currentImages = watchedValues.images || [];
+    const updatedImages = currentImages.map((img) => {
+      if (typeof img === 'object') {
+        const imgHashId = (img as any).hashId;
+        // Se for um fileId pendente, substituir pelo hashId correspondente
+        if ((img as any).isPending && imageFiles.has(imgHashId)) {
+          const index = Array.from(imageFiles.keys()).indexOf(imgHashId);
+          if (index >= 0 && results[index]) {
+            return { hashId: results[index] };
+          }
+        }
+        // Se já for um hashId válido, manter
+        return img;
+      }
+      return img;
+    }).filter((img) => typeof img === 'object' && (img as any).hashId && !(img as any).isPending);
+    
+    setValue('images', updatedImages);
+    return uploadedHashes;
   };
 
   const handleAddTag = () => {
@@ -265,6 +329,17 @@ export function CreateProductForm({ onSuccess, onCancel }: CreateProductFormProp
     setValue('specifications', newSpecs);
   };
 
+  const handleCategoryChange = (category: {
+    categoryId: string;
+    categoryName: string;
+  }) => {
+    setValue('category', category.categoryId, { 
+      shouldValidate: true, 
+      shouldDirty: true 
+    });
+    trigger('category');
+  };
+
   const onSubmit = async (data: ProductFormData) => {
     setIsSubmitting(true);
 
@@ -278,7 +353,9 @@ export function CreateProductForm({ onSuccess, onCancel }: CreateProductFormProp
         sku: data.sku,
         price: data.price,
         originalPrice: data.originalPrice,
-        images: data.images,
+        images: data.images.map((img) => 
+          typeof img === 'object' && img.hashId ? { hashId: img.hashId } : { hashId: '' }
+        ).filter((img) => img.hashId),
         tags: data.tags,
         features: data.features,
         specifications: data.specifications,
@@ -293,18 +370,58 @@ export function CreateProductForm({ onSuccess, onCancel }: CreateProductFormProp
             }
           : undefined,
         isPersonalizable: data.isPersonalizable,
+        supplierId: data.supplierId,
       };
 
-      const response = await ProductService.createProduct(productData);
+      // Criar produto primeiro (sem imagens ainda)
+      const productDataWithoutImages: CreateProductData = {
+        ...productData,
+        images: [], // Não enviar imagens ainda
+      };
+
+      const response = await ProductService.createProduct(productDataWithoutImages);
 
       if (!response.success) {
         throw new Error(response.error || 'Erro ao criar produto');
       }
 
-      toast({
-        title: '✅ Produto criado com sucesso!',
-        description: `${data.name} foi cadastrado no sistema.`,
-      });
+      // Extrair productId da resposta
+      const responseData = response.data as any;
+      const product = responseData?.product || responseData;
+      const productId = product?._id?.toString() || 
+                        product?.id?.toString() || 
+                        responseData?._id?.toString();
+      
+      if (!productId) {
+        throw new Error('Não foi possível obter o ID do produto criado');
+      }
+
+      // Agora fazer upload das imagens com o productId
+      if (imageFiles.size > 0) {
+        try {
+          setUploadingImages(new Set(Array.from(imageFiles.keys())));
+          await uploadImagesAfterProductCreation(productId);
+          
+          toast({
+            title: '✅ Produto e imagens criados com sucesso!',
+            description: `${data.name} foi cadastrado no sistema com ${imageFiles.size} imagem(ns).`,
+          });
+        } catch (error: any) {
+          console.error('Erro ao fazer upload das imagens:', error);
+          toast({
+            title: '⚠️ Produto criado, mas houve erro ao fazer upload das imagens',
+            description: 'O produto foi criado com sucesso, mas algumas imagens não puderam ser enviadas. Você pode adicioná-las depois.',
+            variant: 'default',
+          });
+        } finally {
+          setUploadingImages(new Set());
+        }
+      } else {
+        toast({
+          title: '✅ Produto criado com sucesso!',
+          description: `${data.name} foi cadastrado no sistema.`,
+        });
+      }
 
       onSuccess?.();
     } catch (error) {
@@ -366,38 +483,16 @@ export function CreateProductForm({ onSuccess, onCancel }: CreateProductFormProp
 
             <div className='grid grid-cols-2 gap-4'>
               <div>
-                <Label htmlFor='category'>Categoria *</Label>
-                {/* Campo hidden para registrar o campo no react-hook-form */}
-                <input
-                  type='text'
-                  id='category'
-                  {...register('category')}
-                  value={selectedCategory}
+                <CategorySelector
+                  categoryId={watchedValues.category}
+                  categoryName={
+                    watchedValues.category
+                      ? // Buscar nome da categoria se necessário (opcional, pois o CategorySelector já mostra)
+                        undefined
+                      : undefined
+                  }
+                  onCategoryChange={handleCategoryChange}
                 />
-                <Select
-                  value={watchedValues.category || selectedCategory || undefined}
-                  onValueChange={(value) => {
-                    setValue('category', selectedCategory, { shouldValidate: true, shouldDirty: true });
-                    trigger('category');
-                  }}
-                >
-                  <SelectTrigger id='category' className={errors.category ? 'border-destructive' : ''}>
-                    <SelectValue placeholder='Selecione uma categoria' />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {categories.length === 0 ? (
-                      <div className='px-2 py-1.5 text-sm text-muted-foreground'>
-                        Nenhuma categoria disponível
-                      </div>
-                    ) : (
-                      categories.map((cat) => (
-                        <SelectItem key={cat.id} value={cat.id}>
-                          {cat.name}
-                        </SelectItem>
-                      ))
-                    )}
-                  </SelectContent>
-                </Select>
                 {errors.category && (
                   <p className='text-base text-destructive mt-1'>{errors.category.message}</p>
                 )}
@@ -411,6 +506,31 @@ export function CreateProductForm({ onSuccess, onCancel }: CreateProductFormProp
                   placeholder='Opcional'
                 />
               </div>
+            </div>
+
+            <div>
+              <Label htmlFor='supplierId'>Fornecedor *</Label>
+              <Select
+                value={watchedValues.supplierId || ''}
+                onValueChange={(value) => {
+                  setValue('supplierId', value, { shouldValidate: true, shouldDirty: true });
+                  trigger('supplierId');
+                }}
+              >
+                <SelectTrigger id='supplierId' className={errors.supplierId ? 'border-destructive' : ''}>
+                  <SelectValue placeholder='Selecione um fornecedor' />
+                </SelectTrigger>
+                <SelectContent>
+                  {suppliers.map((supplier) => (
+                    <SelectItem key={supplier.id} value={supplier.id}>
+                      {supplier.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {errors.supplierId && (
+                <p className='text-base text-destructive mt-1'>{errors.supplierId.message}</p>
+              )}
             </div>
 
             <div>
@@ -504,52 +624,82 @@ export function CreateProductForm({ onSuccess, onCancel }: CreateProductFormProp
       case 3:
         return (
           <div className='space-y-4'>
-            <div>
-              <Label htmlFor='imageUrl'>URL da Imagem</Label>
-              <div className='flex gap-2'>
-                <Input
-                  id='imageUrl'
-                  type='url'
-                  value={imageUrl}
-                  onChange={(e) => setImageUrl(e.target.value)}
-                  onKeyPress={(e) => {
-                    if (e.key === 'Enter') {
-                      e.preventDefault();
-                      handleAddImage();
-                    }
-                  }}
-                  placeholder='https://exemplo.com/imagem.jpg'
-                />
-                <Button type='button' onClick={handleAddImage}>
-                  Adicionar
-                </Button>
+            <ImageUploadWithPaste
+              onImageUpload={handleFileSelect}
+              disabled={uploadingImages.size > 0 || isSubmitting}
+              accept='image/jpeg,image/jpg,image/png,image/webp,image/gif'
+              maxSizeMB={10}
+            />
+
+            {uploadingImages.size > 0 && (
+              <div className='text-sm text-muted-foreground'>
+                Enviando {uploadingImages.size} imagem(ns)...
               </div>
-            </div>
+            )}
 
             {watchedValues.images && watchedValues.images.length > 0 && (
               <div className='space-y-2'>
                 <Label>Imagens Adicionadas ({watchedValues.images.length})</Label>
                 <div className='grid grid-cols-2 gap-2'>
-                  {watchedValues.images.map((url, index) => (
-                    <Card key={index}>
-                      <CardContent className='pt-4'>
-                        <div className='flex items-center justify-between'>
-                          <div className='flex-1 min-w-0'>
-                            <p className='text-sm truncate'>{url}</p>
+                  {watchedValues.images.map((img, index) => {
+                    const imgObj = typeof img === 'object' ? img : { hashId: '' };
+                    const hashId = imgObj.hashId || '';
+                    const isPending = (imgObj as any).isPending;
+                    
+                    // Se for arquivo pendente, criar preview do File
+                    let imageUrl = '';
+                    if (isPending && imageFiles.has(hashId)) {
+                      const file = imageFiles.get(hashId);
+                      if (file) {
+                        imageUrl = URL.createObjectURL(file);
+                      }
+                    } else if (hashId && !isPending) {
+                      imageUrl = `/api/products/images/${hashId}`;
+                    }
+                    
+                    return (
+                      <Card key={index}>
+                        <CardContent className='pt-4'>
+                          <div className='flex items-center justify-between'>
+                            <div className='flex-1 min-w-0'>
+                              {imageUrl && (
+                                <img
+                                  src={imageUrl}
+                                  alt={`Imagem ${index + 1}`}
+                                  className='w-full h-24 object-cover rounded'
+                                  onLoad={() => {
+                                    // Limpar object URL após carregar para liberar memória
+                                    if (isPending && imageUrl.startsWith('blob:')) {
+                                      // Não limpar imediatamente, apenas quando remover
+                                    }
+                                  }}
+                                />
+                              )}
+                              <p className='text-xs text-muted-foreground mt-1 truncate'>
+                                {isPending ? 'Aguardando upload...' : hashId || 'Carregando...'}
+                              </p>
+                            </div>
+                            <Button
+                              type='button'
+                              variant='ghost'
+                              size='sm'
+                              onClick={() => {
+                                handleRemoveImage(hashId);
+                                // Limpar object URL se existir
+                                if (imageUrl.startsWith('blob:')) {
+                                  URL.revokeObjectURL(imageUrl);
+                                }
+                              }}
+                              className='ml-2 text-destructive hover:text-destructive'
+                              disabled={isSubmitting}
+                            >
+                              <X className='w-4 h-4' />
+                            </Button>
                           </div>
-                          <Button
-                            type='button'
-                            variant='ghost'
-                            size='sm'
-                            onClick={() => handleRemoveImage(url)}
-                            className='ml-2 text-destructive hover:text-destructive'
-                          >
-                            <X className='w-4 h-4' />
-                          </Button>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
+                        </CardContent>
+                      </Card>
+                    );
+                  })}
                 </div>
               </div>
             )}
@@ -714,7 +864,9 @@ export function CreateProductForm({ onSuccess, onCancel }: CreateProductFormProp
                   </p>
                   <p className='text-muted-foreground'>
                     <strong>Categoria:</strong>{' '}
-                    {categories.find((c) => c.id === watchedValues.category)?.name || watchedValues.category}
+                    {watchedValues.category
+                      ? categories.find((c) => c.id === watchedValues.category)?.name || watchedValues.category
+                      : 'Não selecionada'}
                   </p>
                   {watchedValues.subcategory && (
                     <p className='text-muted-foreground'>
@@ -749,12 +901,25 @@ export function CreateProductForm({ onSuccess, onCancel }: CreateProductFormProp
                 <div>
                   <h3 className='font-semibold mb-2'>Imagens ({watchedValues.images?.length || 0})</h3>
                   {watchedValues.images && watchedValues.images.length > 0 && (
-                    <div className='space-y-1'>
-                      {watchedValues.images.map((url, index) => (
-                        <p key={index} className='text-sm text-muted-foreground truncate'>
-                          {url}
-                        </p>
-                      ))}
+                    <div className='grid grid-cols-2 gap-2'>
+                      {watchedValues.images.map((img, index) => {
+                        const hashId = typeof img === 'object' && img.hashId ? img.hashId : '';
+                        const imageUrl = hashId ? `/api/products/images/${hashId}` : '';
+                        return (
+                          <div key={index} className='relative'>
+                            {imageUrl && (
+                              <img
+                                src={imageUrl}
+                                alt={`Imagem ${index + 1}`}
+                                className='w-full h-24 object-cover rounded border'
+                              />
+                            )}
+                            <p className='text-xs text-muted-foreground mt-1 truncate'>
+                              {hashId || 'Carregando...'}
+                            </p>
+                          </div>
+                        );
+                      })}
                     </div>
                   )}
                 </div>
