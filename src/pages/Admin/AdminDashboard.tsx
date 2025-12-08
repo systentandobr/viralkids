@@ -6,12 +6,11 @@ import { useAdminDashboard } from '@/features/admin/hooks/useAdminDashboard';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { 
-  LayoutDashboard, 
-  Users, 
-  Building, 
-  ShoppingBag, 
+import {
+  LayoutDashboard,
+  Users,
+  Building,
+  ShoppingBag,
   BarChart3,
   Settings,
   Bell,
@@ -20,7 +19,8 @@ import {
   RefreshCw,
   ShoppingCart,
   Package,
-  TrendingUp
+  TrendingUp,
+  BookOpen
 } from 'lucide-react';
 import { useAuthContext } from '@/features/auth';
 import { useRouter } from '@/router';
@@ -29,6 +29,8 @@ import Orders from './Orders/Orders';
 import ProductsManagement from './Products/ProductsManagement';
 import LeadsPipeline from './Leads/LeadsPipeline';
 import { FranchisesManagement } from './Franchisees';
+import TrainingManagement from '@/components/admin/TrainingManagement';
+
 
 export const AdminDashboard: React.FC = () => {
   const {
@@ -47,14 +49,15 @@ export const AdminDashboard: React.FC = () => {
 
   // Detectar a rota atual para destacar o menu correto
   const getActiveTab = (path: string) => {
-  if (path === '/admin/customers') return 'customers';
-  if (path === '/admin/orders') return 'orders';
-  if (path === '/admin/products') return 'products';
-  if (path === '/admin/leads') return 'leads';
-  if (path === '/admin/franchises') return 'franchises';
+    if (path === '/admin/customers') return 'customers';
+    if (path === '/admin/orders') return 'orders';
+    if (path === '/admin/products') return 'products';
+    if (path === '/admin/leads') return 'leads';
+    if (path === '/admin/franchises') return 'franchises';
     if (path === '/admin/suppliers') return 'suppliers';
     if (path === '/admin/analytics') return 'analytics';
     if (path === '/admin/leads') return 'leads';
+    if (path === '/admin/trainings') return 'trainings';
     return 'overview';
   };
 
@@ -104,7 +107,7 @@ export const AdminDashboard: React.FC = () => {
                 </div>
                 <h1 className="text-xl font-bold">Viral Kids Admin</h1>
               </div>
-              
+
               {lastUpdated && (
                 <Badge variant="outline" className="flex items-center space-x-1">
                   <RefreshCw className="h-3 w-3" />
@@ -117,11 +120,11 @@ export const AdminDashboard: React.FC = () => {
               <Button variant="ghost" size="sm">
                 <Bell className="h-4 w-4" />
               </Button>
-              
+
               <Button variant="ghost" size="sm">
                 <Settings className="h-4 w-4" />
               </Button>
-              
+
               <div className="flex items-center space-x-2">
                 <UserCircle className="h-6 w-6 text-gray-600" />
                 <div className="flex flex-col">
@@ -129,7 +132,7 @@ export const AdminDashboard: React.FC = () => {
                   <span className="text-sm text-gray-500">{user?.role}</span>
                 </div>
               </div>
-              
+
               <Button variant="ghost" size="sm" onClick={() => {
                 logout();
                 navigate('#/');
@@ -154,7 +157,7 @@ export const AdminDashboard: React.FC = () => {
               <LayoutDashboard className="h-4 w-4 mr-2" />
               Dashboard
             </Button>
-            
+
             <Button
               variant={activeTab === 'leads' ? 'accent' : 'ghost'}
               className="w-full justify-start"
@@ -168,7 +171,7 @@ export const AdminDashboard: React.FC = () => {
                 </Badge>
               )}
             </Button>
-            
+
             <Button
               variant={activeTab === 'franchises' ? 'accent' : 'ghost'}
               className="w-full justify-start"
@@ -182,7 +185,7 @@ export const AdminDashboard: React.FC = () => {
                 </Badge>
               )}
             </Button>
-            
+
             <Button
               variant={activeTab === 'suppliers' ? 'accent' : 'ghost'}
               className="w-full justify-start"
@@ -191,7 +194,7 @@ export const AdminDashboard: React.FC = () => {
               <ShoppingBag className="h-4 w-4 mr-2" />
               Fornecedores
             </Button>
-            
+
             <Button
               variant={activeTab === 'customers' ? 'accent' : 'ghost'}
               className="w-full justify-start"
@@ -203,7 +206,7 @@ export const AdminDashboard: React.FC = () => {
               <Users className="h-4 w-4 mr-2" />
               Clientes
             </Button>
-            
+
             <Button
               variant={activeTab === 'orders' ? 'accent' : 'ghost'}
               className="w-full justify-start"
@@ -215,7 +218,7 @@ export const AdminDashboard: React.FC = () => {
               <ShoppingCart className="h-4 w-4 mr-2" />
               Pedidos
             </Button>
-            
+
             <Button
               variant={activeTab === 'products' ? 'accent' : 'ghost'}
               className="w-full justify-start"
@@ -227,7 +230,7 @@ export const AdminDashboard: React.FC = () => {
               <Package className="h-4 w-4 mr-2" />
               Produtos
             </Button>
-            
+
             <Button
               variant={activeTab === 'leads' ? 'accent' : 'ghost'}
               className="w-full justify-start"
@@ -239,7 +242,7 @@ export const AdminDashboard: React.FC = () => {
               <TrendingUp className="h-4 w-4 mr-2" />
               Funil de Leads
             </Button>
-            
+
             <Button
               variant={activeTab === 'analytics' ? 'accent' : 'ghost'}
               className="w-full justify-start"
@@ -247,6 +250,18 @@ export const AdminDashboard: React.FC = () => {
             >
               <BarChart3 className="h-4 w-4 mr-2" />
               Analytics
+            </Button>
+
+            <Button
+              variant={activeTab === 'trainings' ? 'accent' : 'ghost'}
+              className="w-full justify-start"
+              onClick={() => {
+                setActiveTab('trainings');
+                navigate('#/admin/trainings');
+              }}
+            >
+              <BookOpen className="h-4 w-4 mr-2" />
+              Treinamentos
             </Button>
           </nav>
         </aside>
@@ -283,7 +298,7 @@ export const AdminDashboard: React.FC = () => {
                   Análises detalhadas de performance e tendências
                 </p>
               </div>
-              
+
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <Card>
                   <CardHeader>
@@ -309,7 +324,7 @@ export const AdminDashboard: React.FC = () => {
                             <div className="text-base text-muted-foreground">Conversas Chatbot</div>
                           </div>
                         </div>
-                        
+
                         <div className="grid grid-cols-2 gap-4">
                           <div className="text-center">
                             <div className="text-2xl font-bold text-purple-600">
@@ -369,6 +384,13 @@ export const AdminDashboard: React.FC = () => {
           )}
           {activeTab === 'products' && (
             <ProductsManagement />
+          )}
+          {activeTab === 'products' && (
+            <ProductsManagement />
+          )}
+
+          {activeTab === 'trainings' && (
+            <TrainingManagement />
           )}
         </main>
       </div>
