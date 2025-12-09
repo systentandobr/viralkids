@@ -53,7 +53,7 @@ export const RegionalTrendsCard = ({ trends }: RegionalTrendsCardProps) => {
                   <MapPin className="h-4 w-4 text-muted-foreground" />
                   <span className="font-semibold text-base">{trend.state}</span>
                   <Badge variant="secondary" className="text-sm">
-                    {trend.franchisesCount} {trend.franchisesCount === 1 ? 'franquia' : 'franquias'}
+                    {trend.franchisesCount} {trend.franchisesCount === 1 ? 'unidade' : 'unidades'}
                   </Badge>
                 </div>
                 <div className="text-sm text-muted-foreground">
@@ -105,13 +105,12 @@ export const RegionalTrendsCard = ({ trends }: RegionalTrendsCardProps) => {
               </div>
               <div className="h-2 bg-muted rounded-full overflow-hidden">
                 <div
-                  className={`h-full ${
-                    trend.trend === 'up'
+                  className={`h-full ${trend.trend === 'up'
                       ? 'bg-neon-green'
                       : trend.trend === 'down'
-                      ? 'bg-neon-red'
-                      : 'bg-gray-400'
-                  }`}
+                        ? 'bg-neon-red'
+                        : 'bg-gray-400'
+                    }`}
                   style={{
                     width: `${Math.min(Math.abs(trend.growthRate), 100)}%`
                   }}

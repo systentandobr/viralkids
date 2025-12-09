@@ -46,7 +46,7 @@ import TrainingCenter from '@/components/franchise/TrainingCenter';
 
 
 export const FranchiseeDashboard: React.FC = () => {
-  // Simulando ID do franqueado logado
+  // Simulando ID do unidade logado
   const franchiseeId = 'franchisee_001';
 
   const {
@@ -65,15 +65,15 @@ export const FranchiseeDashboard: React.FC = () => {
 
   const { logout, user } = useAuthContext();
 
-  // Verificar se o usuário tem acesso ao painel de franqueado
+  // Verificar se o usuário tem acesso ao painel de unidade
   const hasAccess = user && isFranchiseeRole(user.role);
 
   // Se não tem acesso, mostrar mensagem amigável
   if (!hasAccess && user) {
     return (
       <AccessDenied
-        title="Acesso ao Painel de Franqueado Negado"
-        description="Esta área é exclusiva para franqueados, gerentes e parceiros. Se você precisa de acesso, entre em contato com o administrador do sistema."
+        title="Acesso ao Painel de unidadeNegado"
+        description="Esta área é exclusiva para unidades, gerentes e parceiros. Se você precisa de acesso, entre em contato com o administrador do sistema."
         helpText="Se você é um administrador ou usuário do sistema, acesse o painel administrativo através do menu principal."
         allowedRoles={ROLE_CATEGORIES.FRANCHISEE as string[]}
         showUserRole={true}
@@ -91,7 +91,7 @@ export const FranchiseeDashboard: React.FC = () => {
     return (
       <AccessDenied
         title="Acesso Restrito"
-        description="Você precisa estar logado para acessar o painel de franqueado."
+        description="Você precisa estar logado para acessar o painel de unidade."
         showUserRole={false}
         showBackButton={true}
         showHomeButton={true}
@@ -210,7 +210,7 @@ export const FranchiseeDashboard: React.FC = () => {
                 <div className="w-8 h-8 bg-gradient-to-r from-pink-500 to-purple-600 rounded-lg flex items-center justify-center">
                   <span className="text-white font-bold text-base">VK</span>
                 </div>
-                <h1 className="text-xl font-bold">Minha Franquia</h1>
+                <h1 className="text-xl font-bold">Minha AgentSchool</h1>
               </div>
             </div>
 
@@ -557,7 +557,7 @@ export const FranchiseeDashboard: React.FC = () => {
                   franchise={{
                     id: user.unitId,
                     unitId: user.unitId,
-                    name: user.name || 'Minha Franquia',
+                    name: user.name || 'Minha AgentSchool',
                     owner: {
                       id: user.id || '',
                       name: user.name || '',
@@ -599,7 +599,7 @@ export const FranchiseeDashboard: React.FC = () => {
           {activeTab === 'suppliers' && (
             <SupplierCatalog
               title="Catálogo de Fornecedores"
-              description="Encontre os melhores fornecedores para sua franquia"
+              description="Encontre os melhores fornecedores para sua unidade"
               showFilters={true}
               maxSuppliers={maxSuppliers}
               setMaxSuppliers={setMaxSuppliers}

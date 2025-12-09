@@ -666,11 +666,11 @@ export function CreateUserForm({ unitId, unitName, onSuccess, onCancel }: Create
         return (
           <div className="space-y-4">
             <div>
-              <Label htmlFor="unitName">Nome da Unidade/Franquia *</Label>
+              <Label htmlFor="unitName">Nome da Unidade/Unidade *</Label>
               <Input
                 id="unitName"
                 {...register('unitName')}
-                placeholder="Ex: Franquia Centro"
+                placeholder="Ex: Unidade Centro"
                 className={errors.unitName ? 'border-destructive' : ''}
               />
               {errors.unitName && (
@@ -733,20 +733,19 @@ export function CreateUserForm({ unitId, unitName, onSuccess, onCancel }: Create
                           return (
                             <div
                               key={role.id}
-                              className={`flex items-start space-x-3 p-3 border rounded-lg cursor-pointer transition-colors ${
-                                isSelected
+                              className={`flex items-start space-x-3 p-3 border rounded-lg cursor-pointer transition-colors ${isSelected
                                   ? 'border-primary bg-primary/5'
                                   : 'border-muted hover:border-primary/50'
-                              }`}
+                                }`}
                               onClick={async () => {
                                 const currentRoles = watchedValues.selectedRoles || [];
                                 const currentPermissions = watchedValues.selectedPermissions || [];
-                                
+
                                 if (isSelected) {
                                   // Remover role
                                   const newRoles = currentRoles.filter((r) => r !== role.name);
                                   setValue('selectedRoles', newRoles, { shouldValidate: true });
-                                  
+
                                   // Remover permissões que não pertencem a outros roles selecionados
                                   if (newRoles.length > 0) {
                                     const remainingRolePromises = newRoles.map((roleName) => {
@@ -761,14 +760,14 @@ export function CreateUserForm({ unitId, unitName, onSuccess, onCancel }: Create
                                         return [];
                                       });
                                     });
-                                    
+
                                     const remainingPermissionsArrays = await Promise.all(remainingRolePromises);
                                     const remainingPermissionsSet = new Set<string>();
                                     remainingPermissionsArrays.forEach((perms) => {
                                       perms.forEach((perm) => remainingPermissionsSet.add(perm));
                                     });
-                                    
-                                    const newPermissions = currentPermissions.filter((perm) => 
+
+                                    const newPermissions = currentPermissions.filter((perm) =>
                                       remainingPermissionsSet.has(perm)
                                     );
                                     setValue('selectedPermissions', newPermissions, { shouldValidate: true });
@@ -779,7 +778,7 @@ export function CreateUserForm({ unitId, unitName, onSuccess, onCancel }: Create
                                   // Adicionar role
                                   const newRoles = [...currentRoles, role.name];
                                   setValue('selectedRoles', newRoles, { shouldValidate: true });
-                                  
+
                                   // Buscar e adicionar permissões do role
                                   const roleResponse = await RolesService.getRoleById(role.id);
                                   if (roleResponse.success && roleResponse.data?.permissions) {
@@ -796,12 +795,12 @@ export function CreateUserForm({ unitId, unitName, onSuccess, onCancel }: Create
                                 onCheckedChange={async (checked) => {
                                   const currentRoles = watchedValues.selectedRoles || [];
                                   const currentPermissions = watchedValues.selectedPermissions || [];
-                                  
+
                                   if (checked) {
                                     // Adicionar role
                                     const newRoles = [...currentRoles, role.name];
                                     setValue('selectedRoles', newRoles, { shouldValidate: true });
-                                    
+
                                     // Buscar e adicionar permissões do role
                                     const roleResponse = await RolesService.getRoleById(role.id);
                                     if (roleResponse.success && roleResponse.data?.permissions) {
@@ -814,7 +813,7 @@ export function CreateUserForm({ unitId, unitName, onSuccess, onCancel }: Create
                                     // Remover role
                                     const newRoles = currentRoles.filter((r) => r !== role.name);
                                     setValue('selectedRoles', newRoles, { shouldValidate: true });
-                                    
+
                                     // Remover permissões que não pertencem a outros roles selecionados
                                     if (newRoles.length > 0) {
                                       const remainingRolePromises = newRoles.map((roleName) => {
@@ -829,14 +828,14 @@ export function CreateUserForm({ unitId, unitName, onSuccess, onCancel }: Create
                                           return [];
                                         });
                                       });
-                                      
+
                                       const remainingPermissionsArrays = await Promise.all(remainingRolePromises);
                                       const remainingPermissionsSet = new Set<string>();
                                       remainingPermissionsArrays.forEach((perms) => {
                                         perms.forEach((perm) => remainingPermissionsSet.add(perm));
                                       });
-                                      
-                                      const newPermissions = currentPermissions.filter((perm) => 
+
+                                      const newPermissions = currentPermissions.filter((perm) =>
                                         remainingPermissionsSet.has(perm)
                                       );
                                       setValue('selectedPermissions', newPermissions, { shouldValidate: true });

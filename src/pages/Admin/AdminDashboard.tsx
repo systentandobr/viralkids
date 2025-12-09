@@ -105,7 +105,7 @@ export const AdminDashboard: React.FC = () => {
                 <div className="w-8 h-8 bg-gradient-to-r from-pink-500 to-purple-600 rounded-lg flex items-center justify-center">
                   <span className="text-white font-bold text-base">VK</span>
                 </div>
-                <h1 className="text-xl font-bold">Viral Kids Admin</h1>
+                <h1 className="text-xl font-bold">AgentSchool Admin</h1>
               </div>
 
               {lastUpdated && (
@@ -178,7 +178,7 @@ export const AdminDashboard: React.FC = () => {
               onClick={() => setActiveTab('franchises')}
             >
               <Building className="h-4 w-4 mr-2" />
-              Franquias
+              Unidades
               {dashboard && (
                 <Badge variant="secondary" className="ml-auto">
                   {dashboard.franchises.active}

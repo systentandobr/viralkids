@@ -148,7 +148,7 @@ Sistema completo para cadastro e processamento automático de produtos afiliados
 
 1. **Iniciar Python Scraper**:
    ```bash
-   cd backend-monorepo/python/viralkids
+   cd backend-monorepo/python/agentSchool
    python api_product_scraper.py
    ```
 

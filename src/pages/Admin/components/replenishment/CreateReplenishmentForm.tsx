@@ -194,7 +194,7 @@ export function CreateReplenishmentForm({ onSuccess, onCancel }: CreateReplenish
       // Nota: Usando o endpoint de pedidos normal, mas pode ser adaptado para um endpoint específico de reposição
       const orderData = {
         customerId: '', // Pedido interno de reposição
-        customerName: `Reposição - ${user?.name || 'Franquia'}`,
+        customerName: `Reposição - ${user?.name || 'Unidade'}`,
         customerEmail: user?.email || '',
         items: itemsToOrder,
         total: itemsToOrder.reduce((sum, item) => sum + item.total, 0),

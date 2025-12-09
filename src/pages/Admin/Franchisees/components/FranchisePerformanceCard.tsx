@@ -1,11 +1,11 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { 
-  TrendingUp, 
-  TrendingDown, 
-  ShoppingCart, 
-  DollarSign, 
+import {
+  TrendingUp,
+  TrendingDown,
+  ShoppingCart,
+  DollarSign,
   Target,
   Users,
   Activity
@@ -18,7 +18,7 @@ interface FranchisePerformanceCardProps {
 
 export const FranchisePerformanceCard = ({ franchises }: FranchisePerformanceCardProps) => {
   const activeFranchises = franchises.filter(f => f.status === 'active');
-  
+
   // Calcular métricas agregadas
   const metrics = {
     totalSales: activeFranchises.reduce((sum, f) => sum + (f.metrics?.totalSales || 0), 0),
@@ -36,7 +36,7 @@ export const FranchisePerformanceCard = ({ franchises }: FranchisePerformanceCar
       : 0
   };
 
-  // Top 3 franquias por vendas
+  // Top 3 unidades por vendas
   const topFranchises = [...activeFranchises]
     .sort((a, b) => (b.metrics?.totalSales || 0) - (a.metrics?.totalSales || 0))
     .slice(0, 3);
@@ -49,7 +49,7 @@ export const FranchisePerformanceCard = ({ franchises }: FranchisePerformanceCar
           Performance Geral
         </CardTitle>
         <CardDescription>
-          Visão consolidada de todas as franquias ativas
+          Visão consolidada de todas as unidades ativas
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
@@ -114,17 +114,17 @@ export const FranchisePerformanceCard = ({ franchises }: FranchisePerformanceCar
                 <span className="text-base font-semibold">{metrics.averageGrowthRate.toFixed(1)}%</span>
               </div>
             </div>
-            <Progress 
-              value={Math.abs(metrics.averageGrowthRate)} 
+            <Progress
+              value={Math.abs(metrics.averageGrowthRate)}
               className="h-2"
             />
           </div>
         </div>
 
-        {/* Top 3 Franquias */}
+        {/* Top 3 Unidades */}
         {topFranchises.length > 0 && (
           <div>
-            <h4 className="text-base font-semibold mb-3">Top 3 Franquias por Vendas</h4>
+            <h4 className="text-base font-semibold mb-3">Top 3 Unidades por Vendas</h4>
             <div className="space-y-2">
               {topFranchises.map((franchise, index) => (
                 <div

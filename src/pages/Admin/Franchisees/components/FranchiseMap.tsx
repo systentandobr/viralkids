@@ -16,7 +16,7 @@ export const FranchiseMap = ({ franchises }: FranchiseMapProps) => {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <MapPin className="h-5 w-5" />
-          Mapa de Franquias
+          Mapa de Unidades
         </CardTitle>
       </CardHeader>
       <CardContent className="h-[calc(100%-80px)] overflow-auto">
@@ -53,10 +53,10 @@ export const FranchiseMap = ({ franchises }: FranchiseMapProps) => {
           </div>
         </div>
 
-        {/* Lista de franquias abaixo do mapa */}
+        {/* Lista de unidades abaixo do mapa */}
         <div className="mt-4 space-y-2">
           <h4 className="text-base font-semibold text-foreground mb-2">
-            Franquias no Mapa ({franchises.length})
+            Unidades no Mapa ({franchises.length})
           </h4>
           {franchises.map((franchise) => (
             <div
@@ -82,7 +82,7 @@ export const FranchiseMap = ({ franchises }: FranchiseMapProps) => {
                   </div>
                 </div>
                 <Badge variant="secondary" className="ml-2">
-                  {franchise.metrics && franchise.metrics.totalSales > 0 
+                  {franchise.metrics && franchise.metrics.totalSales > 0
                     ? `R$ ${(franchise.metrics.totalSales / 1000).toFixed(0)}k`
                     : 'Novo'}
                 </Badge>

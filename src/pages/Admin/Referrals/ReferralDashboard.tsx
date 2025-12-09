@@ -3,10 +3,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { 
-  TrendingUp, 
-  Users, 
-  Award, 
+import {
+  TrendingUp,
+  Users,
+  Award,
   Target,
   Share2,
   CheckCircle,
@@ -86,11 +86,11 @@ export const ReferralDashboard: React.FC = () => {
   };
 
   const shareReferral = (referral: Referral) => {
-    const text = `Olha que legal! Use meu código ${referral.referralCode} e ganhe recompensas na ViralKids! ${referral.shortLink || ''}`;
-    
+    const text = `Olha que legal! Use meu código ${referral.referralCode} e ganhe recompensas na AgentSchool! ${referral.shortLink || ''}`;
+
     if (navigator.share) {
       navigator.share({
-        title: 'Indique e Ganhe - ViralKids',
+        title: 'Indique e Ganhe - AgentSchool',
         text,
         url: referral.shortLink || window.location.href,
       }).catch(() => {
@@ -289,8 +289,8 @@ export const ReferralDashboard: React.FC = () => {
                           referral.status === 'completed'
                             ? 'default'
                             : referral.status === 'pending'
-                            ? 'secondary'
-                            : 'outline'
+                              ? 'secondary'
+                              : 'outline'
                         }
                       >
                         {referral.status === 'completed' && '✓ Completada'}
@@ -401,8 +401,8 @@ export const ReferralDashboard: React.FC = () => {
                           reward.status === 'paid'
                             ? 'default'
                             : reward.status === 'pending'
-                            ? 'secondary'
-                            : 'outline'
+                              ? 'secondary'
+                              : 'outline'
                         }
                       >
                         {reward.status === 'paid' && '✓ Pago'}

@@ -64,7 +64,7 @@ export const FranchiseUsersManager = ({
     unitId: franchise.unitId,
     enabled: true,
   });
-  
+
   const [searchTerm, setSearchTerm] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
@@ -82,15 +82,15 @@ export const FranchiseUsersManager = ({
       setAvailableUsers([]);
       return;
     }
-    
+
     setIsSearching(true);
     try {
       const response = await UserService.searchAllUsersAvailable(search);
-      
+
       // Garantir que response.data seja um array
       if (response.success && response.data) {
         let usersArray = Array.isArray(response.data) ? response.data : [];
-        
+
         // Filtrar usuários que não pertencem à mesma unitId do usuário logado
         // ou que não têm unitId (disponíveis para alocação)
         if (currentUser?.unitId) {
@@ -99,7 +99,7 @@ export const FranchiseUsersManager = ({
             return !user.unitId || user.unitId !== currentUser.unitId;
           });
         }
-        
+
         setAvailableUsers(usersArray);
       } else {
         setAvailableUsers([]);
@@ -113,7 +113,7 @@ export const FranchiseUsersManager = ({
     }
   };
 
-  // Alocar usuário à franquia
+  // Alocar usuário à unidade
   const allocateUser = async () => {
     if (!selectedUserId) {
       toast.error("Selecione um usuário");
@@ -145,9 +145,9 @@ export const FranchiseUsersManager = ({
     }
   };
 
-  // Remover usuário da franquia
+  // Remover usuário da unidade
   const removeUser = async (userId: string) => {
-    if (!confirm("Tem certeza que deseja remover este usuário da franquia?")) {
+    if (!confirm("Tem certeza que deseja remover este usuário da unidade?")) {
       return;
     }
 
@@ -158,7 +158,7 @@ export const FranchiseUsersManager = ({
       });
 
       if (response.success) {
-        toast.success("Usuário removido da franquia");
+        toast.success("Usuário removido da unidade");
         refetchUsers();
         onUserAllocated?.();
       } else {
@@ -174,11 +174,11 @@ export const FranchiseUsersManager = ({
 
   const filteredUsers = (users || []).filter((user) => {
     if (!user) return false;
-    
+
     const name = user.name || '';
     const email = user.email || '';
     const searchLower = searchTerm.toLowerCase();
-    
+
     return (
       name.toLowerCase().includes(searchLower) ||
       email.toLowerCase().includes(searchLower)
@@ -214,7 +214,7 @@ export const FranchiseUsersManager = ({
             <Users className="h-5 w-5 text-white" />
           </div>
           <div>
-            <h3 className="text-lg font-bold">Usuários da Franquia</h3>
+            <h3 className="text-lg font-bold">Usuários da Unidade</h3>
             <p className="text-base text-muted-foreground">
               Gerencie os usuários alocados para {franchise.name}
             </p>
@@ -235,7 +235,7 @@ export const FranchiseUsersManager = ({
               <DialogHeader>
                 <DialogTitle>Cadastrar Novo Usuário</DialogTitle>
                 <DialogDescription>
-                  Preencha os dados para cadastrar um novo usuário na franquia {franchise.name}
+                  Preencha os dados para cadastrar um novo usuário na unidade {franchise.name}
                 </DialogDescription>
               </DialogHeader>
               <CreateUserForm
@@ -246,7 +246,7 @@ export const FranchiseUsersManager = ({
               />
             </DialogContent>
           </Dialog>
-          
+
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
               <Button className="bg-gradient-to-r from-purple-500 to-pink-500 hover:opacity-90">
@@ -254,99 +254,98 @@ export const FranchiseUsersManager = ({
                 Alocar Usuário
               </Button>
             </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Alocar Usuário à Franquia</DialogTitle>
-              <DialogDescription>
-                Selecione um usuário e defina seu papel na franquia {franchise.name}
-              </DialogDescription>
-            </DialogHeader>
-            <div className="space-y-4 py-4">
-              <div className="space-y-2">
-                <Label htmlFor="user-search">Buscar Usuário</Label>
-                <div className="relative">
-                  <Input
-                    id="user-search"
-                    placeholder="Digite o email ou nome do usuário..."
-                    onChange={(e) => {
-                      const value = e.target.value;
-                      searchAvailableUsers(value);
-                    }}
-                  />
-                  {isSearching && (
-                    <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-muted-foreground" />
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Alocar Usuário à Unidade</DialogTitle>
+                <DialogDescription>
+                  Selecione um usuário e defina seu papel na unidade {franchise.name}
+                </DialogDescription>
+              </DialogHeader>
+              <div className="space-y-4 py-4">
+                <div className="space-y-2">
+                  <Label htmlFor="user-search">Buscar Usuário</Label>
+                  <div className="relative">
+                    <Input
+                      id="user-search"
+                      placeholder="Digite o email ou nome do usuário..."
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        searchAvailableUsers(value);
+                      }}
+                    />
+                    {isSearching && (
+                      <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-muted-foreground" />
+                    )}
+                  </div>
+                  {availableUsers.length > 0 && (
+                    <div className="border rounded-lg max-h-48 overflow-y-auto">
+                      {availableUsers.map((user) => (
+                        <div
+                          key={user.id}
+                          className={`p-2 hover:bg-muted cursor-pointer ${selectedUserId === user.id ? "bg-muted" : ""
+                            }`}
+                          onClick={() => setSelectedUserId(user.id)}
+                        >
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <p className="text-base font-medium">{user.name || user.username || 'Sem nome'}</p>
+                              <p className="text-sm text-muted-foreground">{user.email || 'Sem email'}</p>
+                            </div>
+                            {selectedUserId === user.id && (
+                              <CheckCircle2 className="h-4 w-4 text-neon-green" />
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  {availableUsers.length === 0 && !isSearching && (
+                    <p className="text-sm text-muted-foreground">
+                      Digite pelo menos 3 caracteres para buscar usuários
+                    </p>
                   )}
                 </div>
-                {availableUsers.length > 0 && (
-                  <div className="border rounded-lg max-h-48 overflow-y-auto">
-                    {availableUsers.map((user) => (
-                      <div
-                        key={user.id}
-                        className={`p-2 hover:bg-muted cursor-pointer ${
-                          selectedUserId === user.id ? "bg-muted" : ""
-                        }`}
-                        onClick={() => setSelectedUserId(user.id)}
-                      >
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <p className="text-base font-medium">{user.name || user.username || 'Sem nome'}</p>
-                            <p className="text-sm text-muted-foreground">{user.email || 'Sem email'}</p>
-                          </div>
-                          {selectedUserId === user.id && (
-                            <CheckCircle2 className="h-4 w-4 text-neon-green" />
-                          )}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-                {availableUsers.length === 0 && !isSearching && (
-                  <p className="text-sm text-muted-foreground">
-                    Digite pelo menos 3 caracteres para buscar usuários
-                  </p>
-                )}
+                <div className="space-y-2">
+                  <Label htmlFor="role">Papel na Unidade</Label>
+                  <Select value={selectedRole} onValueChange={setSelectedRole}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione o papel" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="franchisee">Unidade</SelectItem>
+                      <SelectItem value="gerente">Gerente</SelectItem>
+                      <SelectItem value="vendedor">Vendedor</SelectItem>
+                      <SelectItem value="parceiro">Parceiro</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="role">Papel na Franquia</Label>
-                <Select value={selectedRole} onValueChange={setSelectedRole}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecione o papel" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="franchisee">Franqueado</SelectItem>
-                    <SelectItem value="gerente">Gerente</SelectItem>
-                    <SelectItem value="vendedor">Vendedor</SelectItem>
-                    <SelectItem value="parceiro">Parceiro</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-            <DialogFooter>
-              <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
-                Cancelar
-              </Button>
-              <Button
-                onClick={allocateUser}
-                disabled={isLoading || !selectedUserId}
-                className="bg-gradient-to-r from-purple-500 to-pink-500 hover:opacity-90"
-              >
-                {isLoading ? (
-                  <>
-                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    Processando...
-                  </>
-                ) : (
-                  <>
-                    <CheckCircle2 className="h-4 w-4 mr-2" />
-                    Alocar Usuário
-                  </>
-                )}
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
-          </div>
+              <DialogFooter>
+                <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
+                  Cancelar
+                </Button>
+                <Button
+                  onClick={allocateUser}
+                  disabled={isLoading || !selectedUserId}
+                  className="bg-gradient-to-r from-purple-500 to-pink-500 hover:opacity-90"
+                >
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      Processando...
+                    </>
+                  ) : (
+                    <>
+                      <CheckCircle2 className="h-4 w-4 mr-2" />
+                      Alocar Usuário
+                    </>
+                  )}
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
         </div>
+      </div>
 
       {/* Busca */}
       <div className="relative">
@@ -370,7 +369,7 @@ export const FranchiseUsersManager = ({
           <p>Nenhum usuário encontrado</p>
           <p className="text-base mt-1">
             {users.length === 0
-              ? "Aloque usuários para esta franquia"
+              ? "Aloque usuários para esta unidade"
               : "Nenhum usuário corresponde à busca"}
           </p>
         </div>

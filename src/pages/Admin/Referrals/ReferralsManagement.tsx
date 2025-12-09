@@ -81,11 +81,11 @@ export const ReferralsManagement: React.FC = () => {
   };
 
   const shareReferral = (referral: Referral) => {
-    const text = `Use meu código ${referral.referralCode} e ganhe recompensas na ViralKids! ${referral.shortLink || ''}`;
-    
+    const text = `Use meu código ${referral.referralCode} e ganhe recompensas na AgentSchool! ${referral.shortLink || ''}`;
+
     if (navigator.share) {
       navigator.share({
-        title: 'Indique e Ganhe - ViralKids',
+        title: 'Indique e Ganhe - AgentSchool',
         text,
         url: referral.shortLink || window.location.href,
       }).catch(() => {

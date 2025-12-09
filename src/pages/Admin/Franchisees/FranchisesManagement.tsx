@@ -10,10 +10,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { 
-  Building, 
-  Plus, 
-  Search, 
+import {
+  Building,
+  Plus,
+  Search,
   Edit,
   Filter,
   Download,
@@ -99,7 +99,7 @@ const FranchisesManagement = () => {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
 
-  // Buscar franquias da API
+  // Buscar unidades da API
   const { data: franchisesData, isLoading, error } = useFranchises({
     search: searchTerm || undefined,
     status: selectedStatus.length === 1 ? selectedStatus[0] as any : undefined,
@@ -127,12 +127,12 @@ const FranchisesManagement = () => {
     };
   }, [filteredFranchises]);
 
-  
+
   // Handler para sucesso na criação
   const handleCreateSuccess = () => {
     // Fechar modal
     setIsCreateModalOpen(false);
-    
+
     // Recarregar lista
     setRefreshTrigger((prev) => prev + 1);
   };
@@ -148,7 +148,7 @@ const FranchisesManagement = () => {
         <div className="flex items-center justify-center h-64">
           <div className="text-center space-y-4">
             <div className="w-8 h-8 border-4 border-purple-600 border-t-transparent rounded-full animate-spin mx-auto" />
-            <p className="text-muted-foreground">Carregando franquias...</p>
+            <p className="text-muted-foreground">Carregando unidades...</p>
           </div>
         </div>
       </div>
@@ -160,7 +160,7 @@ const FranchisesManagement = () => {
       <div className="min-h-screen bg-background p-6 lg:p-8">
         <div className="flex items-center justify-center h-64">
           <div className="text-center space-y-4">
-            <p className="text-red-600">Erro ao carregar franquias: {error instanceof Error ? error.message : 'Erro desconhecido'}</p>
+            <p className="text-red-600">Erro ao carregar unidades: {error instanceof Error ? error.message : 'Erro desconhecido'}</p>
           </div>
         </div>
       </div>
@@ -201,7 +201,7 @@ const FranchisesManagement = () => {
         <div className="flex items-center justify-center h-64">
           <div className="text-center space-y-4">
             <div className="w-8 h-8 border-4 border-purple-600 border-t-transparent rounded-full animate-spin mx-auto" />
-            <p className="text-muted-foreground">Carregando franquias...</p>
+            <p className="text-muted-foreground">Carregando unidades...</p>
           </div>
         </div>
       </div>
@@ -213,7 +213,7 @@ const FranchisesManagement = () => {
       <div className="min-h-screen bg-background p-6 lg:p-8">
         <div className="flex items-center justify-center h-64">
           <div className="text-center space-y-4">
-            <p className="text-red-600">Erro ao carregar franquias: {error instanceof Error ? error.message : 'Erro desconhecido'}</p>
+            <p className="text-red-600">Erro ao carregar unidades: {error instanceof Error ? error.message : 'Erro desconhecido'}</p>
           </div>
         </div>
       </div>
@@ -229,14 +229,14 @@ const FranchisesManagement = () => {
             <Building className="h-6 w-6 text-white" />
           </div>
           <div>
-            <h1 className="text-3xl font-bold">Gerenciamento de Franquias</h1>
+            <h1 className="text-3xl font-bold">Gerenciamento de Unidades</h1>
             <p className="text-muted-foreground">
-              Sistema de gestão das franquias ativas e seus desempenhos
+              Sistema de gestão das unidades ativas e seus desempenhos
             </p>
           </div>
         </div>
         <div className="flex gap-2">
-          <Button 
+          <Button
             variant={viewMode === 'table' ? 'default' : 'outline'}
             onClick={() => setViewMode('table')}
             className="gap-2"
@@ -244,7 +244,7 @@ const FranchisesManagement = () => {
             <Building className="h-4 w-4" />
             Tabela
           </Button>
-          <Button 
+          <Button
             variant={viewMode === 'map' ? 'default' : 'outline'}
             onClick={() => setViewMode('map')}
             className="gap-2"
@@ -253,11 +253,11 @@ const FranchisesManagement = () => {
             Mapa
           </Button>
           <Button
-             className="bg-gradient-to-r from-purple-500 to-pink-500 hover:opacity-90 transition-opacity shadow-neon"
-             onClick={() => { setIsCreateModalOpen(true); }}
-             >
+            className="bg-gradient-to-r from-purple-500 to-pink-500 hover:opacity-90 transition-opacity shadow-neon"
+            onClick={() => { setIsCreateModalOpen(true); }}
+          >
             <Plus className="h-4 w-4 mr-2" />
-            Nova Franquia
+            Nova Unidade
           </Button>
         </div>
       </div>
@@ -270,7 +270,7 @@ const FranchisesManagement = () => {
               <Building className="h-5 w-5 text-white" />
             </div>
             <div>
-              <p className="text-base text-muted-foreground">Total Franquias</p>
+              <p className="text-base text-muted-foreground">Total Unidades</p>
               <h2 className="text-2xl font-bold text-purple-600 dark:text-purple-400">
                 {aggregatedMetrics.totalFranchises}
               </h2>
@@ -284,7 +284,7 @@ const FranchisesManagement = () => {
               <Activity className="h-5 w-5 text-white" />
             </div>
             <div>
-              <p className="text-base text-muted-foreground">Franquias Ativas</p>
+              <p className="text-base text-muted-foreground">Unidades Ativas</p>
               <h2 className="text-2xl font-bold text-neon-green">
                 {aggregatedMetrics.activeFranchises}
               </h2>
@@ -365,7 +365,7 @@ const FranchisesManagement = () => {
             <RegionalTrendsCard trends={regionalTrends || []} />
           </div>
 
-          {/* Gerenciamento de Usuários - Mostrar quando uma franquia estiver selecionada */}
+          {/* Gerenciamento de Usuários - Mostrar quando uma unidade estiver selecionada */}
           {selectedFranchise && (
             <FranchiseUsersManager
               franchise={selectedFranchise}
@@ -381,7 +381,7 @@ const FranchisesManagement = () => {
               <TableHeader>
                 <TableRow className="border-border/50 hover:bg-muted/50">
                   <TableHead className="text-foreground font-semibold">ID</TableHead>
-                  <TableHead className="text-foreground font-semibold">Franquia</TableHead>
+                  <TableHead className="text-foreground font-semibold">Unidade</TableHead>
                   <TableHead className="text-foreground font-semibold">Proprietário</TableHead>
                   <TableHead className="text-foreground font-semibold">Localização</TableHead>
                   <TableHead className="text-foreground font-semibold text-center">Tipo</TableHead>
@@ -432,9 +432,9 @@ const FranchisesManagement = () => {
                     </TableCell>
                     <TableCell className="text-center">
                       <Badge variant="secondary" className={getStatusBadgeClass(franchise.status)}>
-                        {franchise.status === 'active' ? 'Ativa' : 
-                         franchise.status === 'pending' ? 'Pendente' :
-                         franchise.status === 'suspended' ? 'Suspensa' : 'Inativa'}
+                        {franchise.status === 'active' ? 'Ativa' :
+                          franchise.status === 'pending' ? 'Pendente' :
+                            franchise.status === 'suspended' ? 'Suspensa' : 'Inativa'}
                       </Badge>
                     </TableCell>
                     <TableCell className="text-right">
@@ -442,9 +442,8 @@ const FranchisesManagement = () => {
                         <Button
                           size="sm"
                           variant="ghost"
-                          className={`h-8 w-8 p-0 hover:bg-purple-500/10 hover:text-purple-500 ${
-                            selectedFranchise?.id === franchise.id ? "bg-purple-500/20" : ""
-                          }`}
+                          className={`h-8 w-8 p-0 hover:bg-purple-500/10 hover:text-purple-500 ${selectedFranchise?.id === franchise.id ? "bg-purple-500/20" : ""
+                            }`}
                           title="Gerenciar usuários"
                           onClick={() => setSelectedFranchise(
                             selectedFranchise?.id === franchise.id ? null : franchise
@@ -456,7 +455,7 @@ const FranchisesManagement = () => {
                           size="sm"
                           variant="ghost"
                           className="h-8 w-8 p-0 hover:bg-neon-blue/10 hover:text-neon-blue"
-                          title="Editar franquia"
+                          title="Editar unidade"
                         >
                           <Edit className="h-4 w-4" />
                         </Button>
@@ -468,19 +467,19 @@ const FranchisesManagement = () => {
             </Table>
           </Card>
         </div>
-      )}  
+      )}
 
-       {/* Modal de criação */}
-        <Modal
-          isOpen={isCreateModalOpen}
-          onClose={handleCreateCancel}
-          title="Criar Nova Franquia"
-        >
-          <CreateFranchiseForm
-            onSuccess={handleCreateSuccess}
-            onCancel={handleCreateCancel}
-          />
-        </Modal>  
+      {/* Modal de criação */}
+      <Modal
+        isOpen={isCreateModalOpen}
+        onClose={handleCreateCancel}
+        title="Criar Nova Unidade"
+      >
+        <CreateFranchiseForm
+          onSuccess={handleCreateSuccess}
+          onCancel={handleCreateCancel}
+        />
+      </Modal>
     </div>
   );
 };

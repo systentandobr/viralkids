@@ -10,11 +10,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { 
-  ShoppingCart, 
-  Plus, 
-  Search, 
-  Eye, 
+import {
+  ShoppingCart,
+  Plus,
+  Search,
+  Eye,
   Edit,
   Filter,
   Download,
@@ -86,11 +86,11 @@ const Orders = () => {
           <div>
             <h1 className="text-3xl font-bold">Gerenciamento de Pedidos</h1>
             <p className="text-muted-foreground">
-              Acompanhe e gerencie todos os pedidos da sua franquia
+              Acompanhe e gerencie todos os pedidos da sua unidade
             </p>
           </div>
         </div>
-        <Button 
+        <Button
           className="bg-gradient-to-r from-orange-500 to-red-500 hover:opacity-90 transition-opacity shadow-neon"
           onClick={() => setIsCreateModalOpen(true)}
         >
@@ -222,10 +222,10 @@ const Orders = () => {
                       order.status === "entregue"
                         ? "bg-neon-green/10 text-neon-green border-neon-green/20"
                         : order.status === "processando"
-                        ? "bg-yellow-500/10 text-yellow-600 dark:text-yellow-400 border-yellow-500/20"
-                        : order.status === "enviado"
-                        ? "bg-neon-blue/10 text-neon-blue border-neon-blue/20"
-                        : "bg-neon-red/10 text-neon-red border-neon-red/20"
+                          ? "bg-yellow-500/10 text-yellow-600 dark:text-yellow-400 border-yellow-500/20"
+                          : order.status === "enviado"
+                            ? "bg-neon-blue/10 text-neon-blue border-neon-blue/20"
+                            : "bg-neon-red/10 text-neon-red border-neon-red/20"
                     }
                   >
                     {order.status === "entregue" && <CheckCircle2 className="h-3 w-3 mr-1 inline" />}

@@ -1,4 +1,4 @@
-// Tipos para o sistema de gerenciamento de franquias
+// Tipos para o sistema de gerenciamento de unidades
 
 export interface FranchiseLocation {
   lat: number;
