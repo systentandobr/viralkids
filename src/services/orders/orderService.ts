@@ -34,6 +34,13 @@ export interface Order {
     state: string;
     zipCode: string;
   };
+  // Campos de integração com Referrals
+  referralCode?: string;
+  referralId?: string;
+  referralReward?: {
+    value: number;
+    status: string;
+  };
   createdAt: Date;
   updatedAt: Date;
 }
@@ -43,6 +50,7 @@ export interface OrderFilters {
   status?: 'processando' | 'enviado' | 'entregue' | 'cancelado';
   page?: number;
   limit?: number;
+  hasReferral?: boolean; // true para pedidos com referral
 }
 
 export interface OrderStats {

@@ -10,6 +10,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { 
   Users, 
   Plus, 
@@ -19,7 +26,10 @@ import {
   Filter,
   Download,
   UserPlus,
-  Star
+  Star,
+  Share2,
+  Award,
+  Eye
 } from "lucide-react";
 import { useState, useMemo } from "react";
 import { useCustomers, useCustomerStats, useDeleteCustomer } from "@/services/queries/customers";
@@ -28,25 +38,38 @@ import { EditCustomerForm } from "@/pages/Admin/components/customers/EditCustome
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
 } from "@/components/ui/dialog";
+import { CustomerReferralHistory } from "./components/CustomerReferralHistory";
 
 const Customers = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string | undefined>(undefined);
+  const [referralFilter, setReferralFilter] = useState<string>("all"); // "all" | "top" | "with" | "without"
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [editingCustomerId, setEditingCustomerId] = useState<string | null>(null);
+  const [viewingReferralHistoryId, setViewingReferralHistoryId] = useState<string | null>(null);
   const deleteCustomer = useDeleteCustomer();
 
   // Buscar clientes da API
   const { data: customersData, isLoading, error } = useCustomers({
     search: searchTerm || undefined,
     status: statusFilter as 'vip' | 'ativo' | 'novo' | undefined,
+    topIndicators: referralFilter === 'top' ? true : undefined,
+    minReferrals: referralFilter === 'with' ? 1 : undefined,
   });
 
   const { data: stats } = useCustomerStats();
 
   const customers = customersData?.data || [];
-  const filteredCustomers = customers; // Já filtrado pela API
+  
+  // Filtrar clientes localmente se necessário
+  let filteredCustomers = customers;
+  if (referralFilter === 'without') {
+    filteredCustomers = customers.filter(c => !c.referralStats || c.referralStats.totalReferrals === 0);
+  }
 
   if (isLoading) {
     return (
@@ -176,10 +199,20 @@ const Customers = () => {
             />
           </div>
           <div className="flex gap-2">
-            <Button variant="outline" className="gap-2 border-border/50 hover:border-purple-500">
-              <Filter className="h-4 w-4" />
-              Filtros
-            </Button>
+            <Select
+              value={referralFilter}
+              onValueChange={setReferralFilter}
+            >
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Filtrar por indicações" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todas as Indicações</SelectItem>
+                <SelectItem value="top">Top Indicadores</SelectItem>
+                <SelectItem value="with">Com Indicações</SelectItem>
+                <SelectItem value="without">Sem Indicações</SelectItem>
+              </SelectContent>
+            </Select>
             <Button variant="outline" className="gap-2 border-border/50 hover:border-pink-500">
               <Download className="h-4 w-4" />
               Exportar
@@ -198,6 +231,8 @@ const Customers = () => {
               <TableHead className="text-foreground font-semibold">Contato</TableHead>
               <TableHead className="text-foreground font-semibold text-center">Compras</TableHead>
               <TableHead className="text-foreground font-semibold text-right">Total Gasto</TableHead>
+              <TableHead className="text-foreground font-semibold text-center">Indicações</TableHead>
+              <TableHead className="text-foreground font-semibold text-right">Recompensas</TableHead>
               <TableHead className="text-foreground font-semibold text-center">Status</TableHead>
               <TableHead className="text-foreground font-semibold text-right">Ações</TableHead>
             </TableRow>
@@ -222,6 +257,41 @@ const Customers = () => {
                   R$ {(customer.totalSpent || 0).toFixed(2)}
                 </TableCell>
                 <TableCell className="text-center">
+                  {customer.referralStats ? (
+                    <div className="flex flex-col items-center gap-1">
+                      <div className="flex items-center gap-1">
+                        <Share2 className="h-3 w-3 text-muted-foreground" />
+                        <span className="font-semibold">{customer.referralStats.totalReferrals}</span>
+                      </div>
+                      {customer.referralStats.totalReferrals >= 10 && (
+                        <Badge className="bg-amber-500/10 text-amber-600 border-amber-500/20 text-xs">
+                          <Award className="h-2 w-2 mr-1" />
+                          Top
+                        </Badge>
+                      )}
+                      <span className="text-xs text-muted-foreground">
+                        {customer.referralStats.completedReferrals} completadas
+                      </span>
+                    </div>
+                  ) : (
+                    <span className="text-muted-foreground text-sm">-</span>
+                  )}
+                </TableCell>
+                <TableCell className="text-right">
+                  {customer.referralStats ? (
+                    <div className="flex flex-col items-end">
+                      <span className="font-semibold text-emerald-600">
+                        R$ {customer.referralStats.totalRewardsReceived.toFixed(2)}
+                      </span>
+                      <span className="text-xs text-muted-foreground">
+                        {customer.referralStats.conversionRate.toFixed(1)}% conversão
+                      </span>
+                    </div>
+                  ) : (
+                    <span className="text-muted-foreground text-sm">-</span>
+                  )}
+                </TableCell>
+                <TableCell className="text-center">
                   <Badge
                     variant="secondary"
                     className={
@@ -242,6 +312,17 @@ const Customers = () => {
                 </TableCell>
                 <TableCell className="text-right">
                   <div className="flex justify-end gap-2">
+                    {customer.referralStats && customer.referralStats.totalReferrals > 0 && (
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="h-8 w-8 p-0 hover:bg-emerald-500/10 hover:text-emerald-500"
+                        onClick={() => setViewingReferralHistoryId(customer.id)}
+                        title="Ver histórico de indicações"
+                      >
+                        <Eye className="h-4 w-4" />
+                      </Button>
+                    )}
                     <Button
                       size="sm"
                       variant="ghost"
@@ -297,6 +378,21 @@ const Customers = () => {
               }}
               onCancel={() => setEditingCustomerId(null)}
             />
+          </DialogContent>
+        </Dialog>
+      )}
+
+      {/* Modal de histórico de indicações */}
+      {viewingReferralHistoryId && (
+        <Dialog open={!!viewingReferralHistoryId} onOpenChange={(open) => !open && setViewingReferralHistoryId(null)}>
+          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Histórico de Indicações</DialogTitle>
+              <DialogDescription>
+                Histórico completo de indicações e recompensas do cliente
+              </DialogDescription>
+            </DialogHeader>
+            <CustomerReferralHistory customerId={viewingReferralHistoryId} />
           </DialogContent>
         </Dialog>
       )}

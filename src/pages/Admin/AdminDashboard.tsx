@@ -20,7 +20,8 @@ import {
   ShoppingCart,
   Package,
   TrendingUp,
-  BookOpen
+  BookOpen,
+  CheckSquare
 } from 'lucide-react';
 import { useAuthContext } from '@/features/auth';
 import { useRouter } from '@/router';
@@ -30,6 +31,9 @@ import ProductsManagement from './Products/ProductsManagement';
 import LeadsPipeline from './Leads/LeadsPipeline';
 import { FranchisesManagement } from './Franchisees';
 import TrainingManagement from '@/components/admin/TrainingManagement';
+import TaskTemplateManagement from '@/components/admin/TaskTemplateManagement';
+import { ReferralFunnelAnalytics } from './Analytics/ReferralFunnelAnalytics';
+
 
 
 export const AdminDashboard: React.FC = () => {
@@ -58,6 +62,7 @@ export const AdminDashboard: React.FC = () => {
     if (path === '/admin/analytics') return 'analytics';
     if (path === '/admin/leads') return 'leads';
     if (path === '/admin/trainings') return 'trainings';
+    if (path === '/admin/tasks') return 'tasks';
     return 'overview';
   };
 
@@ -105,7 +110,7 @@ export const AdminDashboard: React.FC = () => {
                 <div className="w-8 h-8 bg-gradient-to-r from-pink-500 to-purple-600 rounded-lg flex items-center justify-center">
                   <span className="text-white font-bold text-base">VK</span>
                 </div>
-                <h1 className="text-xl font-bold">AgentSchool Admin</h1>
+                <h1 className="text-xl font-bold">AgentSummary Admin</h1>
               </div>
 
               {lastUpdated && (
@@ -263,6 +268,18 @@ export const AdminDashboard: React.FC = () => {
               <BookOpen className="h-4 w-4 mr-2" />
               Treinamentos
             </Button>
+
+            <Button
+              variant={activeTab === 'tasks' ? 'accent' : 'ghost'}
+              className="w-full justify-start"
+              onClick={() => {
+                setActiveTab('tasks');
+                navigate('#/admin/tasks');
+              }}
+            >
+              <CheckSquare className="h-4 w-4 mr-2" />
+              SOPs / Tarefas
+            </Button>
           </nav>
         </aside>
 
@@ -298,6 +315,9 @@ export const AdminDashboard: React.FC = () => {
                   Análises detalhadas de performance e tendências
                 </p>
               </div>
+              
+              {/* Analytics de Referrals */}
+              <ReferralFunnelAnalytics />
 
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <Card>
@@ -391,6 +411,10 @@ export const AdminDashboard: React.FC = () => {
 
           {activeTab === 'trainings' && (
             <TrainingManagement />
+          )}
+
+          {activeTab === 'tasks' && (
+            <TaskTemplateManagement />
           )}
         </main>
       </div>

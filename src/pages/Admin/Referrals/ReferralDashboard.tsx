@@ -86,11 +86,11 @@ export const ReferralDashboard: React.FC = () => {
   };
 
   const shareReferral = (referral: Referral) => {
-    const text = `Olha que legal! Use meu código ${referral.referralCode} e ganhe recompensas na AgentSchool! ${referral.shortLink || ''}`;
+    const text = `Olha que legal! Use meu código ${referral.referralCode} e ganhe recompensas na AgentSummary! ${referral.shortLink || ''}`;
 
     if (navigator.share) {
       navigator.share({
-        title: 'Indique e Ganhe - AgentSchool',
+        title: 'Indique e Ganhe - AgentSummary',
         text,
         url: referral.shortLink || window.location.href,
       }).catch(() => {

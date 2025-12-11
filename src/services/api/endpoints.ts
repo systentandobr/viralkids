@@ -18,7 +18,7 @@ export const API_ENDPOINTS = {
     UPDATE_IMAGE_ORDER: (id: string) => `/products/${id}/images/order`,
     UPDATE_MARKETPLACE: (id: string) => `/products/${id}/marketplace`,
   },
-  
+
   // Produtos Afiliados
   AFFILIATE_PRODUCTS: {
     LIST: '/affiliate-products',
@@ -31,13 +31,13 @@ export const API_ENDPOINTS = {
     RETRY: (id: string) => `/affiliate-products/${id}/retry`,
     METRICS: '/affiliate-products/metrics',
   },
-  
+
   // Inventory / Estoque
   INVENTORY: {
     AVAILABILITY: '/inventory/availability',
     REPLENISH_PLAN: '/inventory/replenish/plan',
   },
-  
+
   // Usuário
   USERS: {
     LIST: '/users',
@@ -55,7 +55,7 @@ export const API_ENDPOINTS = {
     ADDRESSES: '/user/addresses',
     CHANGE_PASSWORD: '/user/change-password',
   },
-  
+
   // Pedidos
   ORDERS: {
     LIST: '/orders',
@@ -65,13 +65,13 @@ export const API_ENDPOINTS = {
     TRACKING: (id: string) => `/orders/${id}/tracking`,
     CANCEL: (id: string) => `/orders/${id}/cancel`,
   },
-  
+
   // Delivery
   DELIVERY: {
     QUOTE: '/delivery/quote',
     DISPATCH: '/delivery/dispatch',
   },
-  
+
   // Autenticação
   AUTH: {
     LOGIN: '/auth/login',
@@ -139,7 +139,7 @@ export const API_ENDPOINTS = {
   SUPPLIERS: {
     LIST: '/suppliers',
   },
-  
+
   // Leads ou potenciais clientes
   LEADS: {
     CREATE: '/leads',
@@ -159,6 +159,7 @@ export const API_ENDPOINTS = {
     UPDATE: (id: string) => `/customers/${id}`,
     DELETE: (id: string) => `/customers/${id}`,
     STATS: '/customers/stats',
+    REFERRAL_HISTORY: (id: string) => `/customers/${id}/referrals`,
   },
 
   // Franquias
@@ -209,6 +210,44 @@ export const API_ENDPOINTS = {
     CANCEL: (id: string) => `/rewards/${id}/cancel`,
   },
 
+  // Analytics de Referrals
+  REFERRAL_ANALYTICS: {
+    ANALYTICS: '/admin/referrals/analytics',
+    FUNNEL: '/admin/referrals/funnel',
+    COHORTS: '/admin/referrals/cohorts',
+    LEAD_STATS: '/admin/leads/referral-stats',
+  },
+
+  // Treinamentos
+  TRAININGS: {
+    LIST: '/trainings',
+    DETAIL: (id: string) => `/trainings/${id}`,
+    CREATE: '/trainings',
+    UPDATE: (id: string) => `/trainings/${id}`,
+    DELETE: (id: string) => `/trainings/${id}`,
+    INCREMENT_VIEW: (id: string) => `/trainings/${id}/view`,
+  },
+  // Templates de Tarefas (Admin)
+  TASK_TEMPLATES: {
+    LIST: '/task-templates',
+    DEFAULTS: '/task-templates/defaults',
+    DETAIL: (id: string) => `/task-templates/${id}`,
+    CREATE: '/task-templates',
+    UPDATE: (id: string) => `/task-templates/${id}`,
+    DELETE: (id: string) => `/task-templates/${id}`,
+  },
+
+  // Tarefas da Unidade (Franchisee)
+  FRANCHISE_TASKS: {
+    LIST_BY_FRANCHISE: (franchiseId: string) => `/franchise-tasks/franchise/${franchiseId}`,
+    LIST_BY_USER: (userId: string) => `/franchise-tasks/user/${userId}`,
+    DETAIL: (id: string) => `/franchise-tasks/${id}`,
+    CREATE: '/franchise-tasks',
+    UPDATE: (id: string) => `/franchise-tasks/${id}`,
+    COMPLETE_STEP: (id: string) => `/franchise-tasks/${id}/complete-step`,
+    INITIALIZE: (franchiseId: string) => `/franchise-tasks/initialize/${franchiseId}`,
+    STATS: (franchiseId: string) => `/franchise-tasks/franchise/${franchiseId}/stats`,
+  },
 } as const;
 
 

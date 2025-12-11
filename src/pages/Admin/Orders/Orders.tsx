@@ -21,7 +21,10 @@ import {
   Package,
   CheckCircle2,
   Clock,
-  XCircle
+  XCircle,
+  Share2,
+  ExternalLink,
+  TrendingUp
 } from "lucide-react";
 import { useState } from "react";
 import { useOrders, useOrderStats, useDeleteOrder } from "@/services/queries/orders";
@@ -193,6 +196,7 @@ const Orders = () => {
               <TableHead className="text-foreground font-semibold">Data</TableHead>
               <TableHead className="text-foreground font-semibold text-center">Itens</TableHead>
               <TableHead className="text-foreground font-semibold text-right">Total</TableHead>
+              <TableHead className="text-foreground font-semibold text-center">Indicação</TableHead>
               <TableHead className="text-foreground font-semibold text-center">Status</TableHead>
               <TableHead className="text-foreground font-semibold text-right">Ações</TableHead>
             </TableRow>
@@ -214,6 +218,44 @@ const Orders = () => {
                 </TableCell>
                 <TableCell className="text-right font-semibold text-neon-cyan">
                   R$ {order.total.toFixed(2)}
+                </TableCell>
+                <TableCell className="text-center">
+                  {order.referralCode || order.referralId ? (
+                    <div className="flex flex-col items-center gap-1">
+                      <Badge 
+                        variant="secondary" 
+                        className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20"
+                      >
+                        <Share2 className="h-3 w-3 mr-1" />
+                        Indicação
+                      </Badge>
+                      {order.referralCode && (
+                        <span className="text-xs text-muted-foreground font-mono">
+                          {order.referralCode}
+                        </span>
+                      )}
+                      {order.referralId && (
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="h-6 px-2 text-xs"
+                          onClick={() => {
+                            window.location.href = `#/admin/referrals?referralId=${order.referralId}`;
+                          }}
+                        >
+                          <ExternalLink className="h-3 w-3" />
+                        </Button>
+                      )}
+                      {order.referralReward && order.referralReward.value > 0 && (
+                        <div className="flex items-center gap-1 text-xs text-emerald-600">
+                          <TrendingUp className="h-3 w-3" />
+                          R$ {order.referralReward.value.toFixed(2)}
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <span className="text-muted-foreground text-sm">-</span>
+                  )}
                 </TableCell>
                 <TableCell className="text-center">
                   <Badge

@@ -31,6 +31,8 @@ import {
   CheckCircle,
   XCircle,
   Clock,
+  Share2,
+  ExternalLink,
 } from "lucide-react";
 import { useState } from "react";
 import { useLeads, useLeadPipelineStats, useUpdateLead, useDeleteLead } from "@/services/queries/leads";
@@ -50,6 +52,7 @@ import { Label } from "@/components/ui/label";
 const LeadsPipeline = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<LeadStatus | undefined>(undefined);
+  const [referralFilter, setReferralFilter] = useState<string>("all"); // "all" | "with" | "without"
   const [selectedLead, setSelectedLead] = useState<string | null>(null);
   const [noteText, setNoteText] = useState("");
   const [isNoteDialogOpen, setIsNoteDialogOpen] = useState(false);
@@ -59,6 +62,7 @@ const LeadsPipeline = () => {
   const { data: leadsData, isLoading, error } = useLeads({
     search: searchTerm || undefined,
     status: statusFilter,
+    hasReferral: referralFilter === "all" ? undefined : referralFilter === "with",
   });
 
   const { data: stats } = useLeadPipelineStats();
@@ -66,6 +70,16 @@ const LeadsPipeline = () => {
   const deleteLead = useDeleteLead();
 
   const leads = leadsData?.data || [];
+
+  // Calcular estatísticas de referral
+  const referralStats = {
+    total: leads.length,
+    withReferral: leads.filter(l => l.referralCode || l.referralId).length,
+    withoutReferral: leads.filter(l => !l.referralCode && !l.referralId).length,
+    conversionRate: leads.length > 0 
+      ? (leads.filter(l => l.referralCode || l.referralId).length / leads.length) * 100 
+      : 0,
+  };
 
   const getStatusBadgeClass = (status: LeadStatus) => {
     switch (status) {
@@ -176,7 +190,7 @@ const LeadsPipeline = () => {
       </div>
 
       {/* Pipeline Stats */}
-      <div className="grid md:grid-cols-5 gap-4 mb-8">
+      <div className="grid md:grid-cols-6 gap-4 mb-8">
         <Card className="p-4 bg-blue-500/10 border-blue-500/20">
           <div className="flex items-center justify-between">
             <div>
@@ -228,6 +242,21 @@ const LeadsPipeline = () => {
             <Users className="h-8 w-8 text-purple-600 opacity-50" />
           </div>
         </Card>
+
+        <Card className="p-4 bg-gradient-to-br from-emerald-500/10 to-teal-500/10 border-emerald-500/20">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-base text-muted-foreground">Por Indicação</p>
+              <h3 className="text-2xl font-bold text-emerald-600">
+                {referralStats.withReferral}
+              </h3>
+              <p className="text-xs text-muted-foreground mt-1">
+                {referralStats.conversionRate.toFixed(1)}% do total
+              </p>
+            </div>
+            <Share2 className="h-8 w-8 text-emerald-600 opacity-50" />
+          </div>
+        </Card>
       </div>
 
       {/* Filters */}
@@ -260,6 +289,19 @@ const LeadsPipeline = () => {
               <SelectItem value={LeadStatus.LOST}>Perdido</SelectItem>
             </SelectContent>
           </Select>
+          <Select
+            value={referralFilter}
+            onValueChange={setReferralFilter}
+          >
+            <SelectTrigger className="w-full md:w-[200px]">
+              <SelectValue placeholder="Filtrar por origem" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todas as Origens</SelectItem>
+              <SelectItem value="with">Com Indicação</SelectItem>
+              <SelectItem value="without">Sem Indicação</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
       </Card>
 
@@ -274,6 +316,7 @@ const LeadsPipeline = () => {
               <TableHead>Score</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Etapa Pipeline</TableHead>
+              <TableHead>Indicação</TableHead>
               <TableHead className="text-right">Ações</TableHead>
             </TableRow>
           </TableHeader>
@@ -346,6 +389,39 @@ const LeadsPipeline = () => {
                   <Badge variant="secondary" className={getStatusBadgeClass(lead.status)}>
                     {lead.pipeline?.stage || 'new'}
                   </Badge>
+                </TableCell>
+                <TableCell>
+                  {lead.referralCode || lead.referralId ? (
+                    <div className="flex items-center gap-2">
+                      <Badge 
+                        variant="secondary" 
+                        className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20"
+                      >
+                        <Share2 className="h-3 w-3 mr-1" />
+                        Indicação
+                      </Badge>
+                      {lead.referralCode && (
+                        <span className="text-xs text-muted-foreground font-mono">
+                          {lead.referralCode}
+                        </span>
+                      )}
+                      {lead.referralId && (
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="h-6 px-2 text-xs"
+                          onClick={() => {
+                            // Navegar para detalhes do referral
+                            window.location.href = `#/admin/referrals?referralId=${lead.referralId}`;
+                          }}
+                        >
+                          <ExternalLink className="h-3 w-3" />
+                        </Button>
+                      )}
+                    </div>
+                  ) : (
+                    <span className="text-muted-foreground text-sm">-</span>
+                  )}
                 </TableCell>
                 <TableCell className="text-right">
                   <div className="flex justify-end gap-2">

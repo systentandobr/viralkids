@@ -43,6 +43,8 @@ import { AccessDenied } from '@/components/shared/AccessDenied';
 import { isFranchiseeRole, ROLE_CATEGORIES } from '@/features/auth/utils/roleUtils';
 import TaskChecklist from '@/components/franchise/TaskChecklist';
 import TrainingCenter from '@/components/franchise/TrainingCenter';
+import Ranking from '@/components/franchise/Ranking';
+
 
 
 export const FranchiseeDashboard: React.FC = () => {
@@ -109,6 +111,7 @@ export const FranchiseeDashboard: React.FC = () => {
   // Detectar a rota atual para destacar o menu correto
   const getActiveTab = (path: string) => {
     if (path === '/dashboard/tasks') return 'tasks';
+    if (path === '/dashboard/ranking') return 'ranking';
     if (path === '/dashboard/users') return 'users';
     if (path === '/dashboard/suppliers') return 'suppliers';
     if (path === '/dashboard/products') return 'products';
@@ -210,7 +213,7 @@ export const FranchiseeDashboard: React.FC = () => {
                 <div className="w-8 h-8 bg-gradient-to-r from-pink-500 to-purple-600 rounded-lg flex items-center justify-center">
                   <span className="text-white font-bold text-base">VK</span>
                 </div>
-                <h1 className="text-xl font-bold">Minha AgentSchool</h1>
+                <h1 className="text-xl font-bold">Minha AgentSummary</h1>
               </div>
             </div>
 
@@ -271,6 +274,18 @@ export const FranchiseeDashboard: React.FC = () => {
                   {availableTasks.length}
                 </Badge>
               )}
+            </Button>
+
+            <Button
+              variant={activeTab === '/dashboard/ranking' ? 'default' : 'ghost'}
+              className="w-full justify-start"
+              onClick={() => {
+                setActiveTab('/dashboard/ranking');
+                navigate('#/dashboard/ranking');
+              }}
+            >
+              <Trophy className="h-4 w-4 mr-2" />
+              Ranking
             </Button>
 
 
@@ -378,9 +393,9 @@ export const FranchiseeDashboard: React.FC = () => {
               {/* Welcome Section */}
               <div className="space-y-4">
                 <div>
-                  <h2 className="text-2xl font-bold">Bem-vindo à sua AgentsSchool! 🚀</h2>
+                  <h2 className="text-2xl font-bold">Bem-vindo à sua AgentSummary! 🚀</h2>
                   <p className="text-muted-foreground">
-                    Acompanhe seu progresso e complete tarefas para evoluir sua evolução
+                    Acompanhe seu progresso e complete tarefas para integração do seu portifólio com nossos agentes
                   </p>
                 </div>
 
@@ -550,6 +565,10 @@ export const FranchiseeDashboard: React.FC = () => {
             <TaskChecklist franchiseId={franchiseeId} />
           )}
 
+          {activeTab === 'ranking' && (
+            <Ranking />
+          )}
+
           {activeTab === 'users' && (
             <>
               {user?.unitId ? (
@@ -557,7 +576,7 @@ export const FranchiseeDashboard: React.FC = () => {
                   franchise={{
                     id: user.unitId,
                     unitId: user.unitId,
-                    name: user.name || 'Minha AgentSchool',
+                    name: user.name || 'Minha AgentSummary',
                     owner: {
                       id: user.id || '',
                       name: user.name || '',

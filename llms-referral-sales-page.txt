@@ -1,7 +1,7 @@
 # Guia para Construção da Página de Vendas - Sistema Member Get Member
 
 ## Objetivo
-Criar uma página de vendas atraente e convertida para apresentar o sistema de indicações ViralKids aos franqueados, destacando benefícios, funcionalidades e facilidade de uso.
+Criar uma página de vendas atraente e convertida para apresentar o sistema de indicações AgentSummary aos associados, destacando benefícios, funcionalidades e facilidade de uso.
 
 ## Estrutura da Página
 
@@ -10,17 +10,17 @@ Criar uma página de vendas atraente e convertida para apresentar o sistema de i
 
 **Elementos**:
 - Título impactante: "Multiplique Suas Vendas com Indicações"
-- Subtítulo: "Sistema completo de Member Get Member para franqueados ViralKids"
+- Subtítulo: "Benefícios exclusivos de Membros pra membros com AgentSummary"
 - CTA principal: "Começar Agora" / "Solicitar Demonstração"
 - Imagem/Ilustração: Representação visual do sistema de indicações
-- Badge de confiança: "Usado por X franqueados" ou "Aumente vendas em até X%"
+- Badge de confiança: "Usado por X associados" ou "Aumente vendas em até X%"
 
 **Técnicas de Conversão**:
 - Destaque para benefício principal (aumento de vendas)
 - CTA acima da dobra
 - Visual limpo e profissional
 
-### 2. Seção de Benefícios para Franqueados
+### 2. Seção de Benefícios para associados
 **Componente**: Grid de cards com benefícios
 
 **Benefícios a destacar**:
@@ -71,7 +71,7 @@ Criar uma página de vendas atraente e convertida para apresentar o sistema de i
 - **Cashback**: Dinheiro direto na carteira virtual
 - **Desconto**: Cupons para próximas compras
 - **Pontos**: Acúmulo no programa de fidelidade
-- **Prêmios Físicos**: Produtos do catálogo ViralKids
+- **Prêmios Físicos**: Produtos do catálogo AgentSummary
 
 **Para cada tipo**:
 - Ícone representativo
@@ -245,7 +245,7 @@ src/
 ## Design e UX
 
 ### Cores e Estilo
-- Seguir design system existente do ViralKids
+- Seguir design system existente do AgentSummary
 - Usar cores da marca
 - Tipografia clara e legível
 - Espaçamento adequado
@@ -309,4 +309,4 @@ src/
 
 ---
 
-**Nota**: Esta página deve ser otimizada para conversão, focando em mostrar valor e facilitar o processo de interesse/cadastro dos franqueados.
+**Nota**: Esta página deve ser otimizada para conversão, focando em mostrar valor e facilitar o processo de interesse/cadastro dos associados.

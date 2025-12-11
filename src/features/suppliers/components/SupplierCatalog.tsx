@@ -67,7 +67,7 @@ export const SupplierCatalog: React.FC<SupplierCatalogProps> = ({
       onSupplierContact(supplier);
     } else if (supplier.phone) {
       // Ação padrão - abrir WhatsApp
-      const message = `Olá! Vim através da plataforma Viral Kids e gostaria de saber mais sobre seus produtos para Minha AgentSchool.`;
+      const message = `Olá! Vim através da plataforma Viral Kids e gostaria de saber mais sobre seus produtos para Minha AgentSummary.`;
       const whatsappUrl = `https://wa.me/${supplier.phone}?text=${encodeURIComponent(message)}`;
       window.open(whatsappUrl, '_blank');
     } else {

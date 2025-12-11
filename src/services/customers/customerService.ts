@@ -13,6 +13,13 @@ export interface Customer {
   firstPurchaseAt?: Date;
   lastPurchaseAt?: Date;
   isActive: boolean;
+  // Campos de integração com Referrals
+  referralStats?: {
+    totalReferrals: number;
+    completedReferrals: number;
+    totalRewardsReceived: number;
+    conversionRate: number;
+  };
   createdAt: Date;
   updatedAt: Date;
 }
@@ -22,6 +29,9 @@ export interface CustomerFilters {
   status?: 'vip' | 'ativo' | 'novo';
   page?: number;
   limit?: number;
+  minReferrals?: number;
+  minRewardsValue?: number;
+  topIndicators?: boolean; // true para clientes com mais indicações
 }
 
 export interface CustomerStats {
@@ -75,6 +85,25 @@ export class CustomerService {
 
   static async delete(id: string): Promise<ApiResponse<void>> {
     return httpClient.delete(`${API_ENDPOINTS.CUSTOMERS?.LIST || '/customers'}/${id}`);
+  }
+
+  static async getReferralHistory(customerId: string): Promise<ApiResponse<{
+    referrals: Array<{
+      id: string;
+      referralCode: string;
+      status: string;
+      createdAt: string;
+      completedAt?: string;
+      rewardValue?: number;
+    }>;
+    stats: {
+      totalReferrals: number;
+      completedReferrals: number;
+      totalRewardsReceived: number;
+      conversionRate: number;
+    };
+  }>> {
+    return httpClient.get(`${API_ENDPOINTS.CUSTOMERS?.LIST || '/customers'}/${customerId}/referrals`);
   }
 }
 

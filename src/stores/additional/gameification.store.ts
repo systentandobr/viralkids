@@ -77,7 +77,7 @@ interface GameificationStore {
   completeTask: (franchiseeId: string, taskId: string, validation?: any) => Promise<void>;
   resetProgress: (franchiseeId: string) => void;
   updatePerformance: (franchiseeId: string, performance: Partial<FranchiseePerformance>) => void;
-  
+
   // Utilitários
   getFranchiseeData: (franchiseeId: string) => FranchiseeGameificationData | null;
   getAvailableTasks: (franchiseeId: string) => FranchiseeTask[];
@@ -85,7 +85,7 @@ interface GameificationStore {
   getNextLevelPoints: (franchiseeId: string) => number;
   calculateLevel: (points: number) => number;
   calculateProgress: (franchiseeId: string) => void;
-  
+
   // Estado
   setLoading: (loading: boolean) => void;
   setError: (error: string | null) => void;
@@ -119,7 +119,7 @@ const DEFAULT_TASKS: FranchiseeTask[] = [
   },
   {
     id: 'create-instagram',
-    title: 'Crie seu Instagram ViralKids',
+    title: 'Crie seu Instagram da sua Unidade',
     description: 'Configure seu perfil no Instagram seguindo nossos padrões de marca.',
     category: 'social_media',
     type: 'instagram_creation',
@@ -127,12 +127,12 @@ const DEFAULT_TASKS: FranchiseeTask[] = [
     points: 100,
     status: 'pending',
     dependencies: ['setup-profile'],
-    instructions: 'Crie uma conta @viralkids.suacidade seguindo o template fornecido.',
+    instructions: 'Crie uma conta @suaUnidade.suacidade seguindo o template fornecido.',
     resources: [
       {
         id: 'instagram-template',
         type: 'template',
-        title: 'Template Instagram ViralKids',
+        title: 'Template Instagram da Sua Unidade',
         url: '/templates/instagram-profile.pdf',
         description: 'Template completo para criar seu perfil'
       },
@@ -265,7 +265,7 @@ export const useGameificationStore = create<GameificationStore>()(
       // Inicializar franchisee
       initializeFranchisee: (franchiseeId: string) => {
         const { gameificationData } = get();
-        
+
         if (!gameificationData[franchiseeId]) {
           set(state => ({
             gameificationData: {
@@ -296,7 +296,7 @@ export const useGameificationStore = create<GameificationStore>()(
                 icon: defaultTask?.icon || task.icon
               };
             });
-            
+
             set(state => ({
               gameificationData: {
                 ...state.gameificationData,
@@ -314,7 +314,7 @@ export const useGameificationStore = create<GameificationStore>()(
       completeTask: async (franchiseeId: string, taskId: string, validation?: any) => {
         const { gameificationData } = get();
         const franchiseeData = gameificationData[franchiseeId];
-        
+
         if (!franchiseeData) {
           throw new Error('Franchisee não encontrado');
         }
@@ -333,7 +333,7 @@ export const useGameificationStore = create<GameificationStore>()(
 
           // Remover da lista de tarefas pendentes
           const newTasks = franchiseeData.tasks.filter(t => t.id !== taskId);
-          
+
           // Adicionar à lista de tarefas completas
           const newCompletedTasks = [...franchiseeData.completedTasks, task];
 
@@ -343,7 +343,7 @@ export const useGameificationStore = create<GameificationStore>()(
               const allDependenciesCompleted = t.dependencies.every(depId =>
                 newCompletedTasks.some(ct => ct.id === depId)
               );
-              
+
               if (allDependenciesCompleted) {
                 return { ...t, status: 'pending' as const };
               }
@@ -390,9 +390,9 @@ export const useGameificationStore = create<GameificationStore>()(
           }
 
         } catch (error) {
-          set({ 
+          set({
             error: error instanceof Error ? error.message : 'Erro ao completar tarefa',
-            isLoading: false 
+            isLoading: false
           });
           throw error;
         }
@@ -419,7 +419,7 @@ export const useGameificationStore = create<GameificationStore>()(
       // Verificar novas badges
       checkForNewBadges: (completedTasks: FranchiseeTask[], currentBadges: Badge[]): Badge[] => {
         const newBadges: Badge[] = [];
-        
+
         // Badge primeira tarefa
         if (completedTasks.length >= 1 && !currentBadges.some(b => b.id === 'first-task')) {
           newBadges.push({
@@ -431,7 +431,7 @@ export const useGameificationStore = create<GameificationStore>()(
             type: 'bronze'
           });
         }
-        
+
         // Badge 5 tarefas
         if (completedTasks.length >= 5 && !currentBadges.some(b => b.id === 'five-tasks')) {
           newBadges.push({
@@ -443,7 +443,7 @@ export const useGameificationStore = create<GameificationStore>()(
             type: 'silver'
           });
         }
-        
+
         // Badge Instagram criado
         if (completedTasks.some(t => t.id === 'create-instagram') && !currentBadges.some(b => b.id === 'instagram-master')) {
           newBadges.push({
@@ -495,7 +495,7 @@ export const useGameificationStore = create<GameificationStore>()(
       calculateProgress: (franchiseeId: string) => {
         const { gameificationData } = get();
         const franchiseeData = gameificationData[franchiseeId];
-        
+
         if (!franchiseeData) return;
 
         const completedCount = franchiseeData.completedTasks.length;
@@ -529,7 +529,7 @@ export const useGameificationStore = create<GameificationStore>()(
       getTasksByCategory: (franchiseeId: string, category: FranchiseeTask['category']): FranchiseeTask[] => {
         const franchiseeData = get().getFranchiseeData(franchiseeId);
         if (!franchiseeData) return [];
-        
+
         return [...franchiseeData.tasks, ...franchiseeData.completedTasks]
           .filter(task => task.category === category);
       },
@@ -543,7 +543,7 @@ export const useGameificationStore = create<GameificationStore>()(
         if (currentLevel >= LEVEL_POINTS.length) {
           return LEVEL_POINTS[LEVEL_POINTS.length - 1];
         }
-        
+
         return LEVEL_POINTS[currentLevel] - franchiseeData.totalPoints;
       },
 
@@ -555,8 +555,8 @@ export const useGameificationStore = create<GameificationStore>()(
     {
       name: 'viralkids-gameification-storage',
       storage: createJSONStorage(() => localStorage),
-      partialize: (state) => ({ 
-        gameificationData: state.gameificationData 
+      partialize: (state) => ({
+        gameificationData: state.gameificationData
       }),
       version: 1,
       migrate: (persistedState: any, version: number) => {
@@ -573,7 +573,7 @@ export const useGameification = (franchiseeId: string) => {
   const franchiseeData = useGameificationStore(state => state.gameificationData[franchiseeId]);
   const isLoading = useGameificationStore(state => state.isLoading);
   const error = useGameificationStore(state => state.error);
-  
+
   // Ações da store
   const initializeFranchisee = useGameificationStore(state => state.initializeFranchisee);
   const completeTask = useGameificationStore(state => state.completeTask);
@@ -604,7 +604,7 @@ export const useGameification = (franchiseeId: string) => {
     error,
 
     // Ações
-    completeTask: (taskId: string, validation?: any) => 
+    completeTask: (taskId: string, validation?: any) =>
       completeTask(franchiseeId, taskId, validation),
     resetProgress: () => resetProgress(franchiseeId),
     updatePerformance: (performance: Partial<FranchiseePerformance>) =>

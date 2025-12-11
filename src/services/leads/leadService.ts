@@ -48,6 +48,9 @@ export interface Lead {
       exitedAt?: Date;
     }>;
   };
+  // Campos de integração com Referrals
+  referralCode?: string;
+  referralId?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -61,6 +64,8 @@ export interface LeadFilters {
   maxScore?: number;
   page?: number;
   limit?: number;
+  referralCode?: string;
+  hasReferral?: boolean; // true para leads com referral, false para sem referral
 }
 
 export interface LeadPipelineStats {
@@ -83,6 +88,8 @@ export interface CreateLeadData {
   metadata?: Record<string, any>;
   tags?: string[];
   score?: number;
+  referralCode?: string;
+  referralId?: string;
 }
 
 export interface UpdateLeadData extends Partial<CreateLeadData> {
