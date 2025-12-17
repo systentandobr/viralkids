@@ -7,6 +7,7 @@ interface User {
   name: string;
   email: string;
   role: 'admin' | 'franchisee' | 'supplier' | 'support';
+  unitId?: string;
   avatar?: string;
   phone?: string;
   domain?: string;
@@ -44,7 +45,7 @@ interface AuthState {
   isAuthenticated: boolean;
   isLoading: boolean;
   error: string | null;
-  
+
   // Configurações de sessão
   rememberMe: boolean;
   lastLoginAttempt: Date | null;
@@ -59,18 +60,18 @@ interface AuthActions {
   setLoading: (isLoading: boolean) => void;
   setError: (error: string | null) => void;
   setRememberMe: (rememberMe: boolean) => void;
-  
+
   // Ações de autenticação
   login: (user: User, tokens: AuthTokens, rememberMe?: boolean) => void;
   logout: () => void;
   updateUser: (userData: Partial<User>) => void;
   refreshTokens: (newTokens: AuthTokens) => void;
-  
+
   // Verificações
   isTokenValid: () => boolean;
   isSessionExpired: () => boolean;
   shouldRefreshToken: () => boolean;
-  
+
   // Utilitários
   hasRole: (role: User['role']) => boolean;
   hasPermission: (permission: string) => boolean;
@@ -152,7 +153,7 @@ export const useAuthStore = create<AuthStore>()(
       isTokenValid: () => {
         const { tokens } = get();
         if (!tokens) return false;
-        
+
         return Date.now() < tokens.expiresAt;
       },
 
@@ -160,7 +161,7 @@ export const useAuthStore = create<AuthStore>()(
       isSessionExpired: () => {
         const { lastLoginAttempt, sessionTimeout } = get();
         if (!lastLoginAttempt) return true;
-        
+
         const sessionExpiry = lastLoginAttempt.getTime() + (sessionTimeout * 60 * 1000);
         return Date.now() > sessionExpiry;
       },
@@ -169,7 +170,7 @@ export const useAuthStore = create<AuthStore>()(
       shouldRefreshToken: () => {
         const { tokens } = get();
         if (!tokens) return false;
-        
+
         // Renovar se restam menos de 5 minutos
         const timeLeft = tokens.expiresAt - Date.now();
         return timeLeft < (5 * 60 * 1000);
@@ -185,17 +186,17 @@ export const useAuthStore = create<AuthStore>()(
       hasPermission: (permission) => {
         const { user } = get();
         if (!user) return false;
-        
+
         // Admin tem todas as permissões
         if (user.role === 'admin') return true;
-        
+
         // Implementar lógica específica de permissões aqui
         const rolePermissions: Record<string, string[]> = {
           franchisee: ['dashboard:read', 'profile:update', 'tasks:read', 'suppliers:read'],
           supplier: ['profile:update', 'products:manage', 'orders:read'],
           support: ['leads:read', 'leads:update', 'support:manage'],
         };
-        
+
         return rolePermissions[user.role]?.includes(permission) ?? false;
       },
 

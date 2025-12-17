@@ -2,14 +2,14 @@ import { useCallback, useEffect } from 'react';
 import { useAuthStore } from '@/stores/auth.store';
 import { securityClient } from '@/services/auth/securityClient';
 import { ENV_CONFIG } from '@/config/env';
-import { 
-  User, 
-  LoginCredentials, 
-  RegisterData, 
-  ForgotPasswordData, 
+import {
+  User,
+  LoginCredentials,
+  RegisterData,
+  ForgotPasswordData,
   ResetPasswordData,
   UserRole,
-  TokenPayload 
+  TokenPayload
 } from '../types';
 import { getDefaultRedirectPath, getRoleDisplayName, getRoleDescription } from '../utils/roleUtils';
 
@@ -28,7 +28,7 @@ export const useAuth = ({ autoLogin = true, persistSession = true, autoRedirect 
   const isLoading = useAuthStore(state => state.isLoading);
   const error = useAuthStore(state => state.error);
   const tokens = useAuthStore(state => state.tokens);
-  
+
   // Ações da store
   const storeLogin = useAuthStore(state => state.login);
   const storeLogout = useAuthStore(state => state.logout);
@@ -52,7 +52,7 @@ export const useAuth = ({ autoLogin = true, persistSession = true, autoRedirect 
     try {
       // Verificar se há token válido usando a biblioteca de segurança
       const isTokenValid = await securityClient.isTokenValid();
-      
+
       if (isTokenValid) {
         // Obter informações do usuário armazenadas
         const userInfo = await securityClient.getStoredUserInfo();
@@ -70,18 +70,19 @@ export const useAuth = ({ autoLogin = true, persistSession = true, autoRedirect 
             lastLogin: new Date(userInfo.lastLogin),
             emailVerified: userInfo.emailVerified,
             status: userInfo.status as 'active' | 'pending' | 'inactive',
+            unitId: userInfo.unitId || userInfo.profile?.unitId, // Ensure unitId is restored
             preferences: userInfo.preferences
           };
-          
+
           // Atualizar store com dados do usuário
-          storeLogin(user, { 
+          storeLogin(user, {
             token: await securityClient.getStoredToken(),
             refreshToken: await securityClient.getStoredRefreshToken(),
             expiresAt: Date.now() + (24 * 60 * 60 * 1000) // 24 horas
           }, false);
         }
       }
-      
+
       setLoading(false);
     } catch (error) {
       console.error('Erro ao verificar sessão existente:', error);
@@ -114,10 +115,10 @@ export const useAuth = ({ autoLogin = true, persistSession = true, autoRedirect 
   // Função para redirecionamento automático baseado no role
   const redirectBasedOnRole = useCallback((userRole: UserRole) => {
     if (!autoRedirect) return;
-    
+
     const redirectPath = getDefaultRedirectPath(userRole);
     console.log(`Redirecionando usuário com role '${userRole}' para: ${redirectPath}`);
-    
+
     // Usar setTimeout para garantir que o estado foi atualizado
     setTimeout(() => {
       window.location.hash = redirectPath;
@@ -128,15 +129,15 @@ export const useAuth = ({ autoLogin = true, persistSession = true, autoRedirect 
     try {
       // Usar a biblioteca de segurança para renovar token
       const isRefreshed = await securityClient.ensureValidToken();
-      
+
       if (!isRefreshed) {
         throw new Error('Failed to refresh token');
       }
-      
+
       // Obter novos tokens
       const newToken = await securityClient.getStoredToken();
       const newRefreshToken = await securityClient.getStoredRefreshToken();
-      
+
       if (newToken && newRefreshToken) {
         // Atualizar tokens na store
         const updatedTokens = {
@@ -144,13 +145,13 @@ export const useAuth = ({ autoLogin = true, persistSession = true, autoRedirect 
           refreshToken: newRefreshToken,
           expiresAt: Date.now() + (24 * 60 * 60 * 1000) // 24 horas
         };
-        
+
         // Atualizar store com novos tokens
         if (user) {
           storeLogin(user, updatedTokens, false);
         }
       }
-      
+
     } catch (error) {
       console.error('Erro ao renovar token:', error);
       // Refresh falhou, fazer logout
@@ -179,12 +180,12 @@ export const useAuth = ({ autoLogin = true, persistSession = true, autoRedirect 
       // Mapear o role da API para o formato esperado
       // A API retorna um array de roles, vamos pegar o primeiro
       const userRole = authResult.user.roles?.[0]?.name || 'franchisee';
-      
+
       // Converter dados do usuário para o formato esperado
       const user: User = {
         id: authResult.user.id,
         email: authResult.user.email,
-        name: authResult.user.profile?.firstName 
+        name: authResult.user.profile?.firstName
           ? `${authResult.user.profile.firstName} ${authResult.user.profile.lastName || ''}`.trim()
           : authResult.user.username,
         role: userRole as UserRole,
@@ -271,12 +272,12 @@ export const useAuth = ({ autoLogin = true, persistSession = true, autoRedirect 
 
       // Mapear o role da API para o formato esperado
       const userRole = registerResult.user.roles?.[0]?.name || data.role || 'franchisee';
-      
+
       // Converter dados do usuário para o formato esperado
       const newUser: User = {
         id: registerResult.user.id,
         email: registerResult.user.email,
-        name: registerResult.user.profile?.firstName 
+        name: registerResult.user.profile?.firstName
           ? `${registerResult.user.profile.firstName} ${registerResult.user.profile.lastName || ''}`.trim()
           : registerResult.user.username,
         role: userRole as UserRole,
@@ -432,23 +433,23 @@ export const useAuth = ({ autoLogin = true, persistSession = true, autoRedirect 
       if (data.unitId !== undefined) {
         updateData.unitId = data.unitId;
       }
-      
+
       if (data.location) {
         updateData.location = data.location;
       }
-      
+
       if (data.avatar !== undefined) {
         updateData.avatar = data.avatar;
       }
-      
+
       if (data.bio !== undefined) {
         updateData.bio = data.bio;
       }
-      
+
       if (data.phone !== undefined) {
         updateData.phone = data.phone;
       }
-      
+
       if (data.dateOfBirth !== undefined) {
         updateData.dateOfBirth = data.dateOfBirth;
       }
@@ -471,7 +472,7 @@ export const useAuth = ({ autoLogin = true, persistSession = true, autoRedirect 
         avatar: updateData.avatar || apiUser?.profile?.avatar || user.avatar,
         updatedAt: new Date(),
       };
-      
+
       storeUpdateUser(updatedUser);
 
     } catch (error) {
@@ -573,7 +574,7 @@ export const useAuth = ({ autoLogin = true, persistSession = true, autoRedirect 
   // Utilitários de autorização
   const canAccess = useCallback(async (resource: string, action: string): Promise<boolean> => {
     if (!user) return false;
-    
+
     try {
       // Usar a biblioteca de segurança para verificar permissões
       return await securityClient.hasPermission(`${action}:${resource}`);
@@ -624,7 +625,7 @@ export const useAuth = ({ autoLogin = true, persistSession = true, autoRedirect 
     hasPermission,
     hasRole,
     canAccess,
-    
+
     // Utilitários de Role
     getUserRoleDisplayName,
     getUserRoleDescription,

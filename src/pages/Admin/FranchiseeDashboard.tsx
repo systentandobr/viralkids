@@ -48,8 +48,11 @@ import Ranking from '@/components/franchise/Ranking';
 
 
 export const FranchiseeDashboard: React.FC = () => {
+
+  const { logout, user } = useAuthContext();
+
   // Simulando ID do unidade logado
-  const franchiseeId = 'franchisee_001';
+  const franchiseeId = user?.unitId;
 
   const {
     tasks,
@@ -65,7 +68,6 @@ export const FranchiseeDashboard: React.FC = () => {
     getNextLevelPoints
   } = useGameification({ franchiseeId });
 
-  const { logout, user } = useAuthContext();
 
   // Verificar se o usuário tem acesso ao painel de unidade
   const hasAccess = user && isFranchiseeRole(user.role);

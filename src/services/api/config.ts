@@ -28,8 +28,8 @@ export const API_CONFIG = {
   RETRY_DELAY: 1000, // 1 segundo
 };
 
-export const runMockMode: boolean = 
-  (import.meta.env.VITE_RUN_MOCK_MODE === 'true' || true) as boolean;
+export const runMockMode: boolean =
+  (import.meta.env.VITE_RUN_MOCK_MODE === 'true') as boolean;
 
 // Headers padrão
 export const DEFAULT_HEADERS = {
