@@ -401,7 +401,7 @@ export const AffiliateProductForm = ({
         {/* Botão de Submit */}
         <Button
           type="submit"
-          className="w-full bg-gradient-to-r from-neon-cyan to-neon-blue hover:opacity-90"
+          className="w-full from-neon-cyan to-neon-blue hover:opacity-90"
           disabled={isLoading || isLoadingPreview || !formData.categoryId || !formData.affiliateUrl}
         >
           {isLoadingPreview ? (

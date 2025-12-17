@@ -50,7 +50,7 @@ const LEAD_SOURCES = [
   { value: LeadSource.WEBSITE, label: 'Website' },
   { value: LeadSource.WHATSAPP, label: 'WhatsApp' },
   { value: LeadSource.FORM, label: 'Formulário' },
-  { value: LeadSource.REFERRAL, label: 'Indicação' },
+  { value: LeadSource.LANDING_PAGE, label: 'Indicação' },
 ];
 
 interface EditLeadFormProps {

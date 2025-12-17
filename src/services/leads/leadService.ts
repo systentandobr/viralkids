@@ -15,7 +15,7 @@ export enum LeadSource {
   WEBSITE = 'website',
   WHATSAPP = 'whatsapp',
   FORM = 'form',
-  REFERRAL = 'referral',
+  LANDING_PAGE = 'landingpage',
 }
 
 export interface Lead {
