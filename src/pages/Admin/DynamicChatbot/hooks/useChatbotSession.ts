@@ -34,13 +34,40 @@ export function useChatbotSession({ defaultUnitId }: UseChatbotSessionParams = {
     // Ignorar erro se store não estiver disponível
   }
 
-  // Extrair parâmetros da URL
-  const urlLeadId = getUrlParam('leadId') || undefined;
-  const urlUnitId = getUrlParam('unitId') || undefined;
-  const urlCustomerId = getUrlParam('customerId') || undefined;
-  const urlUserId = getUrlParam('userId') || undefined;
-  const urlSessionId = getUrlParam('sessionId') || undefined;
-  const urlStage = getUrlParam('stage') || undefined;
+  // Estado para parâmetros da URL (para reagir a mudanças no hash)
+  const [urlParams, setUrlParams] = useState(() => ({
+    leadId: getUrlParam('leadId') || undefined,
+    unitId: getUrlParam('unitId') || undefined,
+    customerId: getUrlParam('customerId') || undefined,
+    userId: getUrlParam('userId') || undefined,
+    sessionId: getUrlParam('sessionId') || undefined,
+    stage: getUrlParam('stage') || undefined,
+  }));
+
+  // Atualizar parâmetros quando o hash mudar
+  useEffect(() => {
+    const handleHashChange = () => {
+      setUrlParams({
+        leadId: getUrlParam('leadId') || undefined,
+        unitId: getUrlParam('unitId') || undefined,
+        customerId: getUrlParam('customerId') || undefined,
+        userId: getUrlParam('userId') || undefined,
+        sessionId: getUrlParam('sessionId') || undefined,
+        stage: getUrlParam('stage') || undefined,
+      });
+    };
+
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
+
+  // Extrair parâmetros da URL do estado
+  const urlLeadId = urlParams.leadId;
+  const urlUnitId = urlParams.unitId;
+  const urlCustomerId = urlParams.customerId;
+  const urlUserId = urlParams.userId;
+  const urlSessionId = urlParams.sessionId;
+  const urlStage = urlParams.stage;
 
   // Determinar userId (prioridade: URL > Auth Context > gerar anônimo)
   // Se não tiver userId, gerar um ID anônimo baseado em localStorage
