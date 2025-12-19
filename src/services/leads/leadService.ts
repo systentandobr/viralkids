@@ -135,5 +135,29 @@ export class LeadService {
   static async delete(id: string): Promise<ApiResponse<void>> {
     return httpClient.delete(API_ENDPOINTS.LEADS.DELETE(id));
   }
+
+  static async sendNotification(data: {
+    leadId?: string;
+    customerId?: string;
+    unitId: string;
+    type: string;
+    stage?: string;
+  }): Promise<ApiResponse<void>> {
+    return httpClient.post('/notifications/send', data);
+  }
+
+  static async triggerWelcome(data: {
+    leadId: string;
+    unitId: string;
+    name?: string;
+  }): Promise<ApiResponse<void>> {
+    return httpClient.post('/notifications/trigger/lead-welcome', data);
+  }
+
+  static async createConversation(leadId: string, stage: string = 'sales'): Promise<ApiResponse<{ chatUrl: string }>> {
+    return httpClient.post(`${API_ENDPOINTS.LEADS.LIST}/${leadId}/conversation`, {
+      stage
+    });
+  }
 }
 

@@ -33,12 +33,20 @@ import {
   Clock,
   Share2,
   ExternalLink,
+  MessageCircle,
+  Bell,
+  Link,
+  Copy,
+  Check,
 } from "lucide-react";
+import { toast } from "@/components/ui/use-toast";
 import { useState } from "react";
 import { useLeads, useLeadPipelineStats, useUpdateLead, useDeleteLead } from "@/services/queries/leads";
-import { LeadStatus, LeadSource } from "@/services/leads/leadService";
+import { LeadStatus, LeadSource, LeadService } from "@/services/leads/leadService";
 import { CreateLeadForm } from "@/pages/Admin/components/leads/CreateLeadForm";
 import { EditLeadForm } from "@/pages/Admin/components/leads/EditLeadForm";
+import { useLeadConversations } from "@/services/queries/conversations";
+import { ConversationHistory } from "@/pages/Admin/components/leads/ConversationHistory";
 import {
   Dialog,
   DialogContent,
@@ -58,7 +66,8 @@ const LeadsPipeline = () => {
   const [isNoteDialogOpen, setIsNoteDialogOpen] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [editingLeadId, setEditingLeadId] = useState<string | null>(null);
-  
+  const [viewingConversationsLeadId, setViewingConversationsLeadId] = useState<string | null>(null);
+
   const { data: leadsData, isLoading, error } = useLeads({
     search: searchTerm || undefined,
     status: statusFilter,
@@ -76,8 +85,8 @@ const LeadsPipeline = () => {
     total: leads.length,
     withReferral: leads.filter(l => l.referralCode || l.referralId).length,
     withoutReferral: leads.filter(l => !l.referralCode && !l.referralId).length,
-    conversionRate: leads.length > 0 
-      ? (leads.filter(l => l.referralCode || l.referralId).length / leads.length) * 100 
+    conversionRate: leads.length > 0
+      ? (leads.filter(l => l.referralCode || l.referralId).length / leads.length) * 100
       : 0,
   };
 
@@ -345,22 +354,21 @@ const LeadsPipeline = () => {
                 <TableCell>
                   <Badge variant="secondary" className="text-sm">
                     {lead.source === LeadSource.CHATBOT ? 'Chatbot' :
-                     lead.source === LeadSource.WEBSITE ? 'Website' :
-                     lead.source === LeadSource.WHATSAPP ? 'WhatsApp' :
-                     lead.source === LeadSource.FORM ? 'Formulário' : 'Outro'}
+                      lead.source === LeadSource.WEBSITE ? 'Website' :
+                        lead.source === LeadSource.WHATSAPP ? 'WhatsApp' :
+                          lead.source === LeadSource.FORM ? 'Formulário' : 'Outro'}
                   </Badge>
                 </TableCell>
                 <TableCell>
                   <div className="flex items-center gap-2">
                     <div className="w-16 h-2 bg-muted rounded-full overflow-hidden">
                       <div
-                        className={`h-full ${
-                          lead.score >= 70
-                            ? 'bg-neon-green'
-                            : lead.score >= 40
+                        className={`h-full ${lead.score >= 70
+                          ? 'bg-neon-green'
+                          : lead.score >= 40
                             ? 'bg-yellow-500'
                             : 'bg-red-500'
-                        }`}
+                          }`}
                         style={{ width: `${lead.score}%` }}
                       />
                     </div>
@@ -393,8 +401,8 @@ const LeadsPipeline = () => {
                 <TableCell>
                   {lead.referralCode || lead.referralId ? (
                     <div className="flex items-center gap-2">
-                      <Badge 
-                        variant="secondary" 
+                      <Badge
+                        variant="secondary"
                         className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20"
                       >
                         <Share2 className="h-3 w-3 mr-1" />
@@ -425,6 +433,67 @@ const LeadsPipeline = () => {
                 </TableCell>
                 <TableCell className="text-right">
                   <div className="flex justify-end gap-2">
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={async () => {
+                        try {
+                          await LeadService.triggerWelcome({
+                            leadId: lead.id,
+                            unitId: lead.unitId || "default",
+                            name: lead.name
+                          });
+                          toast({
+                            title: "Notificações Enviadas",
+                            description: `Notificações de boas-vindas enviadas para ${lead.name}`,
+                          });
+                        } catch (error) {
+                          toast({
+                            title: "Erro",
+                            description: "Erro ao enviar notificação.",
+                            variant: "destructive"
+                          });
+                        }
+                      }}
+                      className="h-8 w-8 p-0 hover:bg-blue-500/10 hover:text-blue-500"
+                      title="Enviar Notificações"
+                    >
+                      <Bell className="h-4 w-4" />
+                    </Button>
+
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={async () => {
+                        try {
+                          const { data } = await LeadService.createConversation(lead.id, lead.pipeline?.stage || 'sales');
+                          navigator.clipboard.writeText(data.chatUrl);
+                          toast({
+                            title: "Link Copiado!",
+                            description: "Link do chat gerado e copiado para a área de transferência.",
+                          });
+                        } catch (error) {
+                          toast({
+                            title: "Erro",
+                            description: "Não foi possível gerar o link do chat.",
+                            variant: "destructive"
+                          });
+                        }
+                      }}
+                      className="h-8 w-8 p-0 hover:bg-emerald-500/10 hover:text-emerald-500"
+                      title="Link do Chat"
+                    >
+                      <Link className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => setViewingConversationsLeadId(lead.id)}
+                      className="h-8 w-8 p-0 hover:bg-purple-500/10 hover:text-purple-500"
+                      title="Ver Conversas"
+                    >
+                      <MessageCircle className="h-4 w-4" />
+                    </Button>
                     <Button
                       size="sm"
                       variant="ghost"
@@ -510,7 +579,44 @@ const LeadsPipeline = () => {
           </DialogContent>
         </Dialog>
       )}
+
+      {/* Modal de conversas */}
+      {viewingConversationsLeadId && (
+        <ConversationHistoryDialog
+          leadId={viewingConversationsLeadId}
+          onClose={() => setViewingConversationsLeadId(null)}
+        />
+      )}
     </div>
+  );
+};
+
+// Componente auxiliar para o modal de conversas
+const ConversationHistoryDialog = ({
+  leadId,
+  onClose,
+}: {
+  leadId: string;
+  onClose: () => void;
+}) => {
+  const { data, isLoading, error } = useLeadConversations(leadId);
+
+  return (
+    <Dialog open={!!leadId} onOpenChange={(open) => !open && onClose()}>
+      <DialogContent className="fixed right-0 top-0 h-screen w-full max-w-4xl translate-x-0 translate-y-0 rounded-l-lg rounded-r-none overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle>Histórico de Conversas</DialogTitle>
+          <DialogDescription>
+            Histórico completo de conversas do chatbot para este lead
+          </DialogDescription>
+        </DialogHeader>
+        <ConversationHistory
+          sessions={data?.sessions || []}
+          isLoading={isLoading}
+          error={error as Error | null}
+        />
+      </DialogContent>
+    </Dialog>
   );
 };
 

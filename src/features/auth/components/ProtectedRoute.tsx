@@ -190,7 +190,7 @@ export const useRoleRedirect = () => {
 
       case 'cliente':
       case 'lead':
-        return '#/last-visited';
+        return `#/messages?unitId=${user.unitId}`	;
       default:
         return '#/';
     }

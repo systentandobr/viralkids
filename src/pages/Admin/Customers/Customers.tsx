@@ -29,7 +29,8 @@ import {
   Star,
   Share2,
   Award,
-  Eye
+  Eye,
+  MessageCircle
 } from "lucide-react";
 import { useState, useMemo } from "react";
 import { useCustomers, useCustomerStats, useDeleteCustomer } from "@/services/queries/customers";
@@ -43,6 +44,8 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { CustomerReferralHistory } from "./components/CustomerReferralHistory";
+import { useCustomerConversations } from "@/services/queries/conversations";
+import { ConversationHistory } from "@/pages/Admin/components/leads/ConversationHistory";
 
 const Customers = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -51,6 +54,7 @@ const Customers = () => {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [editingCustomerId, setEditingCustomerId] = useState<string | null>(null);
   const [viewingReferralHistoryId, setViewingReferralHistoryId] = useState<string | null>(null);
+  const [viewingConversationsCustomerId, setViewingConversationsCustomerId] = useState<string | null>(null);
   const deleteCustomer = useDeleteCustomer();
 
   // Buscar clientes da API
@@ -312,6 +316,17 @@ const Customers = () => {
                 </TableCell>
                 <TableCell className="text-right">
                   <div className="flex justify-end gap-2">
+                    {(customer.metadata?.chatbotSessionIds?.length > 0 || customer.metadata?.chatbotSessionId) && (
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="h-8 w-8 p-0 hover:bg-purple-500/10 hover:text-purple-500"
+                        onClick={() => setViewingConversationsCustomerId(customer.id)}
+                        title="Ver Conversas"
+                      >
+                        <MessageCircle className="h-4 w-4" />
+                      </Button>
+                    )}
                     {customer.referralStats && customer.referralStats.totalReferrals > 0 && (
                       <Button
                         size="sm"
@@ -396,8 +411,45 @@ const Customers = () => {
           </DialogContent>
         </Dialog>
       )}
+
+      {/* Modal de conversas */}
+      {viewingConversationsCustomerId && (
+        <ConversationHistoryDialog
+          customerId={viewingConversationsCustomerId}
+          onClose={() => setViewingConversationsCustomerId(null)}
+        />
+      )}
     </div>
     </>
+  );
+};
+
+// Componente auxiliar para o modal de conversas
+const ConversationHistoryDialog = ({
+  customerId,
+  onClose,
+}: {
+  customerId: string;
+  onClose: () => void;
+}) => {
+  const { data, isLoading, error } = useCustomerConversations(customerId);
+
+  return (
+    <Dialog open={!!customerId} onOpenChange={(open) => !open && onClose()}>
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle>Histórico de Conversas</DialogTitle>
+          <DialogDescription>
+            Histórico completo de conversas do chatbot para este cliente
+          </DialogDescription>
+        </DialogHeader>
+        <ConversationHistory
+          sessions={data?.sessions || []}
+          isLoading={isLoading}
+          error={error as Error | null}
+        />
+      </DialogContent>
+    </Dialog>
   );
 };
 

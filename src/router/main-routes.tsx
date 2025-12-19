@@ -12,6 +12,7 @@ import ProductsManagement from '@/pages/Admin/Products/ProductsManagement';
 import LeadsPipeline from '@/pages/Admin/Leads/LeadsPipeline';
 import RouteTest from '@/components/RouteTest';
 import { Route } from '.';
+import Messages from '@/pages/Admin/DynamicChatbot/messages';
 
 // Definição das rotas
 const routes: Route[] = [
@@ -59,6 +60,12 @@ const routes: Route[] = [
     path: '/register',
     component: () => <AuthPage defaultTab="register" />,
     exact: true
+  },
+  {
+    path: '/messages',
+    component: Messages,
+    requireAuth: true,
+    allowedRoles: ['lead', 'cliente', 'customer', 'user', 'franqueado']
   },
   {
     path: '/admin',

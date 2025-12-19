@@ -44,6 +44,7 @@ import { isFranchiseeRole, ROLE_CATEGORIES } from '@/features/auth/utils/roleUti
 import TaskChecklist from '@/components/franchise/TaskChecklist';
 import TrainingCenter from '@/components/franchise/TrainingCenter';
 import Ranking from '@/components/franchise/Ranking';
+import LeadsPipeline from './Leads/LeadsPipeline';
 
 
 
@@ -312,6 +313,18 @@ export const FranchiseeDashboard: React.FC = () => {
             >
               <ShoppingBag className="h-4 w-4 mr-2" />
               Fornecedores
+            </Button>
+
+            <Button
+              variant={activeTab === 'leads' ? 'default' : 'ghost'}
+              className="w-full justify-start"
+              onClick={() => {
+                setActiveTab('leads');
+                navigate('#/dashboard/leads');
+              }}
+            >
+              <TrendingUp className="h-4 w-4 mr-2" />
+              Funil de Leads
             </Button>
 
             <Button
@@ -629,6 +642,10 @@ export const FranchiseeDashboard: React.FC = () => {
 
           {activeTab === 'training' && (
             <TrainingCenter franchiseId={franchiseeId} />
+          )}
+
+          {activeTab === 'leads' && (
+            <LeadsPipeline />
           )}
 
           {activeTab === 'replenishment' && (

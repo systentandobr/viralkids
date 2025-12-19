@@ -56,7 +56,6 @@ export const AdminDashboard: React.FC = () => {
     if (path === '/admin/customers') return 'customers';
     if (path === '/admin/orders') return 'orders';
     if (path === '/admin/products') return 'products';
-    if (path === '/admin/leads') return 'leads';
     if (path === '/admin/franchises') return 'franchises';
     if (path === '/admin/suppliers') return 'suppliers';
     if (path === '/admin/analytics') return 'analytics';
@@ -161,20 +160,6 @@ export const AdminDashboard: React.FC = () => {
             >
               <LayoutDashboard className="h-4 w-4 mr-2" />
               Dashboard
-            </Button>
-
-            <Button
-              variant={activeTab === 'leads' ? 'accent' : 'ghost'}
-              className="w-full justify-start"
-              onClick={() => setActiveTab('leads')}
-            >
-              <Users className="h-4 w-4 mr-2" />
-              Leads
-              {dashboard && (
-                <Badge variant="secondary" className="ml-auto">
-                  {dashboard.leads.newToday}
-                </Badge>
-              )}
             </Button>
 
             <Button

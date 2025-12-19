@@ -3,9 +3,11 @@ import TaskProgress from './TaskProgress';
 import TaskCard from './TaskCard';
 import { franchiseTasksService, FranchiseTask } from '@/services/api/franchise-tasks.service';
 import { Button } from '@/components/ui/button';
-import { Loader2, RefreshCw } from 'lucide-react';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import { Loader2, RefreshCw, CheckSquare, Brain } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
-// import { useAuthStore } from '@/stores/auth.store'; // Assuming we need user ID for initialization
+import { RagInstructionsManager } from '@/components/rag-instructions';
+import { useAuthStore } from '@/stores/auth.store'; // Assuming we need user ID for initialization
 
 const TaskChecklist: React.FC<{ franchiseId: string }> = ({ franchiseId }) => {
     const { toast } = useToast();
@@ -44,8 +46,7 @@ const TaskChecklist: React.FC<{ franchiseId: string }> = ({ franchiseId }) => {
             // As a fallback, we can pass "current" if backend supports extracting from Token.
             // But the service signature is `initializeDefaults(franchiseId, userId)`.
             // Let's import useAuthStore properly if possible.
-
-            const { useAuthStore } = await import('@/stores/auth.store');
+            
             const user = useAuthStore.getState().user;
 
             if (!user) {
@@ -67,35 +68,64 @@ const TaskChecklist: React.FC<{ franchiseId: string }> = ({ franchiseId }) => {
         }
     };
 
-    if (loading) return <div className="flex justify-center p-8"><Loader2 className="animate-spin text-blue-500" /></div>;
+    if (loading) {
+        return (
+            <div className="flex justify-center p-8">
+                <Loader2 className="animate-spin text-blue-500" />
+            </div>
+        );
+    }
 
     return (
-        <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl font-bold">Checklist de Implantação</h2>
-                <Button variant="outline" size="sm" onClick={fetchTasks}><RefreshCw className="h-4 w-4" /></Button>
+        <Tabs defaultValue="tasks" className="w-full">
+            <div className="bg-white rounded-lg shadow p-4 mb-6">
+                <TabsList className="grid w-full grid-cols-2">
+                    <TabsTrigger value="tasks" className="flex items-center gap-2">
+                        <CheckSquare className="h-4 w-4" />
+                        Checklist de Implantação
+                    </TabsTrigger>
+                    <TabsTrigger value="rag-instructions" className="flex items-center gap-2">
+                        <Brain className="h-4 w-4" />
+                        Instruções RAG
+                    </TabsTrigger>
+                </TabsList>
             </div>
 
-            {tasks.length > 0 ? (
-                <>
-                    <TaskProgress tasks={tasks} />
-                    <div className="mt-6 space-y-4">
-                        {tasks.map(task => (
-                            <TaskCard key={task._id || task.id} task={task} />
-                        ))}
+            <TabsContent value="tasks" className="mt-0">
+                <div className="bg-white rounded-lg shadow p-6">
+                    <div className="flex justify-between items-center mb-4">
+                        <h2 className="text-xl font-bold">Checklist de Implantação</h2>
+                        <Button variant="outline" size="sm" onClick={fetchTasks}>
+                            <RefreshCw className="h-4 w-4" />
+                        </Button>
                     </div>
-                </>
-            ) : (
-                <div className="text-center py-8 space-y-4">
-                    <p className="text-gray-500">Nenhuma tarefa encontrada para esta unidade.</p>
-                    <Button onClick={handleInitialize} disabled={initializing}>
-                        {initializing && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                        Inicializar Tarefas Padrão
-                    </Button>
-                    <p className="text-xs text-gray-400">Clique para carregar o checklist de onboarding.</p>
+
+                    {tasks.length > 0 ? (
+                        <>
+                            <TaskProgress tasks={tasks} />
+                            <div className="mt-6 space-y-4">
+                                {tasks.map(task => (
+                                    <TaskCard key={task._id || task.id} task={task} />
+                                ))}
+                            </div>
+                        </>
+                    ) : (
+                        <div className="text-center py-8 space-y-4">
+                            <p className="text-gray-500">Nenhuma tarefa encontrada para esta unidade.</p>
+                            <Button onClick={handleInitialize} disabled={initializing}>
+                                {initializing && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                Inicializar Tarefas Padrão
+                            </Button>
+                            <p className="text-xs text-gray-400">Clique para carregar o checklist de onboarding.</p>
+                        </div>
+                    )}
                 </div>
-            )}
-        </div>
+            </TabsContent>
+
+            <TabsContent value="rag-instructions" className="mt-0">
+                <RagInstructionsManager />
+            </TabsContent>
+        </Tabs>
     );
 };
 

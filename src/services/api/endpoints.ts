@@ -149,6 +149,7 @@ export const API_ENDPOINTS = {
     DELETE: (id: string) => `/leads/${id}`,
     PIPELINE_STATS: '/leads/pipeline/stats',
     CONVERT: (id: string) => `/leads/${id}/convert`,
+    CONVERSATIONS: (id: string) => `/leads/${id}/conversations`,
   },
 
   // Clientes
@@ -160,6 +161,7 @@ export const API_ENDPOINTS = {
     DELETE: (id: string) => `/customers/${id}`,
     STATS: '/customers/stats',
     REFERRAL_HISTORY: (id: string) => `/customers/${id}/referrals`,
+    CONVERSATIONS: (id: string) => `/customers/${id}/conversations`,
   },
 
   // Franquias
@@ -247,6 +249,21 @@ export const API_ENDPOINTS = {
     COMPLETE_STEP: (id: string) => `/franchise-tasks/${id}/complete-step`,
     INITIALIZE: (franchiseId: string) => `/franchise-tasks/initialize/${franchiseId}`,
     STATS: (franchiseId: string) => `/franchise-tasks/franchise/${franchiseId}/stats`,
+  },
+
+  // Instruções RAG
+  RAG_INSTRUCTIONS: {
+    LIST: '/rag-instructions',
+    DETAIL: (id: string) => `/rag-instructions/by-id/${id}`,
+    BY_UNIT: (unitId: string) => `/rag-instructions/${unitId}`,
+    CREATE: '/rag-instructions',
+    CREATE_FROM_TEXT: '/rag-instructions/from-text',
+    CREATE_FROM_URL: '/rag-instructions/from-url',
+    CREATE_FROM_PDF: '/rag-instructions/from-pdf',
+    UPDATE: (id: string) => `/rag-instructions/${id}`,
+    DELETE: (id: string) => `/rag-instructions/${id}`,
+    REINDEX: (id: string) => `/rag-instructions/${id}/reindex`,
+    CONTEXT: (unitId: string) => `/rag-instructions/${unitId}/context`,
   },
 } as const;
 
